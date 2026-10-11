@@ -2759,3 +2759,24 @@ html body.large-text .hw-pic .hw-art{width:74px;height:74px;}
 html body.large-text .hw-txt{padding-left:10px;}
 html body.large-text .todo-banner.ng-card{grid-template-columns:50px 1fr 14px!important;padding-left:16px!important;}
 html body.large-text .todo-banner.ng-card .tb-ic{width:46px;height:46px;}
+
+/* =====================================================================
+   ng3：標頭插畫完整顯示（不裁切，兩側紫藤都看得到）、標題兩側垂掛紫藤（圖包）、新天氣與小驚喜圖
+   ===================================================================== */
+html body .header.ng-hero{min-height:0!important;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 14px!important;background:linear-gradient(180deg,#FFFDF8 0,var(--paper) 100%)!important;}
+html body .ng-hero .ng-hero-img{position:relative!important;inset:auto!important;top:auto!important;bottom:auto!important;display:block!important;width:calc(100% + 28px)!important;max-width:none!important;height:auto!important;aspect-ratio:3/1;object-fit:contain!important;object-position:center!important;margin:10px -14px 0!important;z-index:1;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 12%,#000 88%,transparent 100%)!important;mask-image:linear-gradient(180deg,transparent 0,#000 12%,#000 88%,transparent 100%)!important;}
+html body .ng-hero .header-foot{margin-top:-20px!important;}
+.ng-hang{position:absolute;top:44px;width:62px;height:auto;z-index:1;pointer-events:none;user-select:none;opacity:.95;}
+.ng-hang-l{left:-6px;transform:scaleX(-1);}
+.ng-hang-r{right:-6px;}
+html body .ng-hero .header-title{padding:0 40px!important;}
+html body .ng-hero h1{font-size:min(10.4vw,44px)!important;}
+.ng-logo{width:50px!important;height:50px!important;}
+.ps-mtn{width:52px!important;height:auto!important;}
+.ng-deco-search{right:18px!important;top:6px!important;width:40px!important;transform:none!important;}
+.weather-wear-note{position:relative;}
+.weather-wear-note .wx-chilly{float:right;width:56px;height:56px;object-fit:contain;margin:-4px 0 0 8px;}
+html body.large-text .ng-hero h1{font-size:min(10.4vw,44px)!important;}
+.ng-hang{top:58px!important;}
+html body .weather-wear-note:has(.wx-chilly){padding-right:74px!important;min-height:72px;}
+html body .weather-wear-note .wx-chilly{position:absolute;float:none;right:10px;top:50%;transform:translateY(-50%);margin:0;}

@@ -1474,13 +1474,12 @@ document.addEventListener('visibilitychange',()=>{
 
 function renderDayChips(){
   const today=tripTodayIndex();
-  dayScroll.innerHTML = `<button type="button" class="day-chip ng-today${today>=0?' live':''}" onclick="goToToday()"><div class="d">今日</div><div class="m">${today>=0?'D'+days[today].dayNum:'—'}</div></button>`
-    +days.map((d,i)=>!inPlan(i)?'':`<button type="button" class="day-chip ${i===activeDay?'active':''} ${i===today?'is-today':''}" data-i="${i}" onclick="setActiveDay(${i})" aria-pressed="${i===activeDay}"><div class="d">${d.date}</div><div class="m">D${d.dayNum}・週${d.weekday}</div></button>`).join('');
+  dayScroll.innerHTML = `<button type="button" class="day-chip ng-today${today>=0?' live':''}" onclick="goToToday()"><div class="d">今日</div><div class="m">${today>=0?days[today].date:'—'}</div></button>`
+    +days.map((d,i)=>!inPlan(i)?'':`<button type="button" class="day-chip ${i===activeDay?'active':''} ${i===today?'is-today':''}" data-i="${i}" onclick="setActiveDay(${i})" aria-pressed="${i===activeDay}"><div class="d">${d.date}</div><div class="m">週${d.weekday}</div></button>`).join('');
   const act=dayScroll.querySelector('.day-chip.active');
   if(act)requestAnimationFrame(()=>{const r=act.offsetLeft-(dayScroll.clientWidth-act.offsetWidth)/2;dayScroll.scrollTo({left:Math.max(0,r),behavior:'auto'});});
   if(typeof renderMarksBar==='function'&&typeof marksStore!=='undefined')renderMarksBar();
   if(typeof renderDayTools==='function')renderDayTools();
-  if(typeof renderHomeWx==='function'&&document.getElementById('homeWx'))renderHomeWx();
 }
 
 let activeSubTabStore = {}; /* dayIdx -> 'main' | 'transport' | 'more' | 'routemap' */
@@ -1899,15 +1898,22 @@ const WMO = {
 };
 function wmoInfo(code){ return WMO[code] || ['🌡️','—']; }
 /* 小羚羊天氣圖（依天氣代碼切換：晴、多雲／陰、雨） */
-const WX_IMG={clear:['sunny','晴'],cloudy:['cloudy','多雲'],overcast:['cloudy','陰'],rain:['rainy','雨']};
+const WX_IMG={sunny:['sunny','晴天'],partly:['partly-cloudy','晴時多雲'],cloudy:['cloudy','陰天'],fog:['fog','起霧'],drizzle:['drizzle','小雨'],rain:['rain','下雨'],snow:['snow','下雪'],thunder:['thunderstorm','雷雨'],wind:['wind','有風']};
 function wxKind(code,wind){
-  code=Number(code);
-  if((code>=51&&code<=67)||(code>=71&&code<=86)||code>=95)return 'rain';
-  if(code===3||code===45||code===48)return 'overcast';
-  if(code===2)return 'cloudy';
-  return 'clear';
+  code=Number(code);wind=Number(wind)||0;
+  if(code>=95)return 'thunder';
+  if([71,73,75,77,85,86].includes(code))return 'snow';
+  if([61,63,65,66,67,80,81,82].includes(code))return 'rain';
+  if(code>=51&&code<=57)return 'drizzle';
+  if(code===45||code===48)return 'fog';
+  if(wind>=30)return 'wind';
+  if(code===3)return 'cloudy';
+  if(code===2)return 'partly';
+  return 'sunny';
 }
-function wxImgHTML(code,wind,cls='wx-img'){const [f,l]=WX_IMG[wxKind(code,wind)];return `<img class="${cls}" src="images/weather/serow-${f}.webp" alt="${l}" title="${l}" width="64" height="64" loading="lazy" decoding="async">`;}
+function wxImgHTML(code,wind,cls='wx-img'){const [f,l]=WX_IMG[wxKind(code,wind)];return `<img class="${cls}" src="images/weather/weather-${f}.webp" alt="${l}" title="${l}" width="64" height="64" loading="lazy" decoding="async">`;}
+/* 早晚偏冷是溫度提醒，不取代晴雨圖：最低溫 8°C 以下時，在穿搭旁加一張 */
+function chillyHTML(min){return min!=null&&min<=8?`<img class="wx-chilly" src="images/weather/weather-chilly.webp" alt="早晚偏冷" title="早晚偏冷" width="56" height="56" loading="lazy">`:'';}
 function feelsText(cw){return cw&&cw.apparent_temperature!=null?`體感 ${Math.round(cw.apparent_temperature)}°`:'';}
 
 function getDynamicTip(temp, code) {
@@ -1963,7 +1969,6 @@ async function fetchWeatherFor(k, attempt){
     }
     clearTimeout(timeout);
     liveWeatherCache[k] = { data, error:null, stale:false, fetchedAt: Date.now() };
-    setTimeout(()=>{if(typeof renderHomeWx==='function')renderHomeWx();},0);
     saveWeatherCacheEntry(k, liveWeatherCache[k]);
   }catch(err){
     clearTimeout(timeout);
@@ -2087,7 +2092,7 @@ function renderOneLiveCity(k){
         </div>
         <div class="weather-tenki-row"><a href="${TENKI_LINKS[k]||'https://tenki.jp/'}" target="_blank" rel="noopener">開啟 tenki.jp ${CITIES[k].label}預報（逐時・10 天）</a></div>
         <div class="weather-travel-note"><b>當地提醒</b><span>${MW_TIMES[k]}</span></div>
-        <div class="weather-wear-note"><b>穿搭</b><span>${tip}</span></div>
+        <div class="weather-wear-note">${chillyHTML(data.daily&&data.daily.temperature_2m_min?Math.round(data.daily.temperature_2m_min[0]):null)}<b>穿搭</b><span>${tip}${data.daily&&data.daily.temperature_2m_min&&data.daily.temperature_2m_min[0]<=8?' 🧥 早晚偏冷，多帶一件外套。':''}</span></div>
       </div>
     </details>
   `;
@@ -2494,7 +2499,7 @@ window.addEventListener('offline', updateNetStatus);
 /* ============ Service Worker（離線快取整個網頁） ============ */
 if (navigator.serviceWorker) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=ng2').then(()=>navigator.serviceWorker.ready).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=ng3').then(()=>navigator.serviceWorker.ready).catch(()=>{});
   });
 }
 document.addEventListener('error',e=>{if(e.target?.tagName==='IMG')imageErrorFallback(e.target);},true);
@@ -2994,7 +2999,7 @@ const TENKI_LINKS={
 /* =====================================================================
    v48：收藏／預約狀態／提醒、自駕即時路況、版本與同步比對
    ===================================================================== */
-const APP_VERSION='ng2-2026-10-11';
+const APP_VERSION='ng3-2026-10-11';
 
 /* ---------- 收藏 ★／預約狀態／提醒 ---------- */
 let marksStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_marks'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
@@ -3681,7 +3686,7 @@ function critterBusy(){
   return document.hidden||reducedMotion()||document.body.classList.contains('mama-open')||document.body.classList.contains('family-locked')||!!document.getElementById('formModal')||!!document.getElementById('toolsSheet')||!!document.getElementById('surpriseCard')||!!document.getElementById('spotEditModal')?.classList.contains('active');
 }
 /* ng2：角落探頭用整隻小羚羊（有道具） */
-const PEEK_IMGS=['welcome','peek','point','camera','guide','eat','shop','relaxed'].map(n=>`images/sp-${n}.webp`);
+const PEEK_IMGS=['wave','peek','gift','laugh','camera','tea','wisteria','guide'].map(n=>`images/sp-${n}.webp`);
 function pickCritter(){let img,n=0;do{img=PEEK_IMGS[Math.floor(Math.random()*PEEK_IMGS.length)];n++;}while(img===critter.last&&n<6);critter.last=img;return img;}
 function leafBurst(x,y){
   const l=critterLayer();
@@ -4527,7 +4532,7 @@ function transportAddBarHTML(dayIdx){
 }
 
 /* ---------- 新插圖用在合適的地方 ---------- */
-const SURPRISE_ART={tip:'images/sp-guide.webp',joke:'images/sp-happy.webp',care:'images/sp-relaxed.webp',photo:'images/sp-camera.webp'};
+const SURPRISE_ART={tip:'images/sp-guide.webp',joke:'images/sp-laugh.webp',care:'images/sp-tea.webp',photo:'images/sp-camera.webp'};
 (function extendArt(){
   CRITTER_IMGS.push(ART.suitcase,ART.photo,ART.heart,ART.rain,ART.search,ART.car);
 })();
@@ -4810,16 +4815,8 @@ function deleteTodo(id,skipConfirm){
 }
 /* 行程頁頂端：出發前才顯示「出發前待辦還有幾項」，點了直接跳到清單 */
 function renderTodoBanner(){
-  const host=document.getElementById('view-itinerary');if(!host)return;
-  let el=document.getElementById('todoBanner');
-  const left=todoData.filter(t=>!t.done);
-  const beforeTrip=new Date()<new Date(2027,3,24);
-  if(!beforeTrip||!left.length){el?.remove();return;}
-  const late=left.filter(t=>{const n=todoDaysLeft(t.due);return n!=null&&n<=3;}).length;
-  const home=ensureHomeCards();
-  if(!el){el=document.createElement('button');el.type='button';el.id='todoBanner';el.className='todo-banner ng-card';el.onclick=goToTodos;}
-  if(el.parentNode!==home)home.appendChild(el);
-  el.innerHTML=`<img class="ng-deco ng-deco-leaf" src="images/deco/wisteria-leaf.webp" alt="" aria-hidden="true"><span class="tb-ic"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="tb-txt"><b>出發準備</b><small>還有 ${left.length} 項待辦${late?`・${late} 項快到期`:''}</small></span><img class="ng-deco ng-deco-side" src="images/deco/wisteria-side.webp" alt="" aria-hidden="true"><em>›</em>`;
+  /* ng3：出發準備只放在指南頁，行程頁不顯示提示卡 */
+  document.getElementById('todoBanner')?.remove();
 }
 function goToTodos(){const sec=document.getElementById('todoSection');if(sec)sec.open=true;setTab('guide');setTimeout(()=>document.getElementById('todoSection')?.scrollIntoView({behavior:'smooth',block:'start'}),80);}
 
@@ -4970,7 +4967,7 @@ renderRouteTimeline();
 
 /* ============ 兩版行程切換（Lomä 山湖版／藤井莊溪谷版） ============
    只換顯示哪 10 天；兩版各自的筆記、照片、自訂景點都保留，切回去還在。選擇只記在這支手機上。 */
-const MTN_SVG='<svg class="ps-mtn" viewBox="0 0 64 28" aria-hidden="true"><path d="M2 27L19 7l7 8 9-12 17 24z" fill="#C9B8E6"/><path d="M30 27l12-14 6 6 6-5 9 13z" fill="#B8A3DC"/><path d="M15 11.6L19 7l3.6 4.2-2.1-1-1.5 1.4-1.7-1.3zM31.6 7.4L35 3l3.3 4.6-1.9-.8-1.5 1.2-1.4-1.1z" fill="#fff"/></svg>';
+const MTN_SVG='<img class="ps-mtn" src="images/deco/mountains-snowcap.webp" alt="" aria-hidden="true">';
 const PLAN_GMAPS={
   loma:'https://www.google.com/maps/dir/Narita+Airport/Takasaki+Station/Fujinosakuoka+Fujioka/Nagano+Station/Lake+Nojiri/Imoriike+Myoko/Togakushi+Shrine+Chusha/Obuse/Yokohama+Station/Haneda+Airport+Terminal+3',
   fujiiso:'https://www.google.com/maps/dir/Narita+Airport/Takasaki+Station/Fujinosakuoka+Fujioka/Nagano+Station/Yamada+Onsen+Takayama+Nagano/Obuse/Togakushi+Shrine+Chusha/Yokohama+Station/Haneda+Airport+Terminal+3'
@@ -4993,39 +4990,8 @@ function setPlan(p){
   showToast(`已切換到${PLANS[p].label}`);
 }
 renderPlanSwitch();
-/* ============ ng2：首頁卡片（天氣摘要、出發準備），裝飾小山小花 ============ */
-function ensureHomeCards(){
-  let h=document.getElementById('homeCards');
-  if(!h){h=document.createElement('div');h.id='homeCards';h.className='home-cards';const v=document.getElementById('view-itinerary');const sb=v&&v.querySelector('.mobile-global-search');if(v)v.insertBefore(h,sb||v.firstChild);}
-  return h;
-}
-function homeWxDay(){const t=tripTodayIndex();return t>=0?t:(typeof activeDay==='number'&&days[activeDay]?activeDay:planDays()[0]);}
-let _homeWxFetching=false;
-function renderHomeWx(){
-  const home=ensureHomeCards();if(!home)return;
-  let el=document.getElementById('homeWx');
-  if(!el){el=document.createElement('button');el.type='button';el.id='homeWx';el.className='home-wx ng-card';el.onclick=()=>setTab('weather');home.prepend(el);}
-  const di=homeWxDay(),k=(DAY_CITIES[di]||['Nagano'])[0],c=CITIES[k]||CITIES.Nagano;
-  const e=weatherEntryFor(k),data=e&&e.data,cw=data&&data.current,dl=data&&data.daily;
-  const place=c.label.split('／')[0];
-  const when=e&&e.fetchedAt?new Date(e.fetchedAt).toLocaleString('zh-TW',{hour12:false,month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  const fresh=e&&e.fetchedAt&&!e.stale&&Date.now()-e.fetchedAt<60*60*1000;
-  const badge=cw?(fresh?'<span class="hw-badge live">即時</span>':`<span class="hw-badge">${escHtml(when)}</span>`):'<span class="hw-badge">尚未更新</span>';
-  const art=cw?wxImgHTML(cw.weather_code,cw.wind_speed_10m,'hw-art'):'<img class="hw-art" src="images/weather/serow-sunny.webp" alt="" width="64" height="64">';
-  let main,sub;
-  if(cw){
-    const [,desc]=wmoInfo(cw.weather_code);
-    main=`${escHtml(desc)} <b>${Math.round(cw.temperature_2m)}°</b>`;
-    const lo=dl&&dl.temperature_2m_min?Math.round(dl.temperature_2m_min[0]):null,hi=dl&&dl.temperature_2m_max?Math.round(dl.temperature_2m_max[0]):null;
-    const pp=dl&&dl.precipitation_probability_max&&dl.precipitation_probability_max[0]!=null?dl.precipitation_probability_max[0]:null;
-    sub=[lo!=null&&hi!=null?`${lo}° / ${hi}°`:'',pp!=null?`降雨 ${pp}%`:''].filter(Boolean).join(' · ')||(cw.apparent_temperature!=null?`體感 ${Math.round(cw.apparent_temperature)}°`:'');
-  }else{main='看看今天的天氣';sub=navigator.onLine?'讀取中…':'目前離線，連上網路後再看';}
-  el.innerHTML=`<span class="hw-pic">${art}</span><span class="hw-txt"><span class="hw-place">${escHtml(place)}天氣${badge}</span><span class="hw-main">${main}</span><span class="hw-sub">${escHtml(sub)}</span></span><img class="ng-deco ng-deco-hang" src="images/deco/wisteria-hang.webp" alt="" aria-hidden="true"><em class="hw-go">›</em>`;
-  el.setAttribute('aria-label',`${place}天氣，點了看完整天氣`);
-  const old=!e||!e.fetchedAt||Date.now()-e.fetchedAt>30*60*1000;
-  if(old&&navigator.onLine&&!_homeWxFetching){_homeWxFetching=true;fetchWeatherFor(k,0).finally(()=>{_homeWxFetching=false;});}
-}
-setTimeout(()=>{try{renderHomeWx();renderTodoBanner();}catch(e){console.warn(e)}},0);
+/* ng3：出發準備只放在指南頁，行程頁不再顯示首頁卡片 */
+setTimeout(()=>{try{renderTodoBanner();}catch(e){console.warn(e)}},0);
 
 /* hk9：單機預覽模式啟動時，把以前存在 localStorage 的 Base64 照片搬進 Cache Storage，釋放空間 */
 if(!CLOUD_CONFIGURED&&'caches' in window){

@@ -1,0 +1,65 @@
+/* 開場動畫：三款小雪雀（拖行李出發／搭纜車／停在紅果枝上），隨機或指定播放。
+   色彩只在 .splash 內生效，不影響網站其他地方。 */
+.splash{
+  --sp-paper:#F8F4EC; --sp-paper-2:#F0EADB; --sp-ink:#2C463D; --sp-blue:#3B6A5A; --sp-mist:#A6D1C2; --sp-mustard:#7152A6;
+  position:fixed;inset:0;z-index:2147483000;overflow:hidden;
+  background:radial-gradient(circle at 50% 40%,#fffdf8 0,var(--sp-paper) 55%,var(--sp-paper-2) 100%);
+  opacity:1;transition:opacity .32s ease;
+}
+.splash[hidden]{display:none!important;}
+.splash.is-leaving{opacity:0;pointer-events:none;}
+.splash__skip{position:absolute;z-index:5;top:max(18px,env(safe-area-inset-top,0px));right:18px;padding:8px 16px;border:1px solid #3B6A5A33;border-radius:999px;background:#ffffffb3;color:var(--sp-blue);font:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+.splash__stage{position:absolute;inset:0;display:grid;place-items:center;}
+.splash__sun{position:absolute;width:min(60vw,280px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#A6D1C255,#A6D1C200 70%);transform:scale(.5);opacity:0;}
+.splash__bird{position:absolute;width:min(78vw,400px);height:auto;object-fit:contain;will-change:transform,opacity;top:22%;}
+.splash__bird--travel{opacity:0;transform:translate3d(-80vw,4vh,0) scale(.86);}
+.splash__map-wrap{position:absolute;top:14%;width:min(58vw,280px);clip-path:inset(50% 0 50% 0);opacity:0;}
+.splash__bird--map{position:relative;width:100%;display:block;top:auto;}
+.splash__bird--wakeup{opacity:0;width:min(74vw,380px);transform:translateY(8vh) scale(.94);}
+.splash__title{position:absolute;left:20px;right:20px;top:66%;text-align:center;opacity:0;transform:translateY(12px);letter-spacing:.1em;font-family:'LXGW WenKai TC',serif;}
+.splash__title strong{display:block;font-size:clamp(32px,10vw,52px);line-height:1.2;color:var(--sp-ink);font-weight:700;}
+.splash__title strong::after{content:"";display:block;width:42px;height:2px;margin:12px auto 0;background:var(--sp-mustard);border-radius:2px;}
+.splash__title span{display:block;margin-top:10px;font-family:'Caveat','LXGW WenKai TC',cursive;font-size:15px;letter-spacing:.06em;color:#637D75;font-weight:500;}
+
+/* 飄雪 */
+.flake{position:absolute;width:11px;height:11px;border-radius:70% 0 70% 0;background:#C9B6E8;box-shadow:0 0 6px #B8A3DC88;opacity:0;}
+.flake--1{left:14%;top:10%;}
+.flake--2{left:70%;top:6%;transform:scale(.7);}
+.flake--3{left:84%;top:30%;transform:scale(.9);}
+.flake--4{left:32%;top:4%;transform:scale(.6);}
+.flake--5{left:52%;top:18%;transform:scale(.8);}
+.splash.is-playing .flake{animation:snow-fall 1.9s ease-in-out both;}
+.splash.is-playing .flake--2{animation-delay:.18s;}
+.splash.is-playing .flake--3{animation-delay:.34s;}
+.splash.is-playing .flake--4{animation-delay:.08s;}
+.splash.is-playing .flake--5{animation-delay:.26s;}
+@keyframes snow-fall{0%{opacity:0;transform:translate(0,-8vh);}20%{opacity:1;}100%{opacity:.85;transform:translate(4vw,52vh);}}
+
+/* 1: 拖行李出發 */
+.splash[data-variant="travel"].is-playing .splash__bird--travel{animation:travel-in 1.15s cubic-bezier(.18,.7,.25,1) forwards;}
+.splash[data-variant="travel"].is-playing .splash__title{animation:title-in .42s 1.05s ease-out forwards;}
+@keyframes travel-in{0%{opacity:0;transform:translate3d(-80vw,4vh,0) scale(.86);}15%{opacity:1;}70%{transform:translate3d(0,0,0) scale(1);}84%{transform:translate3d(2vw,-4px,0) rotate(1deg);}100%{opacity:1;transform:translate3d(0,0,0);}}
+
+/* 2: 纜車降下 */
+.splash[data-variant="map"].is-playing .splash__map-wrap{animation:map-open .92s .12s cubic-bezier(.2,.72,.3,1) forwards;}
+.splash[data-variant="map"].is-playing .splash__sun{animation:sun-in .72s .55s ease-out forwards;}
+.splash[data-variant="map"].is-playing .splash__title{animation:title-in .42s 1.08s ease-out forwards;}
+@keyframes map-open{0%{opacity:0;clip-path:inset(50% 0 50% 0);transform:translateY(-6vh) scale(.9);}35%{opacity:1;}100%{opacity:1;clip-path:inset(0 0 0 0);transform:translateY(0) scale(1);}}
+@keyframes sun-in{to{opacity:1;transform:scale(1);}}
+
+/* 3: 停上紅果枝 */
+.splash[data-variant="wakeup"].is-playing .splash__bird--wakeup{animation:wake-in 1.05s .08s cubic-bezier(.2,.75,.25,1) forwards;}
+.splash[data-variant="wakeup"].is-playing .splash__title{animation:title-in .42s 1.16s ease-out forwards;}
+@keyframes wake-in{0%{opacity:0;transform:translateY(8vh) scale(.94);}35%{opacity:1;}70%{transform:translateY(0) scale(1.03,.97);}100%{opacity:1;transform:translateY(0) scale(1);}}
+
+@keyframes title-in{to{opacity:1;transform:translateY(0);}}
+
+@media (prefers-reduced-motion:reduce){
+  .splash *{animation:none!important;transition:none!important;}
+  .splash__bird--travel{opacity:1;transform:none;}
+  .splash__title{opacity:1;transform:none;}
+  .flake{display:none;}
+}
+@font-face{font-family:'ChenYuluoyan';src:url('fonts/ChenYuluoyan-Thin-sub.woff2') format('woff2');font-display:swap;}
+.splash__title strong{font-weight:400;}
+.splash__title strong{font-family:'ChenYuluoyan','LXGW WenKai TC',serif;font-size:clamp(40px,12vw,60px);}

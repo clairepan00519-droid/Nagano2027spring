@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F8F4EC">
+<script>/* hk13：開場動畫一打開就先蓋住畫面，不等整個網頁載完 */
+try{var d=document.documentElement;if((window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone||/[?&]splash=1/.test(location.search)){d.classList.add("show-splash");var seen=false;try{seen=sessionStorage.getItem("naganoSplashSeen")==="1";sessionStorage.setItem("naganoSplashSeen","1");}catch(e){}if(!seen||/[?&]splash=1/.test(location.search)){d.classList.add("splash-now");var v=["travel","map","wakeup"][Math.floor(Math.random()*3)];d.setAttribute("data-splash",v);var l=document.createElement("link");l.rel="preload";l.as="image";l.href="images/"+({travel:"splash-serow-welcome",map:"splash-serow-point",wakeup:"splash-serow-camera"})[v]+".webp";document.head.appendChild(l);}}}catch(e){}</script>
+<style>html.splash-now,html.splash-now body{background:#F8F4EC;}html.splash-now #naganoSplash{display:block!important;}</style>
+<script>/* hk14：程式若沒有正常啟動，直接在畫面上顯示原因，並提供「修復」按鈕 */
+(function(){var errs=[];
+function box(){var b=document.getElementById('bootDiag');if(!b&&document.body){b=document.createElement('div');b.id='bootDiag';b.style.cssText='position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483646;background:#FFF1EE;border:2px solid #E9A398;border-radius:16px;padding:14px;font:15px/1.6 system-ui,sans-serif;color:#7E1F1F;box-shadow:0 10px 30px rgba(0,0,0,.2);max-height:60vh;overflow:auto';document.body.appendChild(b);}return b;}
+window.__bootErrors=errs;
+window.addEventListener('error',function(e){var t=e&&e.target;if(t&&t!==window){if(t.tagName==='SCRIPT'&&String(t.src).indexOf(location.origin)===0)errs.push('檔案載入失敗：'+t.src.split('/').pop());return;}if(!e.message)return;errs.push(e.message+' @ '+String(e.filename||'').split('/').pop()+':'+(e.lineno||'')+':'+(e.colno||''));},true);
+window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;errs.push('Promise：'+String(r&&r.message||r));});
+window.__repairApp=function(){var done=function(){var u=location.pathname+'?fresh='+Date.now();location.replace(u);};try{var ps=[];if(navigator.serviceWorker)ps.push(navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister();}));}));if(window.caches)ps.push(caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k.indexOf('images-persist')<0&&k.indexOf('local-media')<0;}).map(function(k){return caches.delete(k);}));}));Promise.all(ps).then(done,done);}catch(x){done();}};
+window.addEventListener('load',function(){setTimeout(function(){if(window.__appReady)return;var b=box();if(!b)return;b.innerHTML='<b>⚠️ 網站程式沒有正常啟動</b><div style="margin:6px 0;font-size:13px;word-break:break-all">'+(window.__appReady?'':'主程式 app.js 沒有跑完。<br>')+errs.slice(0,5).map(function(x){return x.replace(/</g,'&lt;');}).join('<br>')+'<br><small>'+navigator.userAgent.replace(/</g,'')+'</small></div><button type="button" onclick="__repairApp()" style="width:100%;min-height:48px;border:0;border-radius:12px;background:#3B6A5A;color:#fff;font:inherit;font-weight:800">清除舊版快取並重新載入（資料不會刪除）</button><div style="margin-top:6px;font-size:13px">如果還是不行，請把這個畫面截圖傳給我。</div>';},2500);});
+})();</script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="64x64" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="藤花慢旅">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<title>藤花慢慢，山色青青｜背上小背包，去山裡住幾天</title>
+<meta name="description" content="2027.04.24–05.03 高崎、長野與橫濱春日慢旅：紫藤、山湖、戶隱、小布施，含 Lomä 與藤井莊兩版行程、天氣、行李與家人共享。">
+<meta property="og:title" content="藤花慢慢，山色青青｜背上小背包，去山裡住幾天">
+<meta property="og:description" content="高崎・長野・橫濱 10 日春旅行程與家人共享指南。">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@300;400;700&family=Caveat:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/ChenYuluoyan-Thin-sub.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css?v=ng1">
+<link rel="stylesheet" href="splash.css?v=ng1">
+<link rel="stylesheet" href="snowbird/snowbird-widget.css?v=ng1">
+</head>
+<body class="family-locked">
+<div id="naganoSplash" class="splash" hidden aria-label="藤花慢慢，山色青青 載入中">
+  <button class="splash__skip" type="button">略過</button>
+  <div class="splash__stage">
+    <div class="splash__sun"></div>
+    <img class="splash__bird splash__deer--travel" src="images/splash-serow-welcome.webp" alt="小羚羊揮手出發">
+    <div class="splash__map-wrap">
+      <img class="splash__bird splash__deer--map" src="images/splash-serow-point.webp" alt="小羚羊指著前方的路">
+    </div>
+    <img class="splash__bird splash__deer--wakeup" src="images/splash-serow-camera.webp" alt="小羚羊拿著相機">
+    <i class="flake flake--1"></i><i class="flake flake--2"></i><i class="flake flake--3"></i><i class="flake flake--4"></i><i class="flake flake--5"></i>
+    <div class="splash__title"><strong>藤花慢慢，山色青青</strong><span>背上小背包，去山裡住幾天</span></div>
+  </div>
+</div>
+<script src="splash.js?v=ng1"></script>
+
+<div id="familyGate" class="family-gate" aria-hidden="false">
+  <div class="family-gate-card">
+    <img class="family-gate-img" src="images/logo.webp" alt="藤花慢慢，山色青青" width="84" height="84">
+    <h2>長野春旅・家庭行程</h2>
+    <p>請輸入家人帳號的 Email 和密碼。<br>只要登入一次，這支手機之後打開就會自動進入，全家看到的是同一份行程。</p>
+    <input id="familyGateEmail" type="email" inputmode="email" autocomplete="username" placeholder="Email（例：name@gmail.com）" aria-label="Email">
+    <input id="familyGateInput" type="password" autocomplete="current-password" placeholder="密碼" aria-label="密碼">
+    <button id="familyGateButton" type="button">登入行程</button>
+    <button id="offlineGateButton" class="family-offline-button" type="button" hidden>先看行程（暫時不同步）</button>
+    <div id="familyGateError" class="family-gate-error" role="alert"></div>
+    <button id="gateCheckButton" class="family-check-button" type="button" onclick="runConnectionCheck()">登不進去？按這裡檢查連線</button>
+    <div id="gateCheckResult" class="gate-check-result" hidden></div>
+    <small class="gate-version" id="gateVersion"></small>
+  </div>
+</div>
+
+<aside id="desktopWorkbench" class="desktop-workbench" aria-label="桌機預覽與編輯工具">
+  <div class="workbench-title">桌機手機預覽</div>
+  <div class="workbench-sub">畫面與手機使用時保持相同寬度與操作邏輯。</div>
+  <div class="workbench-label">顯示模式</div>
+  <div class="workbench-segment">
+    <button type="button" data-ui-mode="edit" onclick="setUiMode('edit')">✎ 編輯</button>
+    <button type="button" data-ui-mode="travel" onclick="setUiMode('travel')">旅行</button>
+  </div>
+  <div class="workbench-label">預覽寬度</div>
+  <div class="workbench-segment preview-size-segment">
+    <button type="button" data-preview-width="390" onclick="setPreviewWidth(390)">390</button>
+    <button type="button" data-preview-width="430" onclick="setPreviewWidth(430)">430</button>
+  </div>
+  <label class="desktop-search-label" for="globalSearchDesktop">搜尋全部行程</label>
+  <div class="global-search-input-wrap">
+    <span>⌕</span><input id="globalSearchDesktop" type="search" placeholder="景點、餐廳、住宿…" oninput="runGlobalSearch(this.value)">
+  </div>
+  <div id="globalSearchResultsDesktop" class="global-search-results"></div>
+</aside>
+
+<div class="app">
+
+  <!-- Header -->
+  <div class="header" id="main-header">
+    <div class="header-top">
+      <div class="header-status">
+        <div class="net-status" id="netStatus"><span class="net-dot online"></span><span class="net-txt">線上</span></div>
+        <div class="cloud-sync-status" id="cloudSyncStatus">☁️ 同步中</div>
+      </div>
+      <div class="header-tools">
+        <button type="button" class="ht-btn ht-fav" id="favCorner" onclick="openMarksPanel('fav')" aria-label="收藏與預約">★<span class="ht-badge" id="favBadge" style="display:none"></span></button>
+        <button type="button" class="ht-pill" id="modeBtn" onclick="toggleUiMode()">✎ 編輯</button>
+        <button type="button" class="ht-pill" id="sizeBtn" onclick="toggleTextSize()">字放大</button>
+        <button type="button" class="ht-btn" onclick="openToolsSheet()" aria-label="工具與設定">⚙️</button>
+      </div>
+    </div>
+    <div class="header-title">
+      <div class="eyebrow">Nagano · A Little Serow’s Spring Journey</div>
+      <h1>藤花慢慢，<br>山色青青<small>背上小背包，去山裡住幾天</small></h1>
+    </div>
+    <div class="header-scene">
+      <img class="header-art" src="images/header.webp" alt="" width="1500" height="500" decoding="async">
+    </div>
+    <div class="header-foot"><div class="dates">2027.4.24 出發 – 5.3 返台・10天9夜</div></div>
+    <div class="plan-switch" id="planSwitch" role="radiogroup" aria-label="行程版本"></div>
+    <div class="preview-note">單機預覽：尚未連接家人同步，資料只存在這台裝置</div>
+    <span id="spotCount" hidden>--</span>
+  </div>
+
+  <!-- ================= ITINERARY VIEW ================= -->
+  <div class="view active" id="view-itinerary">
+    <div class="mobile-global-search">
+      <div class="global-search-input-wrap"><span>⌕</span><input id="globalSearchMobile" type="search" placeholder="搜尋全部 10 天行程…" oninput="runGlobalSearch(this.value)"></div>
+      <div id="globalSearchResultsMobile" class="global-search-results"></div>
+    </div>
+    <div class="day-tools" id="dayTools" role="tablist" aria-label="當日工具"></div>
+    <div class="day-scroll" id="dayScroll"></div>
+    <div id="dayContent"></div>
+  </div>
+
+  <!-- ================= ROUTE MAP VIEW ================= -->
+  <div class="view" id="view-route">
+    <div class="map-wrap" style="margin-top:0; padding-bottom:24px;">
+      <h3 class="page-title"><img src="images/nav-route.webp" alt="" width="34" height="34"> 高崎・長野・橫濱 10 日移動路線</h3>
+      <div class="plan-note" id="planNoteRoute"></div>
+      <div id="naganoRouteMap" class="svg-map-container" style="position:relative;">
+        <img id="handDrawnMapImg" src="images/overview-loma.webp" alt="藤花慢慢，山色青青 行程總覽插畫" loading="lazy" class="route-main-image" onclick="openAttachModal(this.getAttribute('src'))">
+        <div id="mapFallback" style="display:none; padding:24px 16px; border:2px dashed var(--line); border-radius:var(--r-md); background:var(--paper); text-align:center;">
+          <p style="font-size:13px; color:var(--ink); font-weight:700; line-height:1.6; margin-top:0;">⚠️ 找不到地圖圖片！<br><span style="font-size:11px; font-weight:400;">請點擊下方按鈕手動選擇：</span></p>
+          <input type="file" id="mapUploader" style="display:none;" accept="image/*" onchange="loadLocalMap(event)">
+          <button onclick="document.getElementById('mapUploader').click()" style="background:var(--blue); color:#fff; border:none; padding:10px 20px; border-radius:999px; font-size:12px; font-weight:700; cursor:pointer;">📁 手動載入圖片</button>
+        </div>
+      </div>
+      <div class="map-zoom-hint">點擊總覽插畫可全螢幕放大</div>
+      <a id="routeGmapLink" href="#" target="_blank" rel="noopener" class="btn btn-map" style="display:flex; margin-top:12px; text-decoration:none;">🗺️ 在 Google 地圖開啟主要路線</a>
+    </div>
+
+    <!-- 10 天一覽 -->
+    <details class="section-card route-timeline-card" open>
+      <summary class="rt-summary"><img class="h-ic" src="images/nav-itinerary.webp" alt="" width="30" height="30"><span class="rt-sum-title">10 天一覽</span><span class="rt-hint">點一天直接看行程</span><em class="rt-toggle"></em></summary>
+      <div id="routeTimeline" class="route-timeline"></div>
+    </details>
+
+    <!-- Flights -->
+    <div class="section-card">
+      <h3><img class="h-ic" src="images/art-route.webp" alt="" width="30" height="30"> 飛航與主要交通</h3>
+      <div class="flight-box"><div class="ftitle">🛫 去程 台灣 → 成田</div><div class="flight-row"><span>日期</span><span>2027.04.24（六）</span></div><div class="flight-row"><span>時間</span><span>待訂（以中午或下午早段抵達為佳）</span></div><div class="flight-row"><span>航班</span><span>待訂</span></div></div>
+      <div class="flight-box"><div class="ftitle">🛬 回程 羽田 → 台灣</div><div class="flight-row"><span>日期</span><span>2027.05.03（一）</span></div><div class="flight-row"><span>時間</span><span>待訂（國際線預留起飛前約 3 小時到機場）</span></div><div class="flight-row"><span>航班</span><span>待訂</span></div></div>
+      <div class="source-note">※ 成田進、羽田出通常要用多城市方式購票；若維持華航，可優先比桃園至成田與羽田至松山組合，2027 班表公布後再定。</div>
+    </div>
+
+    <!-- Docs -->
+    <details class="section-card compact-section voucher-section">
+      <summary class="compact-section-summary"><img class="cs-art" src="images/art-lodging.webp" alt=""><div><h3>行程票券與住宿總匯</h3><div class="sub">住宿、航班、租車與新幹線憑證</div></div><em>展開</em></summary>
+      <div class="compact-section-body"><div id="docsListWrap" class="voucher-list"></div></div>
+    </details>
+
+    <!-- Driving -->
+    <details class="section-card compact-section transport-section">
+      <summary class="compact-section-summary"><img class="cs-art" src="images/nav-route.webp" alt=""><div><h3>交通提醒</h3><div class="sub">租車、新幹線與各日移動</div></div><em>展開</em></summary>
+      <div class="compact-section-body">
+      <div class="sub" style="margin-bottom:12px;">每日鐘點為建議節奏，車程為估算，不是已訂班次。</div>
+      <details class="transport-principles">
+        <summary class="transport-principles-head"><img class="tp-ic" src="images/nav-route.webp" alt="" width="34" height="34"><div><small>共通設定</small><h4>租車與鐵路原則</h4></div><em>展開</em></summary>
+        <div class="transport-principles-body">
+        <ul><li>租車分兩段：4/26 高崎取還約 1 天；4/27 長野取車、4/30 長野還車約 4 天，連住期間保留車子。5/1 起只用鐵路。</li><li>新幹線熱門日期及想搭的班次先訂指定席；JR 一般指定席在搭乘日前 1 個月開售。</li><li>高崎往長野要搭北陸新幹線，不要誤搭只往新潟方向的上越新幹線。</li><li>4/29 昭和之日有國定假日交通風險；4/30 還車不代表前段完全不塞車。</li><li>山區道路出發前查狀況，雨雪時取消高處步道；駕車以白天移動為主。</li></ul><div class="transport-link-row"><a href="https://www.jreast.co.jp/multi/zh-CHT/" target="_blank" rel="noopener">JR 東日本新幹線及機場列車</a></div>
+        </div>
+      </details>
+      <div id="transportQuickNav" class="transport-quick-nav" aria-label="交通日期快速索引"></div>
+      <div class="transport-grid" id="transportGrid">
+        <article class="transport-card"><div class="transport-day">D1</div><div><h4>成田機場 → 東京站 → 高崎</h4><p>成田Express 到東京站，轉上越或北陸新幹線（選停高崎的班次）。含入境與轉乘約 2.5–3.5 小時；東京站轉乘留 35–45 分鐘。</p></div></article>
+        <article class="transport-card"><div class="transport-day">D2</div><div><h4>高崎市區・計程車串接</h4><p>少林山達磨寺與彩繪工房用計程車或公車串接，這天不租車。</p></div></article>
+        <article class="transport-card"><div class="transport-day">D3</div><div><h4>租車 1：高崎取還（1 天）</h4><p>08:00–09:00 高崎站附近取車，藤岡單程約 40–60 分鐘；16:00–17:00 高崎還車。</p></div></article>
+        <article class="transport-card"><div class="transport-day">D4</div><div><h4>高崎 → 長野（北陸新幹線）＋租車 2</h4><p>約 50–60 分鐘，不要誤搭只往新潟方向的上越新幹線。長野站取車 4 天，4/30 長野還車。Lomä 版開往黑姬（約 50–70 分）；藤井莊版經須坂、高山村到山田溫泉（約 50–70 分）。</p></div></article>
+        <article class="transport-card"><div class="transport-day">D5–D7</div><div><h4>長野周邊自駕</h4><p>Lomä 版：いもり池半日（單程 25–40 分）→ 4/29 戶隱（約 45–60 分）→ 長野 → 4/30 小布施。藤井莊版：4/28 不開車 → 4/29 小布施（約 30–45 分）→ 長野 → 4/30 戶隱（約 60–75 分）。4/30 傍晚加油後在營業時間內還車。</p></div></article>
+        <article class="transport-card"><div class="transport-day">D8</div><div><h4>長野 → 東京 → 橫濱</h4><p>北陸新幹線到東京，轉 JR 東海道線等到橫濱，全段約 2.5–3 小時。</p></div></article>
+        <article class="transport-card"><div class="transport-day">D9</div><div><h4>橫濱 → 三井 Outlet 橫濱 Bayside</h4><p>JR 根岸線到新杉田，轉金澤 Seaside Line 到鳥濱，步行約 5 分鐘；含等車約 45–60 分鐘。</p><div class="transport-link-row"><a href="https://mitsui-shopping-park.com/mop/yokohama/access/" target="_blank" rel="noopener">Bayside 交通</a></div></div></article>
+        <article class="transport-card"><div class="transport-day">D10</div><div><h4>橫濱 → 羽田機場第 3 航廈</h4><p>京急線，優先挑直通列車，部分班次要在京急蒲田轉車；退房到航廈約 60–90 分鐘。國際線預留起飛前約 3 小時。</p><div class="transport-link-row"><a href="https://www.haneda-tokyo-access.com/" target="_blank" rel="noopener">京急羽田機場交通</a></div></div></article>
+      </div>
+      </div>
+    </details>
+
+    <!-- Live road / driving -->
+    <details class="section-card compact-section live-section">
+      <summary class="compact-section-summary"><img class="cs-art" src="images/nav-weather.webp" alt=""><div><h3>即時交通與警報</h3><div class="sub">新幹線、道路、機場與天氣警報</div></div><em>展開</em></summary>
+      <div class="compact-section-body">
+      <div class="sub" style="margin-bottom:12px;">連結為官方頁面，內容與判斷規則都可以在編輯模式修改、刪除或新增。</div>
+      <div id="liveRoadWrap"></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ================= GUIDE VIEW ================= -->
+  <div class="view" id="view-guide">
+
+    <details class="section-card todo-section" id="todoSection" ontoggle="try{localStorage.setItem('nagano_todo_open',this.open?'1':'0')}catch(e){}">
+      <summary class="todo-sum"><span class="todo-sum-ic">✅</span><span><b>出發前待辦</b><small id="todoSumLine">全家共用的準備清單</small></span><i aria-hidden="true">▾</i></summary>
+      <div class="sub">全家共用：誰勾了完成，大家都看得到。可以自己新增、修改日期與備註（預約編號、網址等）。</div>
+      <div id="todoListWrap"></div>
+    </details>
+
+    <div class="section-card">
+      <h3><img class="h-ic" src="images/nav-guide.webp" alt="" width="28" height="28"> 行李打包清單<img class="h-art" src="images/serow-welcome.webp" alt="" width="58" height="47"></h3>
+      <div class="sub">4 月下旬到 5 月初，高崎、長野市區白天約 15–22°C，早晚約 5–10°C；戶隱、黑姬、山田溫泉海拔高更涼，帶防風外套與好走的鞋。點擊項目可勾選完成。</div>
+      <div id="packListWrap"></div>
+    </div>
+
+    <div class="section-card">
+      <h3><img class="h-ic" src="images/nav-shopping.webp" alt="" width="28" height="28"> 旅途購物清單</h3>
+      <div class="sub">記得預留行李空間＆秤重額度。您可以自行上傳商品截圖！</div>
+      <div id="shopListWrap"></div>
+    </div>
+
+    <div class="section-card">
+      <h3>📋 旅遊規範與提醒</h3>
+      <div class="sub">您可以自行新增行前準備規範或攜帶物品注意事項，並附上截圖（如海關申報單範例）。</div>
+      <div id="rulesListWrap"></div>
+    </div>
+
+  </div>
+
+  <!-- ================= WEATHER VIEW ================= -->
+  <div class="view" id="view-weather">
+    <div class="section-card" style="margin-bottom:14px;">
+      <h3><img class="h-ic" src="images/nav-weather.webp" alt="" width="28" height="28"> 即時氣象與春季穿搭</h3>
+      <div class="sub">以日本氣象廳（JMA）模式的預報數值顯示高崎、長野、戶隱、山區住宿與橫濱的氣溫、風與穿搭建議；每個地點下方都有 tenki.jp 逐時／10 天預報連結。</div>
+      <div class="add-row" style="margin-bottom:10px;">
+        <button onclick="loadLiveWeather()" style="flex:1; background:var(--blue); color:#fff; border:none; border-radius:999px; padding:10px 0; font-family:inherit; font-weight:700; font-size:12.5px; cursor:pointer; box-shadow:var(--shadow-sm);">🔄 取得最新即時氣象與穿搭</button>
+      </div>
+      <div class="wc-tools"><button type="button" onclick="weatherExpandAll(true)">全部展開</button><button type="button" onclick="weatherExpandAll(false)">全部收合</button></div>
+      <div id="liveWeatherList"></div>
+      <div class="source-note" id="liveWeatherTime">即時資料尚未更新</div>
+    </div>
+
+    <div class="section-card" style="margin-bottom:14px;">
+      <h3>🌸 花況、開山與我的地圖</h3>
+      <div class="sub">紫藤、八重櫻的花況與戶隱開山每年不同，出發前請再確認。也可以上傳自己截取的花況圖或會場地圖，點圖即可放大。</div>
+      <div class="foliage-links">
+        <a href="https://fujioka-kanko.net/spot/fujinosakuoka" target="_blank" rel="noopener">藤岡 ふじの咲く丘・開花資訊</a>
+        <a href="https://www.obusekanko.jp/season" target="_blank" rel="noopener">小布施季節花況</a>
+        <a href="https://togakushi-21.jp/" target="_blank" rel="noopener">戶隱觀光・開山消息</a>
+        <a href="https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=200000" target="_blank" rel="noopener">日本氣象廳・長野縣預報</a>
+        <a href="https://www.jma.go.jp/bosai/warning/" target="_blank" rel="noopener">日本氣象廳・警報與注意報</a>
+        <a href="https://eco.mtk.nao.ac.jp/koyomi/yoko/2027/rekiyou271.html" target="_blank" rel="noopener">2027 日本國定假日</a>
+      </div>
+      <div id="foliageMapGallery" class="foliage-map-gallery"></div>
+      <button class="foliage-upload-btn" onclick="document.getElementById('foliageMapFile').click()">📷 上傳花況／地圖</button>
+      <input type="file" id="foliageMapFile" accept="image/*" multiple style="display:none" onchange="handleFoliageMapUpload(event)">
+    </div>
+    <div class="section-card" style="margin-bottom:14px;">
+      <h3>🌧️ 雨雲與天氣圖</h3>
+      <div class="sub">Windy 圖層可查看長野、群馬與關東的雲、雨與風向；日本氣象廳按鈕則連到官方即時雨雲雷達。</div>
+      <div class="add-row" style="margin-bottom:10px;">
+        <button onclick="refreshRainRadar()" style="flex:1; background:var(--blue); color:#fff; border:none; border-radius:999px; padding:10px 0; font-family:inherit; font-weight:700; font-size:12.5px; cursor:pointer; box-shadow:var(--shadow-sm);">🔄 重新整理雲圖</button>
+      </div>
+      <div id="rainRadarMap" class="windy-embed-wrap"></div>
+      <div class="source-note" id="rainRadarTime">衛星雲圖尚未更新</div>
+      <a href="https://www.jma.go.jp/bosai/realtimerad/" target="_blank" rel="noopener" style="display:block; text-align:center; margin-top:10px; background:#fff; border:1.5px solid var(--blue); color:var(--blue); border-radius:999px; padding:10px 0; font-family:inherit; font-weight:700; font-size:12.5px; text-decoration:none;">🔗 查看日本氣象廳雨雲雷達（另開新分頁）</a>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav" role="tablist">
+    <button class="nav-btn active" onclick="setTab('itinerary')"><img class="nav-img" src="images/nav-itinerary.webp" alt="" width="34" height="34"><span class="lb">行程</span></button>
+    <button class="nav-btn" onclick="setTab('route')"><img class="nav-img" src="images/nav-route.webp" alt="" width="34" height="34"><span class="lb">環線</span></button>
+    <button class="nav-btn" onclick="setTab('guide')"><img class="nav-img" src="images/nav-guide.webp" alt="" width="34" height="34"><span class="lb">指南</span></button>
+    <button class="nav-btn" onclick="setTab('weather')"><img class="nav-img" src="images/nav-weather.webp" alt="" width="34" height="34"><span class="lb">天氣</span></button>
+  </div>
+</div>
+
+<div id="undoToast" class="undo-toast" role="status" aria-live="polite" hidden>
+  <span id="undoToastText">已刪除</span>
+  <button id="undoToastButton" type="button">復原</button>
+</div>
+
+<!-- Modal for Images -->
+<div class="attach-modal" id="attachModal" onclick="closeAttachModal()">
+  <button class="attach-modal-close" onclick="event.stopPropagation(); closeAttachModal()">✕</button>
+  <img id="attachModalImg" src="" onclick="event.stopPropagation()">
+</div>
+
+<!-- Modal for editing a spot's info all at once -->
+<div class="spot-edit-modal" id="spotEditModal" onclick="if(event.target===this)closeSpotEditModal()">
+  <div class="spot-edit-modal-card" onclick="event.stopPropagation()">
+    <div class="spot-edit-modal-head">
+      <h3>✎ 編輯景點資訊</h3>
+      <button class="spot-edit-modal-close" onclick="closeSpotEditModal()">✕</button>
+    </div>
+    <div class="spot-edit-modal-body">
+      <label class="spot-edit-field">
+        <span>景點名稱</span>
+        <input type="text" id="editSpotName" placeholder="景點名稱">
+      </label>
+      <label class="spot-edit-field">
+        <span>簡介（標題下方一行）</span>
+        <input type="text" id="editSpotDesc" placeholder="一句話簡介">
+      </label>
+      <label class="spot-edit-field">
+        <span>內文簡介（點開卡片後顯示的完整段落）</span>
+        <textarea id="editSpotFullDesc" rows="4" placeholder="展開後顯示的完整介紹"></textarea>
+      </label>
+      <label class="spot-edit-field">
+        <span>建議停留時間</span>
+        <input type="text" id="editSpotDur" placeholder="例：約 1–1.5 小時（清空＝刪除）">
+      </label>
+      <label class="spot-edit-field">
+        <span>營業／開放時間</span>
+        <input type="text" id="editSpotHours" placeholder="例：09:00–17:00，週一公休">
+      </label>
+      <label class="spot-edit-field">
+        <span>重要提點／門票</span>
+        <textarea id="editSpotNote" rows="2" placeholder="門票資訊、注意事項..."></textarea>
+      </label>
+      <label class="spot-edit-field">
+        <span>評論與資訊</span>
+        <textarea id="editSpotInfo" rows="2" placeholder="這個景點的一句話心得或攻略"></textarea>
+      </label>
+      <div id="hotelAmenityFields" class="hotel-amen-fields" style="display:none;">
+        <div class="hotel-amen-title">🏨 住宿設施</div>
+        <label class="spot-edit-field"><span>浴缸</span><select id="editAmen_bath"><option value="">待確認</option><option value="yes">有浴缸</option><option value="no">無浴缸</option></select></label>
+        <label class="spot-edit-field"><span>免費洗衣機</span><select id="editAmen_laundry"><option value="">待確認</option><option value="yes">有免費洗衣機</option><option value="no">無免費洗衣機</option></select></label>
+        <label class="spot-edit-field"><span>早餐</span><select id="editAmen_breakfast"><option value="">待確認</option><option value="yes">有早餐</option><option value="no">無早餐</option></select></label>
+        <label class="spot-edit-field"><span>晚餐</span><select id="editAmen_dinner"><option value="">待確認</option><option value="yes">有晚餐</option><option value="no">無晚餐</option></select></label>
+      </div>
+      <label class="spot-edit-field">
+        <span>導航位置（可貼 Google Maps 分享網址、地址、經緯度或搜尋關鍵字）</span>
+        <input type="text" id="editSpotMapQuery" placeholder="未填時使用景點名稱">
+      </label>
+    </div>
+    <div class="spot-edit-modal-actions">
+      <button class="spot-edit-reset" onclick="resetSpotEditModal()">還原全部為預設</button>
+      <button class="spot-edit-save" onclick="saveSpotEditModal()">💾 儲存</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="restoreFile" accept="application/json,.json" style="display:none" onchange="restoreBackupFile(event)">
+
+<script src="config.js?v=ng1"></script>
+<script src="snowbird/snowbird-content.js?v=ng1"></script>
+<script src="snowbird/snowbird-widget.js?v=ng1"></script>
+<script src="app.js?v=ng1"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+.snowbird-widget{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:calc(80px + env(safe-area-inset-bottom));z-index:900;width:112px;font-family:inherit;color:#3B6A5A}
+.snowbird-widget[hidden],.snowbird-widget [hidden]{display:none!important}
+.snowbird-left{right:auto;left:max(14px,env(safe-area-inset-left))}
+.snowbird-bird{display:block;border:0;background:transparent;padding:0;width:112px;height:112px;cursor:pointer;border-radius:24px}
+.snowbird-bird img{display:block;width:100%;height:100%;object-fit:contain}
+.snowbird-bird:focus-visible,.snowbird-controls button:focus-visible{outline:2px solid #589782;outline-offset:3px}
+.snowbird-bubble{position:absolute;bottom:116px;right:0;width:min(280px,calc(100vw - 42px));box-sizing:border-box;background:#fffdf8;border:1px solid #A6D1C2;border-radius:18px;padding:16px;box-shadow:0 6px 22px #3B6A5A20;line-height:1.65}
+.snowbird-left .snowbird-bubble{right:auto;left:0}
+.snowbird-bubble small{font-size:12px;color:#6AA893}.snowbird-bubble p{font-size:15px;margin:8px 0;white-space:normal}.snowbird-bubble a{font-size:12px;color:#589782}
+.snowbird-controls{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.snowbird-controls button{font:inherit;font-size:12px;border:1px solid #A6D1C2;border-radius:12px;padding:5px 9px;background:#F9F7F1;color:#3B6A5A;cursor:pointer;min-height:34px}
+@media(prefers-reduced-motion:no-preference){.snowbird-bird{animation:snowbird-arrive .5s ease-out}@keyframes snowbird-arrive{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}}
+@media(max-width:480px){.snowbird-widget{width:96px}.snowbird-bird{width:96px;height:96px}.snowbird-bubble{bottom:101px}}
+
+/* 雪羽慢旅：避開底部導覽列、沿用網站字體 */
+.snowbird-widget{bottom:calc(104px + env(safe-area-inset-bottom));font-family:'LXGW WenKai TC',serif}
+.snowbird-bubble p{font-size:15px;text-wrap:pretty}
+body.large-text .snowbird-bubble p{font-size:18px}
+body.large-text .snowbird-bubble small,body.large-text .snowbird-controls button{font-size:14px}
+
+/* hk12：小雪雀縮小；泡泡加寬、文字不亂斷行 */
+.snowbird-widget{width:84px}
+.snowbird-bird{width:84px;height:84px}
+.snowbird-bubble{bottom:90px;width:min(330px,calc(100vw - 28px));padding:14px 16px}
+.snowbird-bubble p{font-size:15.5px;line-height:1.7;text-wrap:pretty;word-break:normal;line-break:strict}
+.snowbird-bubble .sb-nb{white-space:nowrap}
+.snowbird-controls{flex-wrap:nowrap}
+.snowbird-controls button{white-space:nowrap;flex:1 1 auto}
+@media(max-width:480px){.snowbird-widget{width:72px}.snowbird-bird{width:72px;height:72px}.snowbird-bubble{bottom:78px}}
+/* hk17：一小段（到標點為止）盡量放在同一行 */
+.snowbird-bubble .sb-ph{display:inline-block;max-width:100%;}

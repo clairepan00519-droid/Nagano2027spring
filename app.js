@@ -777,8 +777,8 @@ function S(name, cat, desc, opts={}){
    每日鐘點為建議節奏，車程為估算，不是已訂班次。2027 花況、活動、票價、開山及班表需出發前確認。 */
 const PLAN_KEY='nagano_plan_v1';
 const PLANS={
-  loma:{label:'Lomä 山湖版',short:'Lomä 山湖版',stay:'黑姬 Lomä 連住 2 晚',note:'黑姬 Lomä 連住 2 晚，含妙高半日；4/29 戶隱、4/30 小布施。',overview:'images/overview-loma.webp',days:[0,1,2,3,4,5,6,11,12,13]},
-  fujiiso:{label:'藤井莊溪谷版',short:'藤井莊溪谷版',stay:'山田溫泉 藤井莊 連住 2 晚',note:'山田溫泉藤井莊連住 2 晚，不排妙高；4/29 小布施、4/30 戶隱。',overview:'images/overview-fujiiso.webp',days:[0,1,2,7,8,9,10,11,12,13]}
+  loma:{label:'Lomä 山湖版',short:'Lomä 山湖版',theme:'山湖慢住・妙高・戶隱・小布施',stay:'黑姬 Lomä 連住 2 晚',note:'黑姬 Lomä 連住 2 晚，含妙高半日；4/29 戶隱、4/30 小布施。',overview:'images/overview-loma.webp',days:[0,1,2,3,4,5,6,11,12,13]},
+  fujiiso:{label:'藤井莊溪谷版',short:'藤井莊溪谷版',theme:'溪谷慢住・山田溫泉・小布施・戶隱',stay:'山田溫泉 藤井莊 連住 2 晚',note:'山田溫泉藤井莊連住 2 晚，不排妙高；4/29 小布施、4/30 戶隱。',overview:'images/overview-fujiiso.webp',days:[0,1,2,7,8,9,10,11,12,13]}
 };
 let PLAN=(()=>{try{const v=localStorage.getItem(PLAN_KEY);return PLANS[v]?v:'loma';}catch(e){return 'loma';}})();
 function planDays(){return PLANS[PLAN].days;}
@@ -1474,16 +1474,13 @@ document.addEventListener('visibilitychange',()=>{
 
 function renderDayChips(){
   const today=tripTodayIndex();
-  dayScroll.innerHTML = `<button class="today-chip" onclick="goToToday()">今日</button>`
-    +`<div class="day-chip special-chip ${activeDay==='eat'?'active':''}" onclick="setActiveDay('eat')"><div class="d"><img class="chip-ic" src="images/nav-food.webp" alt=""></div><div class="m">吃·旅途</div></div>`
-    +`<div class="day-chip special-chip ${activeDay==='shop'?'active':''}" onclick="setActiveDay('shop')"><div class="d"><img class="chip-ic" src="images/nav-shopping.webp" alt=""></div><div class="m">逛·旅途</div></div>`
-    +days.map((d,i)=>!inPlan(i)?'':`
-    <div class="day-chip ${i===activeDay?'active':''} ${i===today?'is-today':''}${daySnowy(i)?' snowy':''}" data-i="${i}"${daySnowy(i)?' title="預報大雪或強風"':''} onclick="setActiveDay(${i})">
-      <div class="d">${d.date}</div>
-      <div class="m">週${d.weekday}</div>
-    </div>`).join('');
+  dayScroll.innerHTML = `<button type="button" class="day-chip ng-today${today>=0?' live':''}" onclick="goToToday()"><div class="d">今日</div><div class="m">${today>=0?'D'+days[today].dayNum:'—'}</div></button>`
+    +days.map((d,i)=>!inPlan(i)?'':`<button type="button" class="day-chip ${i===activeDay?'active':''} ${i===today?'is-today':''}" data-i="${i}" onclick="setActiveDay(${i})" aria-pressed="${i===activeDay}"><div class="d">${d.date}</div><div class="m">D${d.dayNum}・週${d.weekday}</div></button>`).join('');
+  const act=dayScroll.querySelector('.day-chip.active');
+  if(act)requestAnimationFrame(()=>{const r=act.offsetLeft-(dayScroll.clientWidth-act.offsetWidth)/2;dayScroll.scrollTo({left:Math.max(0,r),behavior:'auto'});});
   if(typeof renderMarksBar==='function'&&typeof marksStore!=='undefined')renderMarksBar();
   if(typeof renderDayTools==='function')renderDayTools();
+  if(typeof renderHomeWx==='function'&&document.getElementById('homeWx'))renderHomeWx();
 }
 
 let activeSubTabStore = {}; /* dayIdx -> 'main' | 'transport' | 'more' | 'routemap' */
@@ -1845,8 +1842,9 @@ function renderDayContent(){
   const transportHTML=transportPlanHTML(activeDay);
 
   dayContent.innerHTML = `${todayRemindHTML()}
-    <div class="day-card-head">
-      <div class="day-eyebrow"><span>DAY ${String(d.dayNum).padStart(2,'0')}</span><i></i><span>${d.date}（${d.weekday}）</span></div>
+    <div class="day-card-head ng-dayhead">
+      <img class="dh-art" src="${SCENE['d'+activeDay]||''}" alt="" decoding="async" onclick="openAttachModal(this.getAttribute('src'))">
+      <div class="day-eyebrow"><span>DAY ${String(d.dayNum).padStart(2,'0')} · ${String(d.date).split('/').map(x=>x.padStart(2,'0')).join('.')}（${d.weekday}）</span><i></i></div>
       <div class="region">${d.title}</div>
       ${d.gas ? `<div class="gas-info">${d.gas}</div>` : ''}
       ${d.dayDesc ? `<h2>${d.dayDesc}</h2>` : ''}
@@ -1954,7 +1952,7 @@ async function fetchWeatherFor(k, attempt){
   const timeout = setTimeout(()=>controller.abort(), 9000);
   try{
     if(!navigator.onLine) throw new Error('OFFLINE');
-    const base = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,precipitation,snowfall,weather_code&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo`;
+    const base = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,precipitation,snowfall,weather_code&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo`;
     /* 優先使用日本氣象廳（JMA）模式的數值；若該模式暫時無資料，自動退回一般預報，避免整個天氣頁空白。 */
     let res = await fetch(base + '&models=jma_seamless', { signal: controller.signal }).catch(()=>null);
     let data = (res && res.ok) ? await res.json().catch(()=>null) : null;
@@ -1965,6 +1963,7 @@ async function fetchWeatherFor(k, attempt){
     }
     clearTimeout(timeout);
     liveWeatherCache[k] = { data, error:null, stale:false, fetchedAt: Date.now() };
+    setTimeout(()=>{if(typeof renderHomeWx==='function')renderHomeWx();},0);
     saveWeatherCacheEntry(k, liveWeatherCache[k]);
   }catch(err){
     clearTimeout(timeout);
@@ -2495,7 +2494,7 @@ window.addEventListener('offline', updateNetStatus);
 /* ============ Service Worker（離線快取整個網頁） ============ */
 if (navigator.serviceWorker) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=67').then(()=>navigator.serviceWorker.ready).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=ng2').then(()=>navigator.serviceWorker.ready).catch(()=>{});
   });
 }
 document.addEventListener('error',e=>{if(e.target?.tagName==='IMG')imageErrorFallback(e.target);},true);
@@ -2995,7 +2994,7 @@ const TENKI_LINKS={
 /* =====================================================================
    v48：收藏／預約狀態／提醒、自駕即時路況、版本與同步比對
    ===================================================================== */
-const APP_VERSION='ng1-2026-10-11';
+const APP_VERSION='ng2-2026-10-11';
 
 /* ---------- 收藏 ★／預約狀態／提醒 ---------- */
 let marksStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_marks'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
@@ -3247,9 +3246,9 @@ function toggleUiMode(){
 function toggleTextSize(){setTextSize(document.body.classList.contains('large-text')?0:1);}
 function syncHeaderControls(){
   const m=document.getElementById('modeBtn');
-  if(m){const e=currentUiMode()==='edit';m.textContent=e?'✓ 完成編輯':'✎ 編輯';m.classList.toggle('edit',e);m.title=e?'改完了，回到只看行程的旅行模式':'進入編輯模式，可以修改行程';m.setAttribute('aria-label',m.title);}
+  if(m){const e=currentUiMode()==='edit';m.innerHTML=e?'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>':'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4.2-1 10.4-10.4a2 2 0 0 0 0-2.8l-.4-.4a2 2 0 0 0-2.8 0L5 15.8 4 20z"/><path d="M13.5 7.5l3 3"/></svg>';m.classList.toggle('edit',e);m.title=e?'改完了，回到只看行程的旅行模式':'進入編輯模式，可以修改行程';m.setAttribute('aria-label',m.title);}
   const t=document.getElementById('sizeBtn');
-  if(t){const big=document.body.classList.contains('large-text');t.textContent=big?'字縮小':'字放大';t.classList.toggle('on',big);t.setAttribute('aria-label',big?'把字縮回標準大小':'把字放大');}
+  if(t){const big=document.body.classList.contains('large-text');t.textContent='Aa';t.classList.toggle('on',big);t.setAttribute('aria-label',big?'把字縮回標準大小':'把字放大');}
   let bar=document.getElementById('editModeBar');
   if(!bar&&document.querySelector('.app')){bar=document.createElement('div');bar.id='editModeBar';bar.className='edit-mode-bar';bar.innerHTML='<span>✎ 編輯模式中：可以修改、新增、刪除</span><button type="button" onclick="setUiMode(\'travel\')">完成編輯</button>';document.querySelector('.app').prepend(bar);}
 }
@@ -3405,7 +3404,7 @@ function openToolsSheet(){
     diag:()=>{closeToolsSheet();diagnoseCloud();},
     precache:()=>startOfflinePrecache(true),
     logout:()=>{closeToolsSheet();logoutFamily();},
-    surprise:()=>{closeToolsSheet();if(window.snowbird){window.snowbird.resume&&0;window.snowbird.open();}},
+    surprise:()=>{closeToolsSheet();showSurprise();},
     force:()=>{closeToolsSheet();forceRefreshApp();}
   };
   wrap.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>acts[b.dataset.act]&&acts[b.dataset.act]());
@@ -3424,7 +3423,7 @@ function renderDayTools(){
   const numeric=typeof activeDay==='number';
   const cur=numeric?(activeSubTabStore[activeDay]||'main'):'';
   const tools=[['itinerary','行程'],['weather','天氣'],['transport','交通'],['routemap','路線圖'],['eat','逛吃']];
-  const isOn=t=>t==='itinerary'?(numeric&&(cur==='main'||cur==='more')):cur===t;
+  const isOn=t=>t==='itinerary'?(numeric&&(cur==='main'||cur==='more')):(t==='eat'&&!numeric)?true:cur===t;
   el.innerHTML=tools.map(([t,l])=>`<button type="button" class="day-tool t-${t}${isOn(t)?' active':''}" data-type="${t}" aria-pressed="${isOn(t)}" onclick="goDayTool('${t}')">${l}</button>`).join('');
 }
 function goDayTool(t){
@@ -3583,7 +3582,45 @@ const SURPRISE_SEED=[
   {id:'sd-j02',type:'joke',text:'達摩為什麼總是一隻眼睛？因為牠還在等你的願望實現。'},
   {id:'sd-j03',type:'joke',text:'行李箱最怕聽到什麼？「你怎麼回程又變重了？」（栗子甜點表示：不是我。）'},
   {id:'sd-j04',type:'joke',text:'紫藤為什麼都往下長？因為它想跟每一個抬頭的人打招呼。'},
-  {id:'sd-w01',type:'tip',text:'走累了就找間咖啡館坐一下，山不會跑，花也會等你。'}
+  {id:'sd-w01',type:'tip',text:'走累了就找間咖啡館坐一下，山不會跑，花也會等你。'},
+  {id:'sd-k01',type:'joke',text:'我不是山羊，是羚羊。差在我比較會擺姿勢。'},
+  {id:'sd-k02',type:'joke',text:'我的角很短，因為長太長會勾到紫藤。'},
+  {id:'sd-k03',type:'joke',text:'今天的步數，請把去買栗子甜點的那段算成勇敢。'},
+  {id:'sd-k04',type:'joke',text:'我的導航只有兩個目的地：好吃的，和好看的。'},
+  {id:'sd-k05',type:'joke',text:'紫藤垂下來的時候，我都會低頭讓它先過。'},
+  {id:'sd-k06',type:'joke',text:'背包裡有地圖、零食，和一點點想再住一晚的心。'},
+  {id:'sd-k07',type:'joke',text:'我在山裡長大，所以看到樓梯不會怕，看到排隊會。'},
+  {id:'sd-k08',type:'joke',text:'蕎麥麵一束一束擺好，我一口一口吃好。'},
+  {id:'sd-k09',type:'joke',text:'達摩說要先畫一隻眼睛許願，我說要先吃午餐。'},
+  {id:'sd-k10',type:'joke',text:'我的毛很蓬，不是胖，是山上的春天還有點冷。'},
+  {id:'sd-k11',type:'joke',text:'在杉木步道上，我覺得自己很小，胃口還是很大。'},
+  {id:'sd-k12',type:'joke',text:'湖面很安靜，我也放輕腳步，怕吵醒山的倒影。'},
+  {id:'sd-k13',type:'joke',text:'泡湯是你們的行程，發呆是我的專長。'},
+  {id:'sd-k14',type:'joke',text:'今天沒有出發時間，所以我一直出發去冰箱。'},
+  {id:'sd-k15',type:'joke',text:'栗子的殼很硬，栗子甜點很溫柔。'},
+  {id:'sd-k16',type:'joke',text:'我把地圖打開了，結果先找到咖啡店。'},
+  {id:'sd-k17',type:'joke',text:'如果行程趕不上，就先趕上自己的好心情。'},
+  {id:'sd-k18',type:'joke',text:'今天沒有迷路，只是在收集沒有排進去的風景。'},
+  {id:'sd-k19',type:'joke',text:'出門前看天氣，出門後看甜點。'},
+  {id:'sd-k20',type:'joke',text:'黃金週人很多，我負責站在角落，看起來很悠閒。'},
+  {id:'sd-k21',type:'joke',text:'新幹線很快，我的午睡更快。'},
+  {id:'sd-k22',type:'joke',text:'在 Outlet 我沒有購物清單，只有購物的勇氣。'},
+  {id:'sd-k23',type:'joke',text:'伴手禮的本質，是把旅行再吃一次。'},
+  {id:'sd-k24',type:'joke',text:'那不是發呆，是我在替下一個景點留白。'},
+  {id:'sd-k25',type:'joke',text:'我把疲勞寄放在旅館，出門只帶胃口。'},
+  {id:'sd-k26',type:'joke',text:'如果咖啡店是景點，我今天完成了很多文化參訪。'},
+  {id:'sd-k27',type:'joke',text:'我不是一直出現，我是在不同角落值班。'},
+  {id:'sd-k28',type:'joke',text:'點我一下，我就把今天的小心事交給你。'},
+  {id:'sd-k29',type:'joke',text:'下雨就少排一點，風景不會因為你休息而生氣。'},
+  {id:'sd-k30',type:'joke',text:'你在等車，我在等你把剛才那張照片拍給我看。'},
+  {id:'sd-k31',type:'joke',text:'拍風景時，我負責融入背景，你負責找到我。'},
+  {id:'sd-k32',type:'joke',text:'小小的背包，裝不下整座山，卻裝得下今天的快樂。'},
+  {id:'sd-k33',type:'joke',text:'山路慢慢開，我會在下一個彎等你。'},
+  {id:'sd-k34',type:'joke',text:'今天的幸運物是外套，因為山上早晚還很涼。'},
+  {id:'sd-k35',type:'joke',text:'港邊的風很大，我的瀏海直接變成全身。'},
+  {id:'sd-k36',type:'joke',text:'旅行結束後，最重的行李通常叫作捨不得。'},
+  {id:'sd-k37',type:'joke',text:'我研究過了，旅館的榻榻米最適合研究午睡。'},
+  {id:'sd-k38',type:'joke',text:'看到美食先拍照，是我對它最後的禮貌。'}
 ];
 let surprisesData=[];
 let tipsSeen=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_tips_seen'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
@@ -3600,7 +3637,7 @@ function accountKey(){
   return 'a'+hash36(String(email||'guest').toLowerCase());
 }
 /* (v54 已改寫) */
-const SURPRISE_LABEL={tip:'小知識',joke:'笑話',photo:'旅程照片'};
+const SURPRISE_LABEL={tip:'小知識',joke:'小羚羊碎碎念',care:'小羚羊叮嚀',photo:'旅程照片'};
 function closeSurprise(){document.getElementById('surpriseCard')?.remove();}
 /* (v54 已改寫) */
 /* 內容庫管理（指南頁，只在編輯模式出現） */
@@ -3643,7 +3680,9 @@ function critterLayer(){let l=document.getElementById('critterLayer');if(!l){l=d
 function critterBusy(){
   return document.hidden||reducedMotion()||document.body.classList.contains('mama-open')||document.body.classList.contains('family-locked')||!!document.getElementById('formModal')||!!document.getElementById('toolsSheet')||!!document.getElementById('surpriseCard')||!!document.getElementById('spotEditModal')?.classList.contains('active');
 }
-function pickCritter(){let img,n=0;do{img=CRITTER_IMGS[Math.floor(Math.random()*CRITTER_IMGS.length)];n++;}while(img===critter.last&&n<6);critter.last=img;return img;}
+/* ng2：角落探頭用整隻小羚羊（有道具） */
+const PEEK_IMGS=['welcome','peek','point','camera','guide','eat','shop','relaxed'].map(n=>`images/sp-${n}.webp`);
+function pickCritter(){let img,n=0;do{img=PEEK_IMGS[Math.floor(Math.random()*PEEK_IMGS.length)];n++;}while(img===critter.last&&n<6);critter.last=img;return img;}
 function leafBurst(x,y){
   const l=critterLayer();
   for(let i=0;i<5;i++){
@@ -3659,7 +3698,7 @@ function spawnPeek(){
   const l=critterLayer();if(l.querySelector('.critter-peek'))return false;
   const side=Math.random()<.5?'left':'right';
   const el=document.createElement('div');el.className='critter-peek '+side;
-  el.innerHTML=`<img src="${pickCritter()}" alt="" style="width:${44+Math.round(Math.random()*10)}px" draggable="false">`;
+  el.innerHTML=`<img src="${pickCritter()}" alt="" style="width:${62+Math.round(Math.random()*8)}px" draggable="false">`;
   el.addEventListener('click',()=>{const r=el.getBoundingClientRect();leafBurst(r.left+r.width/2,r.top+r.height/2);el.classList.add('hop');setTimeout(()=>el.classList.remove('in'),500);showSurprise();});
   l.appendChild(el);
   requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('in')));
@@ -3669,7 +3708,7 @@ function spawnPeek(){
 }
 /* (v54 已改寫) */   /* 之後約每 4–8 分鐘一次 */
 /* (v54 已改寫) */
-document.addEventListener('DOMContentLoaded',()=>{initSurprises();try{initSnowbird();}catch(e){console.warn(e)}});
+document.addEventListener('DOMContentLoaded',()=>{initSurprises();startCritters();});
 
 /* =====================================================================
    v52：吃逛資料以「吃·旅途／逛·旅途」為本體、可排入某天的食衣住；
@@ -4113,6 +4152,11 @@ function nextSurprise(mode){
   safeSetItem('nagano_tips_seen',tipsSeen);
   return pick;
 }
+/* 依標點切成一小段一小段，換行盡量落在逗號、句號之後 */
+function phraseWrapHTML(t){
+  const parts=String(t).match(/[^，、。；：！？!?）」』]+[，、。；：！？!?）」』]*|[，、。；：！？!?）」』]+/g)||[String(t)];
+  return parts.map(x=>`<span class="ph">${escHtml(x)}</span>`).join('');
+}
 function showSurprise(mode){
   const m=(mode==='more')?'more':'first';
   const item=nextSurprise(m);
@@ -4120,7 +4164,7 @@ function showSurprise(mode){
   closeSurprise();
   const card=document.createElement('div');card.id='surpriseCard';card.className='surprise-card';
   const img=item.img?`<img class="sc-img" src="${escAttr(item.img)}" alt="" loading="lazy">`:'';
-  card.innerHTML=`<div class="sc-head"><span class="sc-tag ${item.type}">${SURPRISE_LABEL[item.type]||'小驚喜'}</span><button type="button" class="sc-x" aria-label="關閉">✕</button></div>${(typeof SURPRISE_ART!=='undefined'&&SURPRISE_ART[item.type]&&!item.img)?`<img class="sc-art" src="${SURPRISE_ART[item.type]}" alt="">`:''}${img}${item.text?`<p>${escHtml(item.text)}</p>`:''}<div class="sc-actions"><button type="button" class="sc-more">再來一則</button></div>`;
+  card.innerHTML=`<div class="sc-head"><span class="sc-tag ${item.type}">${SURPRISE_LABEL[item.type]||'小驚喜'}</span><button type="button" class="sc-x" aria-label="關閉">✕</button></div>${(typeof SURPRISE_ART!=='undefined'&&SURPRISE_ART[item.type]&&!item.img)?`<img class="sc-art" src="${SURPRISE_ART[item.type]}" alt="">`:''}${img}${item.text?`<p>${phraseWrapHTML(item.text)}</p>`:''}<div class="sc-actions"><button type="button" class="sc-more">再來一則</button></div>`;
   document.body.appendChild(card);
   card.querySelector('.sc-x').onclick=closeSurprise;
   card.querySelector('.sc-more').onclick=()=>showSurprise('more');
@@ -4483,7 +4527,7 @@ function transportAddBarHTML(dayIdx){
 }
 
 /* ---------- 新插圖用在合適的地方 ---------- */
-const SURPRISE_ART={tip:ART.search,joke:ART.photo,care:ART.heart};
+const SURPRISE_ART={tip:'images/sp-guide.webp',joke:'images/sp-happy.webp',care:'images/sp-relaxed.webp',photo:'images/sp-camera.webp'};
 (function extendArt(){
   CRITTER_IMGS.push(ART.suitcase,ART.photo,ART.heart,ART.rain,ART.search,ART.car);
 })();
@@ -4769,11 +4813,13 @@ function renderTodoBanner(){
   const host=document.getElementById('view-itinerary');if(!host)return;
   let el=document.getElementById('todoBanner');
   const left=todoData.filter(t=>!t.done);
-  const beforeTrip=new Date()<new Date(2027,1,4);
+  const beforeTrip=new Date()<new Date(2027,3,24);
   if(!beforeTrip||!left.length){el?.remove();return;}
   const late=left.filter(t=>{const n=todoDaysLeft(t.due);return n!=null&&n<=3;}).length;
-  if(!el){el=document.createElement('button');el.type='button';el.id='todoBanner';el.className='todo-banner';el.onclick=goToTodos;host.prepend(el);}
-  el.innerHTML=`<span class="tb-ic">✅</span><span class="tb-txt"><b>出發前待辦還有 ${left.length} 項</b>${late?`<small>${late} 項快到期或已過期</small>`:'<small>點這裡查看、勾選</small>'}</span><em>›</em>`;
+  const home=ensureHomeCards();
+  if(!el){el=document.createElement('button');el.type='button';el.id='todoBanner';el.className='todo-banner ng-card';el.onclick=goToTodos;}
+  if(el.parentNode!==home)home.appendChild(el);
+  el.innerHTML=`<img class="ng-deco ng-deco-leaf" src="images/deco/wisteria-leaf.webp" alt="" aria-hidden="true"><span class="tb-ic"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="tb-txt"><b>出發準備</b><small>還有 ${left.length} 項待辦${late?`・${late} 項快到期`:''}</small></span><img class="ng-deco ng-deco-side" src="images/deco/wisteria-side.webp" alt="" aria-hidden="true"><em>›</em>`;
 }
 function goToTodos(){const sec=document.getElementById('todoSection');if(sec)sec.open=true;setTab('guide');setTimeout(()=>document.getElementById('todoSection')?.scrollIntoView({behavior:'smooth',block:'start'}),80);}
 
@@ -4784,17 +4830,17 @@ var reviewStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_review
 function persistReviews(){safeSetItem('nagano_reviews',reviewStore);}
 /* v94：小羚羊心情（圖片 icon）；舊版的 great/good/ok/tired 自動對應 */
 const REVIEW_MOODS=[
-  ['happy','開心','今天真開心'],
-  ['relaxed','放鬆','慢慢走也很好'],
-  ['amazed','驚喜','撿到意外的風景'],
-  ['satisfied','滿足','吃飽飽，心也飽飽'],
-  ['accomplished','成就感','今天的路都走完了'],
-  ['tired','累了','腳有點痠，但很值得'],
-  ['sleepy','想睡','先讓我睡一下'],
-  ['rainy','雨天小失落','下雨了，下次再來！']];
+  ['happy','開心','角角都在笑','今天真開心','#D9772B'],
+  ['relaxed','放鬆','慢慢吃草就好','慢慢走也很好','#3E8E6A'],
+  ['amazed','驚喜','耳朵豎起來','撿到意外的風景','#2E86B5'],
+  ['satisfied','滿足','肚子圓滾滾','吃飽喝足，剛剛好','#B5651D'],
+  ['accomplished','成就感','插上小旗子','今天的路都走完了','#4F7A3A'],
+  ['tired','累了','腳腳走痠了','有點累，但很值得','#8A6E55'],
+  ['sleepy','想睡','窩著打個盹','先讓我睡一下','#7A62B8'],
+  ['rainy','雨天小失落','撐著紫藤傘','下雨了，下次再來！','#5D7FB5']];
 /* hk26：拿掉「低落」「不順心」，改成「有點可惜」；更早期的心情代碼自動對應 */
 const OLD_MOOD_MAP={great:'happy',good:'relaxed',ok:'relaxed',excited:'happy',moved:'amazed',content:'satisfied',touched:'amazed',surprised:'amazed',snowtired:'tired',sad:'rainy',frustrated:'rainy',disappointed:'rainy'};
-function moodInfo(m){m=OLD_MOOD_MAP[m]||m;const x=REVIEW_MOODS.find(z=>z[0]===m);return x?{key:x[0],label:x[1],sub:x[2],img:`images/mood-${x[0]}.webp`}:null;}
+function moodInfo(m){m=OLD_MOOD_MAP[m]||m;const x=REVIEW_MOODS.find(z=>z[0]===m);return x?{key:x[0],label:x[1],title:x[2],sub:x[3],color:x[4],img:`images/mood-${x[0]}.webp`}:null;}
 /* v95：心情可複選，存成 "excited,touched"（舊的單一值也相容） */
 function moodList(m){const seen=new Set();return String(m||'').split(',').map(x=>OLD_MOOD_MAP[x.trim()]||x.trim()).filter(x=>x&&!seen.has(x)&&seen.add(x)&&REVIEW_MOODS.some(z=>z[0]===x));}
 function myReviewName(){const w=todoWho();return w||'這支手機';}
@@ -4802,14 +4848,14 @@ function myEmail(){try{return (familyAuthSession&&familyAuthSession.email)||(rea
 function dayReviewHTML(i){
   const day=reviewStore[i]||{},me=accountKey();
   const entries=Object.entries(day).filter(([,r])=>r&&(r.text||r.img||r.mood)).sort((a,b)=>(a[0]===me?-1:b[0]===me?1:String(a[1].at||'').localeCompare(String(b[1].at||''))));
-  const card=([k,r])=>{const ms=moodList(r.mood).map(moodInfo);const mi=ms[0];return `<div class="rv-item${k===me?' mine':''}"><div class="rv-head">${mi?`<img class="rv-deer" src="${mi.img}" alt="${escAttr(mi.label)}" width="56" height="56">`:`<span class="rv-av">${escHtml(String(r.name||'?').slice(0,1).toUpperCase())}</span>`}<div class="rv-who"><b>${escHtml(r.name||'家人')}${k===me?'<em>（我）</em>':''}</b></div></div>${ms.length?`<div class="rv-moods">${ms.map((x,n)=>`<span class="rv-mood">${n?`<img src="${x.img}" alt="" width="26" height="26">`:''}${escHtml(x.label)}</span>`).join('')}</div>`:''}${r.text?`<p>${brText(r.text)}</p>`:''}${r.img?`<img class="rv-img" src="${escAttr(r.img)}" data-src="${escAttr(r.img)}" alt="" loading="lazy" onclick="openAttachModal(this.dataset.src)">`:''}${k===me?`<div class="rv-acts"><button type="button" onclick="editMyReview(${i})">修改</button><button type="button" class="rv-del" onclick="deleteMyReview(${i})">刪除</button></div>`:''}</div>`;};
+  const card=([k,r])=>{const ms=moodList(r.mood).map(moodInfo);const mi=ms[0];return `<div class="rv-item${k===me?' mine':''}"><div class="rv-head">${mi?`<img class="rv-deer" src="${mi.img}" alt="${escAttr(mi.label)}" width="56" height="56">`:`<span class="rv-av">${escHtml(String(r.name||'?').slice(0,1).toUpperCase())}</span>`}<div class="rv-who"><b>${escHtml(r.name||'家人')}${k===me?'<em>（我）</em>':''}</b></div></div>${ms.length?`<div class="rv-moods">${ms.map((x,n)=>`<span class="rv-mood" style="--mc:${x.color}" title="${escAttr(x.label)}">${n?`<img src="${x.img}" alt="" width="26" height="26">`:''}<b>${escHtml(x.title)}</b><small>${escHtml(x.label)}</small></span>`).join('')}</div>`:''}${r.text?`<p>${brText(r.text)}</p>`:''}${r.img?`<img class="rv-img" src="${escAttr(r.img)}" data-src="${escAttr(r.img)}" alt="" loading="lazy" onclick="openAttachModal(this.dataset.src)">`:''}${k===me?`<div class="rv-acts"><button type="button" onclick="editMyReview(${i})">修改</button><button type="button" class="rv-del" onclick="deleteMyReview(${i})">刪除</button></div>`:''}</div>`;};
   const mine=day[me]&&(day[me].text||day[me].img||day[me].mood);
   const email=myEmail();
   return `<section class="day-review"><h3><img src="images/mood-happy.webp" alt="" width="40" height="40">今日回顧</h3><p class="rv-sub">今天過得怎麼樣呀？選幾隻小羚羊代表你的心情，再說說今天最喜歡的瞬間～全家都看得到喔 🌸</p>${entries.map(card).join('')||'<div class="rv-empty">還沒有人寫喔～<br>睡前來跟小羚羊說說今天吧！</div>'}${mine?'':`<button type="button" class="rv-add" onclick="editMyReview(${i})">＋ 寫我的回顧</button>`}${CLOUD_CONFIGURED?'':'<!--'}<p class="rv-acct">${email?`目前用 <b>${escHtml(email)}</b> 寫`:'目前沒有登入'}・<button type="button" class="rv-switch" onclick="logoutFamily()">不是你？換帳號</button></p>${CLOUD_CONFIGURED?'':'-->'}</section>`;
 }
 function moodPickerHTML(cur){
   const sel=moodList(cur);
-  return `<input type="hidden" data-f="mood" value="${escAttr(sel.join(','))}"><div class="mood-grid" role="group">${REVIEW_MOODS.map(([k,l,sub])=>`<button type="button" class="mood-opt${sel.includes(k)?' on':''}" data-mood="${k}" role="checkbox" aria-checked="${sel.includes(k)}"><i class="mood-check" aria-hidden="true">✓</i><img src="images/mood-${k}.webp" alt="" width="64" height="64"><b>${escHtml(l)}</b><small>${escHtml(sub)}</small></button>`).join('')}</div>`;
+  return `<input type="hidden" data-f="mood" value="${escAttr(sel.join(','))}"><div class="mood-grid" role="group">${REVIEW_MOODS.map(([k,l,t,sub,c])=>`<button type="button" class="mood-opt${sel.includes(k)?' on':''}" data-mood="${k}" role="checkbox" aria-checked="${sel.includes(k)}" aria-label="${escAttr(l+'：'+t)}" style="--mc:${c}"><i class="mood-check" aria-hidden="true">✓</i><img src="images/mood-${k}.webp" alt="" width="64" height="64"><b class="mood-title">${escHtml(t)}</b><small class="mood-word">${escHtml(l)}</small><small>${escHtml(sub)}</small></button>`).join('')}</div>`;
 }
 function initMoodPicker(wrap){
   const hid=wrap.querySelector('[data-f="mood"]');
@@ -4818,7 +4864,7 @@ function initMoodPicker(wrap){
 }
 function editMyReview(i){
   const me=accountKey(),cur=(reviewStore[i]||{})[me]||{};
-  openFormModal({title:`🐦 D${days[i].dayNum}・${days[i].date} 的我`,fields:[
+  openFormModal({title:`🌸 D${days[i].dayNum}・${days[i].date} 的我`,fields:[
     {id:'mood',type:'custom',label:'今天的心情是哪幾隻小羚羊？（可以選好幾隻喔）',html:moodPickerHTML(cur.mood),init:initMoodPicker,noFocus:true},
     {id:'text',label:'今天最喜歡的瞬間是…？',type:'textarea',rows:5,value:cur.text||'',placeholder:'例如：紫藤花棚下的風真的是紫色的！'},
     {id:'file',label:cur.img?'換一張照片（選填；不選就保留原本的）':'放一張今天最喜歡的照片（選填）',type:'file'},
@@ -4830,7 +4876,7 @@ function editMyReview(i){
         if(v.file){try{img=await uploadMediaFile(v.file,'reviews');}catch(err){reportUploadError(err);return false;}}
         (reviewStore[i]=reviewStore[i]||{})[me]={name:v.name||myReviewName(),mood:v.mood||'',text:v.text,img,at:new Date().toISOString()};
         persistReviews();userRender();
-        showToast('記下來了！今天辛苦了 🐦');
+        showToast('記下來了！今天辛苦了 🌸');
       })();
     }});
 }
@@ -4924,14 +4970,15 @@ renderRouteTimeline();
 
 /* ============ 兩版行程切換（Lomä 山湖版／藤井莊溪谷版） ============
    只換顯示哪 10 天；兩版各自的筆記、照片、自訂景點都保留，切回去還在。選擇只記在這支手機上。 */
+const MTN_SVG='<svg class="ps-mtn" viewBox="0 0 64 28" aria-hidden="true"><path d="M2 27L19 7l7 8 9-12 17 24z" fill="#C9B8E6"/><path d="M30 27l12-14 6 6 6-5 9 13z" fill="#B8A3DC"/><path d="M15 11.6L19 7l3.6 4.2-2.1-1-1.5 1.4-1.7-1.3zM31.6 7.4L35 3l3.3 4.6-1.9-.8-1.5 1.2-1.4-1.1z" fill="#fff"/></svg>';
 const PLAN_GMAPS={
   loma:'https://www.google.com/maps/dir/Narita+Airport/Takasaki+Station/Fujinosakuoka+Fujioka/Nagano+Station/Lake+Nojiri/Imoriike+Myoko/Togakushi+Shrine+Chusha/Obuse/Yokohama+Station/Haneda+Airport+Terminal+3',
   fujiiso:'https://www.google.com/maps/dir/Narita+Airport/Takasaki+Station/Fujinosakuoka+Fujioka/Nagano+Station/Yamada+Onsen+Takayama+Nagano/Obuse/Togakushi+Shrine+Chusha/Yokohama+Station/Haneda+Airport+Terminal+3'
 };
 function renderPlanSwitch(){
   const el=document.getElementById('planSwitch');
-  if(el)el.innerHTML=`<span class="ps-label">行程版本</span><div class="ps-seg">${Object.entries(PLANS).map(([k,p])=>`<button type="button" role="radio" aria-checked="${k===PLAN}" class="${k===PLAN?'on':''}" onclick="setPlan('${k}')">${escHtml(p.short)}</button>`).join('')}</div><small class="ps-note">${escHtml(PLANS[PLAN].note)}</small>`;
-  const img=document.getElementById('handDrawnMapImg');if(img&&img.getAttribute('src')!==PLANS[PLAN].overview){img.setAttribute('src',PLANS[PLAN].overview);img.alt=`藤花慢慢，山色青青 ${PLANS[PLAN].label} 行程總覽插畫`;}
+  if(el)el.innerHTML=`<span class="ps-label">行程版本</span><div class="ps-seg">${Object.entries(PLANS).map(([k,p])=>`<button type="button" role="radio" aria-checked="${k===PLAN}" class="${k===PLAN?'on':''}" onclick="setPlan('${k}')">${escHtml(p.short)}</button>`).join('')}</div><div class="ps-theme"><i></i><span>${escHtml(PLANS[PLAN].theme)}</span><i></i>${MTN_SVG}</div>`;
+  const img=document.getElementById('handDrawnMapImg');if(img&&img.getAttribute('src')!==PLANS[PLAN].overview){img.setAttribute('src',PLANS[PLAN].overview);img.alt=`春光•藤花•山色 ${PLANS[PLAN].label} 行程總覽插畫`;}
   const note=document.getElementById('planNoteRoute');if(note)note.innerHTML=`<b>目前顯示：${escHtml(PLANS[PLAN].label)}</b><span>${escHtml(PLANS[PLAN].note)}</span><button type="button" onclick="setPlan('${PLAN==='loma'?'fujiiso':'loma'}')">改看${escHtml(PLANS[PLAN==='loma'?'fujiiso':'loma'].short)}</button>`;
   const gm=document.getElementById('routeGmapLink');if(gm)gm.href=PLAN_GMAPS[PLAN];
   document.body.dataset.plan=PLAN;
@@ -4946,6 +4993,39 @@ function setPlan(p){
   showToast(`已切換到${PLANS[p].label}`);
 }
 renderPlanSwitch();
+/* ============ ng2：首頁卡片（天氣摘要、出發準備），裝飾小山小花 ============ */
+function ensureHomeCards(){
+  let h=document.getElementById('homeCards');
+  if(!h){h=document.createElement('div');h.id='homeCards';h.className='home-cards';const v=document.getElementById('view-itinerary');const sb=v&&v.querySelector('.mobile-global-search');if(v)v.insertBefore(h,sb||v.firstChild);}
+  return h;
+}
+function homeWxDay(){const t=tripTodayIndex();return t>=0?t:(typeof activeDay==='number'&&days[activeDay]?activeDay:planDays()[0]);}
+let _homeWxFetching=false;
+function renderHomeWx(){
+  const home=ensureHomeCards();if(!home)return;
+  let el=document.getElementById('homeWx');
+  if(!el){el=document.createElement('button');el.type='button';el.id='homeWx';el.className='home-wx ng-card';el.onclick=()=>setTab('weather');home.prepend(el);}
+  const di=homeWxDay(),k=(DAY_CITIES[di]||['Nagano'])[0],c=CITIES[k]||CITIES.Nagano;
+  const e=weatherEntryFor(k),data=e&&e.data,cw=data&&data.current,dl=data&&data.daily;
+  const place=c.label.split('／')[0];
+  const when=e&&e.fetchedAt?new Date(e.fetchedAt).toLocaleString('zh-TW',{hour12:false,month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+  const fresh=e&&e.fetchedAt&&!e.stale&&Date.now()-e.fetchedAt<60*60*1000;
+  const badge=cw?(fresh?'<span class="hw-badge live">即時</span>':`<span class="hw-badge">${escHtml(when)}</span>`):'<span class="hw-badge">尚未更新</span>';
+  const art=cw?wxImgHTML(cw.weather_code,cw.wind_speed_10m,'hw-art'):'<img class="hw-art" src="images/weather/serow-sunny.webp" alt="" width="64" height="64">';
+  let main,sub;
+  if(cw){
+    const [,desc]=wmoInfo(cw.weather_code);
+    main=`${escHtml(desc)} <b>${Math.round(cw.temperature_2m)}°</b>`;
+    const lo=dl&&dl.temperature_2m_min?Math.round(dl.temperature_2m_min[0]):null,hi=dl&&dl.temperature_2m_max?Math.round(dl.temperature_2m_max[0]):null;
+    const pp=dl&&dl.precipitation_probability_max&&dl.precipitation_probability_max[0]!=null?dl.precipitation_probability_max[0]:null;
+    sub=[lo!=null&&hi!=null?`${lo}° / ${hi}°`:'',pp!=null?`降雨 ${pp}%`:''].filter(Boolean).join(' · ')||(cw.apparent_temperature!=null?`體感 ${Math.round(cw.apparent_temperature)}°`:'');
+  }else{main='看看今天的天氣';sub=navigator.onLine?'讀取中…':'目前離線，連上網路後再看';}
+  el.innerHTML=`<span class="hw-pic">${art}</span><span class="hw-txt"><span class="hw-place">${escHtml(place)}天氣${badge}</span><span class="hw-main">${main}</span><span class="hw-sub">${escHtml(sub)}</span></span><img class="ng-deco ng-deco-hang" src="images/deco/wisteria-hang.webp" alt="" aria-hidden="true"><em class="hw-go">›</em>`;
+  el.setAttribute('aria-label',`${place}天氣，點了看完整天氣`);
+  const old=!e||!e.fetchedAt||Date.now()-e.fetchedAt>30*60*1000;
+  if(old&&navigator.onLine&&!_homeWxFetching){_homeWxFetching=true;fetchWeatherFor(k,0).finally(()=>{_homeWxFetching=false;});}
+}
+setTimeout(()=>{try{renderHomeWx();renderTodoBanner();}catch(e){console.warn(e)}},0);
 
 /* hk9：單機預覽模式啟動時，把以前存在 localStorage 的 Base64 照片搬進 Cache Storage，釋放空間 */
 if(!CLOUD_CONFIGURED&&'caches' in window){
@@ -4960,7 +5040,7 @@ if(!CLOUD_CONFIGURED&&'caches' in window){
   },1500));
 }
 /* 行程頁最下方的小羚羊：用角落小羚羊的插圖 */
-CRITTER_IMGS.length=0;for(let i=1;i<=8;i++)CRITTER_IMGS.push(`snowbird/assets/snowbird-0${i}.webp`);
+CRITTER_IMGS.length=0;CRITTER_IMGS.push(...PEEK_IMGS);
 
 /* 10 天一覽：記住收合狀態 */
 (function(){const d=document.querySelector('.route-timeline-card');if(!d)return;

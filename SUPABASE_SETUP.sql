@@ -1,4 +1,4 @@
--- 長野春旅（藤花慢慢，山色青青）家庭旅行網站安全設定。請在 Supabase SQL Editor 執行一次；可重複執行。
+-- 長野春旅（春光•藤花•山色）家庭旅行網站安全設定。請在 Supabase SQL Editor 執行一次；可重複執行。
 -- 跟北海道網站共用同一個 Supabase 專案與家人帳號，資料放在獨立的 nagano_sync 表，不會互相影響。
 create table if not exists public.nagano_sync (
   key text primary key,

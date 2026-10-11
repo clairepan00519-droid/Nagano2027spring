@@ -2615,3 +2615,147 @@ body.large-text .plan-switch .ps-seg button{font-size:17px;min-height:50px;}
 body.large-text .plan-switch .ps-note,body.large-text .plan-note{font-size:15px;}
 .compact-section[open] .compact-section-summary em::after{color:#fff!important;}
 .plan-note b{display:block;width:100%;}
+
+/* =====================================================================
+   ng2：首頁照設計圖重排（滿版插畫標頭、一行手寫標題、天氣卡、出發準備卡、小山小花裝飾、每日漸層卡）
+   並套用挪威版 nw4–nw12 的版面規則（底線分頁、日期列、心情彩色手寫、小驚喜探頭、標題卡縮小、換行整理、大字 1.3 倍）
+   ===================================================================== */
+html body{background:var(--paper)!important;}
+/* ---------- 標頭 ---------- */
+html body .header.ng-hero{position:relative!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;min-height:clamp(400px,108vw,480px)!important;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 16px!important;margin:0!important;background:var(--paper)!important;background-image:none!important;border-radius:0 0 22px 22px!important;box-shadow:none!important;color:var(--ink)!important;}
+html body .header.ng-hero::after,html body .header.ng-hero::before{content:none!important;display:none!important;}
+.ng-hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 100%;z-index:0;pointer-events:none;-webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.06) 0,rgba(0,0,0,.28) 14%,rgba(0,0,0,.85) 34%,#000 46%,#000 86%,transparent 100%);mask-image:linear-gradient(180deg,rgba(0,0,0,.06) 0,rgba(0,0,0,.28) 14%,rgba(0,0,0,.85) 34%,#000 46%,#000 86%,transparent 100%);}
+html body .ng-hero .header-top{position:relative!important;z-index:3;display:flex!important;align-items:center;gap:6px;min-height:52px;margin:0!important;padding:0!important;}
+.ng-logo{width:54px;height:54px;object-fit:contain;flex:none;filter:drop-shadow(0 2px 4px rgba(52,89,77,.18));}
+html body .ng-hero .header-status{position:static!important;display:flex;gap:6px;align-items:center;margin-right:auto;}
+html body .ng-hero .net-status,html body .ng-hero .cloud-sync-status{position:static!important;}
+html body .ng-hero .net-status:not(.offline){display:none!important;}
+html body .ng-hero .header-tools{position:static!important;display:flex!important;gap:6px;margin-left:auto;}
+html body .ng-hero .ht-btn{position:relative;width:42px!important;height:42px!important;min-width:42px!important;padding:0!important;border-radius:50%!important;display:inline-flex!important;align-items:center;justify-content:center;background:rgba(255,253,248,.82)!important;border:1px solid rgba(52,89,77,.18)!important;color:var(--forest)!important;font:inherit;font-size:16px!important;font-weight:800!important;box-shadow:0 2px 8px -4px rgba(52,89,77,.35)!important;backdrop-filter:blur(4px);}
+html body .ng-hero .ht-btn.on,html body .ng-hero .ht-btn.edit{background:var(--forest)!important;color:#fff!important;}
+html body .ng-hero .ht-badge{position:absolute;top:-3px;right:-3px;}
+html body .ng-hero .header-title{position:relative!important;z-index:2;text-align:center!important;padding:2px 0 0!important;margin:0!important;}
+html body .ng-hero .eyebrow{font-family:'Caveat',cursive!important;font-style:normal!important;font-weight:500!important;font-size:19px!important;letter-spacing:.05em!important;color:var(--v2)!important;margin:0!important;text-transform:none!important;text-shadow:0 0 6px #FFFDF8;}
+html body .ng-hero h1{font-family:var(--title)!important;font-weight:400!important;font-size:min(11.6vw,48px)!important;line-height:1.15!important;letter-spacing:.04em!important;white-space:nowrap!important;color:#2C4C40!important;margin:2px 0 2px!important;-webkit-text-stroke:.6px #2C4C40;text-shadow:0 0 2px #FFFDF8,0 0 10px #FFFDF8,0 0 18px rgba(255,253,248,.9)!important;}
+.ng-hero-sub{margin:4px 0 0;font-size:14.5px;letter-spacing:.18em;color:var(--ink);font-weight:600;text-shadow:0 0 6px #FFFDF8,0 0 12px #FFFDF8;}
+html body .ng-hero .header-foot{position:relative!important;z-index:2;margin-top:auto!important;display:flex!important;justify-content:center!important;}
+html body .ng-hero .dates{display:inline-flex!important;align-items:center;gap:8px;background:rgba(255,253,248,.94)!important;border:1.5px solid #C9DCC0!important;color:var(--ink)!important;border-radius:999px!important;padding:8px 20px!important;font-size:16px!important;font-weight:600!important;letter-spacing:.06em;box-shadow:0 4px 14px -8px rgba(52,89,77,.45);backdrop-filter:blur(4px);}
+html body .ng-hero .preview-note{position:relative;z-index:2;margin:8px auto 0!important;}
+/* ---------- 兩版切換＋主題小字（小山） ---------- */
+html body .plan-switch{margin:14px 16px 4px!important;gap:10px!important;}
+html body .plan-switch .ps-label{display:none!important;}
+html body .plan-switch .ps-seg{max-width:none!important;padding:5px!important;background:#EFEADF!important;border:0!important;box-shadow:inset 0 1px 3px rgba(52,89,77,.08);}
+html body .plan-switch .ps-seg button{min-height:52px!important;font-size:17px!important;letter-spacing:.06em;}
+.ps-theme{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;color:var(--ink-soft);font-size:14.5px;letter-spacing:.14em;}
+.ps-theme i{flex:1 1 30px;max-width:70px;height:1px;background:linear-gradient(90deg,transparent,#BFB5A0);}
+.ps-theme i:nth-of-type(2){background:linear-gradient(90deg,#BFB5A0,transparent);}
+.ps-theme span{white-space:nowrap;}
+.ps-mtn{width:44px;height:20px;flex:none;}
+/* ---------- 首頁卡片 ---------- */
+.home-cards{display:flex;flex-direction:column;gap:12px;margin:12px 14px 0;}
+.ng-card{position:relative;overflow:hidden;display:block;width:100%;background:#FFFDF8;border:1px solid #E7E0CE;border-radius:22px;box-shadow:0 8px 20px -14px rgba(52,89,77,.45);font:inherit;color:var(--ink);text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.ng-card:active{transform:scale(.99);}
+.ng-deco{position:absolute;pointer-events:none;user-select:none;z-index:0;}
+.ng-deco-hang{right:30px;top:-8px;width:44px;opacity:.95;}
+.ng-deco-side{right:28px;bottom:-26px;width:26px;transform:rotate(-12deg);opacity:.9;}
+.ng-deco-leaf{left:-6px;bottom:-30px;width:36px;transform:rotate(18deg);opacity:.9;}
+.home-wx{display:grid!important;grid-template-columns:112px 1fr 18px;align-items:center;gap:0;padding:12px 12px 12px 4px;min-height:116px;}
+.hw-pic{display:flex;justify-content:center;align-items:center;}
+.hw-pic .hw-art{width:96px;height:96px;object-fit:contain;}
+.hw-txt{position:relative;z-index:1;display:flex;flex-direction:column;gap:2px;padding-left:16px;border-left:1px solid #E3DCCB;min-width:0;}
+.hw-place{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:800;letter-spacing:.08em;color:var(--ink);}
+.hw-badge{font-style:normal;font-size:11.5px;font-weight:700;letter-spacing:.04em;background:#EDE5F8;color:#6F58A8;border-radius:8px;padding:2px 8px;white-space:nowrap;}
+.hw-badge.live{background:#E3F1E6;color:#2F6E4A;}
+.hw-main{font-family:var(--title);font-size:27px;line-height:1.25;color:var(--ink);letter-spacing:.04em;-webkit-text-stroke:.3px currentColor;}
+.hw-main b{font-family:inherit;font-weight:400;}
+.hw-sub{font-size:14.5px;color:var(--ink-soft);letter-spacing:.06em;}
+.hw-go,.ng-card em{position:relative;z-index:1;font-style:normal;font-size:28px;color:var(--ink-soft);line-height:1;}
+html body .todo-banner.ng-card{display:grid!important;grid-template-columns:62px 1fr 18px!important;align-items:center;gap:12px;padding:14px 14px 14px 22px!important;margin:0!important;min-height:92px;background:#FFFDF8!important;border:1px solid #E7E0CE!important;}
+html body .todo-banner.ng-card .tb-ic{position:relative;z-index:1;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 35% 30%,#6BB487,#3E8E61)!important;color:#fff!important;box-shadow:0 4px 10px -4px rgba(62,142,97,.6);font-size:0!important;}
+html body .todo-banner.ng-card .tb-txt{position:relative;z-index:1;}
+html body .todo-banner.ng-card b{display:block;font-family:var(--title)!important;font-weight:400!important;font-size:26px!important;letter-spacing:.08em;color:var(--ink)!important;-webkit-text-stroke:.3px currentColor;}
+html body .todo-banner.ng-card small{display:block;font-size:14.5px!important;letter-spacing:.1em;color:var(--ink-soft)!important;margin-top:2px;}
+/* 搜尋 */
+html body .mobile-global-search{position:relative;margin:12px 14px 0!important;}
+html body .ng-search{min-height:54px!important;border-radius:18px!important;background:#FFFDF8!important;border:1px solid #E7E0CE!important;box-shadow:0 6px 16px -14px rgba(52,89,77,.5)!important;padding-right:64px!important;}
+html body .ng-search input{font-size:16px!important;letter-spacing:.06em;}
+.ng-deco-search{right:22px;top:8px;width:22px;transform:rotate(-24deg);z-index:2;}
+/* ---------- 底線分頁＋日期列（挪威 nw4） ---------- */
+html body #dayTools{display:flex!important;gap:0!important;align-items:flex-end;margin:14px 14px 0!important;padding:0 2px!important;border-bottom:1px solid var(--line);background:transparent!important;overflow:visible!important;flex-wrap:nowrap!important;}
+html body #dayTools .day-tool{flex:1 1 auto;min-width:0;background:transparent!important;border:0!important;box-shadow:none!important;color:var(--ink-soft)!important;font-size:16.5px!important;letter-spacing:.1em;padding:10px 2px 12px!important;border-radius:0!important;position:relative;min-height:0!important;font-weight:500!important;}
+html body #dayTools .day-tool.active{color:var(--forest)!important;font-weight:800!important;}
+html body #dayTools .day-tool.active::after{display:block!important;content:""!important;position:absolute;left:22%;right:22%;bottom:-1px;height:3px;border-radius:3px;background:var(--mustard)!important;}
+html body #dayScroll{display:flex!important;gap:0!important;align-items:stretch;padding:10px 2px 14px!important;margin:0 14px!important;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;background:transparent!important;}
+html body #dayScroll::-webkit-scrollbar{display:none;}
+html body #dayScroll .day-chip{flex:0 0 auto;min-width:70px;background:transparent!important;border:0!important;box-shadow:none!important;border-radius:16px!important;padding:9px 8px 11px!important;margin:0!important;position:relative;transform:none!important;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;}
+html body #dayScroll .day-chip+.day-chip::before{content:"";position:absolute;left:0;top:28%;height:44%;width:1px;background:var(--line);}
+html body #dayScroll .day-chip.active::before,html body #dayScroll .day-chip.active+.day-chip::before{display:none;}
+html body #dayScroll .day-chip .d{font-family:var(--title)!important;font-size:20px!important;font-weight:400!important;color:var(--ink)!important;letter-spacing:.02em;white-space:nowrap;}
+html body #dayScroll .day-chip .m{font-size:12px!important;color:var(--ink-soft)!important;letter-spacing:.04em;white-space:nowrap;}
+html body #dayScroll .day-chip.active{background:linear-gradient(150deg,var(--forest) 0,#4A7A68 100%)!important;}
+html body #dayScroll .day-chip.active .d,html body #dayScroll .day-chip.active .m{color:#fff!important;}
+html body #dayScroll .day-chip.active::after{content:"";position:absolute;left:50%;bottom:-4px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--wisteria);border:2px solid var(--paper);}
+html body #dayScroll .day-chip.is-today .m{color:#3E8E61!important;font-weight:700;}
+html body #dayScroll .ng-today .d{font-family:inherit!important;font-size:15px!important;color:var(--mustard-deep)!important;font-weight:700!important;}
+/* ---------- 每日漸層卡（右邊插圖往左淡出） ---------- */
+html body .day-card-head.ng-dayhead{position:relative!important;overflow:hidden!important;background:#FFFDF8!important;border:1px solid #E7E0CE!important;border-radius:22px!important;padding:18px 16px 14px!important;box-shadow:0 8px 20px -14px rgba(52,89,77,.45)!important;}
+.ng-dayhead .dh-art{position:absolute;top:0;right:0;width:70%;height:232px;object-fit:cover;object-position:62% 50%;z-index:0;cursor:zoom-in;-webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.25) 16%,rgba(0,0,0,.8) 42%,#000 60%),linear-gradient(180deg,#000 62%,transparent 100%);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.25) 16%,rgba(0,0,0,.8) 42%,#000 60%),linear-gradient(180deg,#000 62%,transparent 100%);mask-composite:intersect;}
+html body .ng-dayhead>*:not(.dh-art){position:relative;z-index:1;}
+html body .ng-dayhead .day-eyebrow{max-width:66%;display:flex!important;align-items:center;gap:10px;font-family:inherit!important;font-style:normal!important;font-size:15px!important;letter-spacing:.16em;color:var(--ink)!important;font-weight:600;}
+html body .ng-dayhead .day-eyebrow span{white-space:nowrap;}
+html body .ng-dayhead .day-eyebrow i{flex:1 1 40px;max-width:70px;height:2px;border-radius:2px;background:var(--wisteria)!important;}
+html body .ng-dayhead .region{max-width:64%;font-size:min(8.6vw,36px)!important;line-height:1.25!important;letter-spacing:.06em;color:var(--ink)!important;margin:8px 0 6px!important;-webkit-text-stroke:.4px currentColor;text-shadow:0 0 6px #FFFDF8,0 0 14px #FFFDF8;}
+html body .ng-dayhead h2{max-width:56%;font-size:15px!important;line-height:1.75!important;letter-spacing:.1em;color:var(--ink-soft)!important;font-weight:500!important;margin:0 0 54px!important;text-shadow:0 0 6px #FFFDF8,0 0 12px #FFFDF8;}
+html body .ng-dayhead .weather-strip{background:rgba(244,240,250,.94)!important;backdrop-filter:blur(3px);}
+/* ---------- 底部導覽：選中的項目淡紫底 ---------- */
+html body .bottom-nav .nav-btn.active{background:#EEE7F8!important;border-radius:22px!important;}
+html body .bottom-nav .nav-btn.active .lb{color:#6F58A8!important;font-weight:800!important;}
+/* ---------- 心情：彩色手寫標題（挪威 nw10） ---------- */
+html body .mood-opt{gap:1px;background:linear-gradient(180deg,color-mix(in srgb,var(--mc,#6F58A8) 9%,#fff) 0,#fff 100%)!important;border-color:color-mix(in srgb,var(--mc,#6F58A8) 28%,#fff)!important;}
+html body .mood-opt .mood-title{font-family:var(--title)!important;font-weight:400!important;font-size:21px!important;line-height:1.25;color:var(--mc,#34594D)!important;letter-spacing:.04em;margin-top:2px;-webkit-text-stroke:.35px currentColor;}
+html body .mood-opt .mood-word{display:inline-block;margin:2px 0 1px;padding:0 9px;border-radius:999px;font-size:11.5px!important;font-weight:700;color:#fff!important;background:var(--mc,#6F58A8);}
+html body .mood-opt.on{border-color:var(--mc,#6F58A8)!important;background:color-mix(in srgb,var(--mc,#6F58A8) 14%,#fff)!important;box-shadow:0 4px 14px color-mix(in srgb,var(--mc,#6F58A8) 30%,transparent)!important;}
+html body .mood-opt.on .mood-check{background:var(--mc,#6F58A8)!important;border-color:var(--mc,#6F58A8)!important;}
+html body .rv-moods .rv-mood{gap:5px;padding:3px 11px;background:color-mix(in srgb,var(--mc,#6F58A8) 12%,#fff)!important;color:var(--mc,#34594D)!important;border:1px solid color-mix(in srgb,var(--mc,#6F58A8) 30%,#fff);}
+html body .rv-moods .rv-mood b{font-family:var(--title)!important;font-weight:400!important;font-size:17px;letter-spacing:.03em;-webkit-text-stroke:.3px currentColor;}
+html body .rv-moods .rv-mood small{font-size:11px;font-weight:700;opacity:.8;}
+body.large-text .mood-opt .mood-title{font-size:23px!important;}
+html body .day-review h3{font-size:21px!important;color:var(--forest)!important;}
+/* ---------- 小驚喜：角落探頭＋深森林綠卡片、藤紫邊框（挪威 nw12） ---------- */
+html body .surprise-card{background:linear-gradient(160deg,#3B6656 0,#34594D 60%,#2C4C40 100%)!important;border:2px solid var(--wisteria)!important;border-radius:20px!important;box-shadow:0 14px 34px rgba(30,48,42,.45),0 0 0 4px rgba(184,163,220,.16)!important;padding:14px 16px 14px!important;}
+html body .surprise-card p{color:#F7F5EE!important;font-size:15.5px!important;line-height:1.8!important;}
+html body .sc-tag{background:var(--wisteria)!important;color:#2C4C40!important;font-family:var(--title)!important;font-weight:400!important;font-size:15px!important;padding:2px 12px!important;letter-spacing:.06em;}
+html body .sc-x{background:rgba(255,255,255,.12)!important;color:#F3EEFB!important;border:1px solid rgba(184,163,220,.5)!important;}
+html body .sc-more{background:var(--wisteria)!important;color:#2C4C40!important;}
+html body .sc-art{width:84px!important;top:-62px!important;right:56px!important;filter:drop-shadow(0 4px 8px rgba(30,48,42,.35))!important;}
+html body .critter-peek img{filter:drop-shadow(0 3px 6px rgba(30,48,42,.3))!important;}
+.surprise-card p .ph{display:inline-block;max-width:100%;}
+/* ---------- 可收合標題卡縮小、清單單層框（挪威 nw12） ---------- */
+html body .compact-section-summary{padding:9px 12px!important;gap:10px!important;min-height:0!important;}
+html body .compact-section-summary .cs-art{width:46px!important;height:46px!important;flex:none;object-fit:contain;}
+html body .compact-section-summary h3{font-size:17px!important;margin:0!important;line-height:1.3!important;}
+html body .compact-section-summary .sub{font-size:12px!important;line-height:1.45!important;margin-top:1px!important;}
+html body .compact-section-summary em{font-size:11.5px!important;padding:3px 10px!important;}
+html body .checklist-group{border:0!important;box-shadow:none!important;background:transparent!important;overflow:visible!important;border-radius:0!important;}
+html body .checklist-group-head{box-shadow:none!important;}
+html body .checklist-group-body.open{background:#fff;border:1px solid var(--line);border-top:0;border-radius:0 0 16px 16px;margin:-10px 4px 0;padding-top:12px!important;}
+/* ---------- 換行整理（挪威 nw12） ---------- */
+html body p,html body li,html body .sub,html body small,html body .tc-text,html body .surprise-card p{text-wrap:pretty;line-break:strict;}
+html body h1,html body h2,html body h3,html body h4,html body summary small,html body .compact-section-summary .sub,html body .todo-sum small{text-wrap:balance;}
+html body .transport-day,html body .rt-day .rt-date,html body .day-chip .d,html body .sc-tag{white-space:nowrap;}
+/* ---------- 大字模式：統一放大 1.3 倍（挪威 nw8） ---------- */
+html body.large-text .view,html body.large-text .plan-switch{zoom:1.3!important;}
+html body.large-text .ng-hero h1{font-size:min(11.6vw,48px)!important;}
+/* ng2 微調：插畫只放在標頭下半，小羚羊不會蓋到標題 */
+.ng-hero-img{top:auto!important;bottom:0!important;height:74%!important;object-position:78% 100%!important;-webkit-mask-image:linear-gradient(180deg,transparent 0,rgba(0,0,0,.55) 16%,#000 32%,#000 86%,transparent 100%)!important;mask-image:linear-gradient(180deg,transparent 0,rgba(0,0,0,.55) 16%,#000 32%,#000 86%,transparent 100%)!important;}
+html body .header.ng-hero{background:radial-gradient(120% 60% at 50% 0,#FFFDF8 0,#F7F2E6 60%,var(--paper) 100%)!important;}
+.ng-deco-side{right:42px!important;}
+.ng-hero-img{object-position:40% 100%!important;}
+html body .ng-hero .preview-note{background:rgba(255,253,248,.88);border-radius:999px;padding:3px 10px;font-size:11px;}
+.hw-place{flex-wrap:wrap;row-gap:2px;}
+.hw-place>span:first-child,.hw-place{white-space:nowrap;}
+html body.large-text .home-wx{grid-template-columns:82px 1fr 14px;padding-left:2px;}
+html body.large-text .hw-pic .hw-art{width:74px;height:74px;}
+html body.large-text .hw-txt{padding-left:10px;}
+html body.large-text .todo-banner.ng-card{grid-template-columns:50px 1fr 14px!important;padding-left:16px!important;}
+html body.large-text .todo-banner.ng-card .tb-ic{width:46px;height:46px;}

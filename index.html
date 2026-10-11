@@ -21,23 +21,22 @@ window.addEventListener('load',function(){setTimeout(function(){if(window.__appR
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="藤花慢旅">
+<meta name="apple-mobile-web-app-title" content="春光藤花山色">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
-<title>藤花慢慢，山色青青｜背上小背包，去山裡住幾天</title>
+<title>春光•藤花•山色｜背上小背包，去山裡住幾天</title>
 <meta name="description" content="2027.04.24–05.03 高崎、長野與橫濱春日慢旅：紫藤、山湖、戶隱、小布施，含 Lomä 與藤井莊兩版行程、天氣、行李與家人共享。">
-<meta property="og:title" content="藤花慢慢，山色青青｜背上小背包，去山裡住幾天">
+<meta property="og:title" content="春光•藤花•山色｜背上小背包，去山裡住幾天">
 <meta property="og:description" content="高崎・長野・橫濱 10 日春旅行程與家人共享指南。">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@300;400;700&family=Caveat:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="preload" href="fonts/ChenYuluoyan-Thin-sub.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=ng1">
-<link rel="stylesheet" href="splash.css?v=ng1">
-<link rel="stylesheet" href="snowbird/snowbird-widget.css?v=ng1">
+<link rel="stylesheet" href="style.css?v=ng2">
+<link rel="stylesheet" href="splash.css?v=ng2">
 </head>
 <body class="family-locked">
-<div id="naganoSplash" class="splash" hidden aria-label="藤花慢慢，山色青青 載入中">
+<div id="naganoSplash" class="splash" hidden aria-label="春光•藤花•山色 載入中">
   <button class="splash__skip" type="button">略過</button>
   <div class="splash__stage">
     <div class="splash__sun"></div>
@@ -47,14 +46,14 @@ window.addEventListener('load',function(){setTimeout(function(){if(window.__appR
     </div>
     <img class="splash__bird splash__deer--wakeup" src="images/splash-serow-camera.webp" alt="小羚羊拿著相機">
     <i class="flake flake--1"></i><i class="flake flake--2"></i><i class="flake flake--3"></i><i class="flake flake--4"></i><i class="flake flake--5"></i>
-    <div class="splash__title"><strong>藤花慢慢，山色青青</strong><span>背上小背包，去山裡住幾天</span></div>
+    <div class="splash__title"><strong>春光•藤花•山色</strong><span>背上小背包，去山裡住幾天</span></div>
   </div>
 </div>
-<script src="splash.js?v=ng1"></script>
+<script src="splash.js?v=ng2"></script>
 
 <div id="familyGate" class="family-gate" aria-hidden="false">
   <div class="family-gate-card">
-    <img class="family-gate-img" src="images/logo.webp" alt="藤花慢慢，山色青青" width="84" height="84">
+    <img class="family-gate-img" src="images/logo.webp" alt="春光•藤花•山色" width="84" height="84">
     <h2>長野春旅・家庭行程</h2>
     <p>請輸入家人帳號的 Email 和密碼。<br>只要登入一次，這支手機之後打開就會自動進入，全家看到的是同一份行程。</p>
     <input id="familyGateEmail" type="email" inputmode="email" autocomplete="username" placeholder="Email（例：name@gmail.com）" aria-label="Email">
@@ -91,36 +90,37 @@ window.addEventListener('load',function(){setTimeout(function(){if(window.__appR
 <div class="app">
 
   <!-- Header -->
-  <div class="header" id="main-header">
+  <div class="header ng-hero" id="main-header">
+    <img class="ng-hero-img" src="images/header-hero.webp" alt="" width="1472" height="724" decoding="async">
     <div class="header-top">
+      <img class="ng-logo" src="images/deco/logo-serow.webp" alt="" width="56" height="56">
       <div class="header-status">
         <div class="net-status" id="netStatus"><span class="net-dot online"></span><span class="net-txt">線上</span></div>
         <div class="cloud-sync-status" id="cloudSyncStatus">☁️ 同步中</div>
       </div>
       <div class="header-tools">
-        <button type="button" class="ht-btn ht-fav" id="favCorner" onclick="openMarksPanel('fav')" aria-label="收藏與預約">★<span class="ht-badge" id="favBadge" style="display:none"></span></button>
-        <button type="button" class="ht-pill" id="modeBtn" onclick="toggleUiMode()">✎ 編輯</button>
-        <button type="button" class="ht-pill" id="sizeBtn" onclick="toggleTextSize()">字放大</button>
-        <button type="button" class="ht-btn" onclick="openToolsSheet()" aria-label="工具與設定">⚙️</button>
+        <button type="button" class="ht-btn ht-fav" id="favCorner" onclick="openMarksPanel('fav')" aria-label="收藏與預約"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.6 9.6l5.8-.8z"/></svg><span class="ht-badge" id="favBadge" style="display:none"></span></button>
+        <button type="button" class="ht-btn" id="sizeBtn" onclick="toggleTextSize()" aria-label="把字放大">Aa</button>
+        <button type="button" class="ht-btn" id="modeBtn" onclick="toggleUiMode()" aria-label="進入編輯模式"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4.2-1 10.4-10.4a2 2 0 0 0 0-2.8l-.4-.4a2 2 0 0 0-2.8 0L5 15.8 4 20z"/><path d="M13.5 7.5l3 3"/></svg></button>
+        <button type="button" class="ht-btn" onclick="openToolsSheet()" aria-label="工具與設定"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></button>
       </div>
     </div>
     <div class="header-title">
-      <div class="eyebrow">Nagano · A Little Serow’s Spring Journey</div>
-      <h1>藤花慢慢，<br>山色青青<small>背上小背包，去山裡住幾天</small></h1>
+      <div class="eyebrow">A Little Serow’s Spring Journey</div>
+      <h1>春光•藤花•山色</h1>
+      <p class="ng-hero-sub">背上小背包，去山裡住幾天。</p>
     </div>
-    <div class="header-scene">
-      <img class="header-art" src="images/header.webp" alt="" width="1500" height="500" decoding="async">
-    </div>
-    <div class="header-foot"><div class="dates">2027.4.24 出發 – 5.3 返台・10天9夜</div></div>
-    <div class="plan-switch" id="planSwitch" role="radiogroup" aria-label="行程版本"></div>
+    <div class="header-foot"><div class="dates"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 19c2-8 7-12 14-14-1 7-5 12-12 13" fill="#B4CF83" stroke="#4E7A68" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 19c3-4 6-7 10-10" fill="none" stroke="#4E7A68" stroke-width="1.3" stroke-linecap="round"/></svg>2027.04.24 — 05.03 · 10天9夜</div></div>
     <div class="preview-note">單機預覽：尚未連接家人同步，資料只存在這台裝置</div>
     <span id="spotCount" hidden>--</span>
   </div>
+  <div class="plan-switch" id="planSwitch" role="radiogroup" aria-label="行程版本"></div>
 
   <!-- ================= ITINERARY VIEW ================= -->
   <div class="view active" id="view-itinerary">
     <div class="mobile-global-search">
-      <div class="global-search-input-wrap"><span>⌕</span><input id="globalSearchMobile" type="search" placeholder="搜尋全部 10 天行程…" oninput="runGlobalSearch(this.value)"></div>
+      <div class="global-search-input-wrap ng-search"><span>⌕</span><input id="globalSearchMobile" type="search" placeholder="搜尋行程與景點" oninput="runGlobalSearch(this.value)"></div>
+      <img class="ng-deco ng-deco-search" src="images/deco/wisteria-side.webp" alt="" aria-hidden="true">
       <div id="globalSearchResultsMobile" class="global-search-results"></div>
     </div>
     <div class="day-tools" id="dayTools" role="tablist" aria-label="當日工具"></div>
@@ -134,7 +134,7 @@ window.addEventListener('load',function(){setTimeout(function(){if(window.__appR
       <h3 class="page-title"><img src="images/nav-route.webp" alt="" width="34" height="34"> 高崎・長野・橫濱 10 日移動路線</h3>
       <div class="plan-note" id="planNoteRoute"></div>
       <div id="naganoRouteMap" class="svg-map-container" style="position:relative;">
-        <img id="handDrawnMapImg" src="images/overview-loma.webp" alt="藤花慢慢，山色青青 行程總覽插畫" loading="lazy" class="route-main-image" onclick="openAttachModal(this.getAttribute('src'))">
+        <img id="handDrawnMapImg" src="images/overview-loma.webp" alt="春光•藤花•山色 行程總覽插畫" loading="lazy" class="route-main-image" onclick="openAttachModal(this.getAttribute('src'))">
         <div id="mapFallback" style="display:none; padding:24px 16px; border:2px dashed var(--line); border-radius:var(--r-md); background:var(--paper); text-align:center;">
           <p style="font-size:13px; color:var(--ink); font-weight:700; line-height:1.6; margin-top:0;">⚠️ 找不到地圖圖片！<br><span style="font-size:11px; font-weight:400;">請點擊下方按鈕手動選擇：</span></p>
           <input type="file" id="mapUploader" style="display:none;" accept="image/*" onchange="loadLocalMap(event)">
@@ -346,10 +346,8 @@ window.addEventListener('load',function(){setTimeout(function(){if(window.__appR
 
 <input type="file" id="restoreFile" accept="application/json,.json" style="display:none" onchange="restoreBackupFile(event)">
 
-<script src="config.js?v=ng1"></script>
-<script src="snowbird/snowbird-content.js?v=ng1"></script>
-<script src="snowbird/snowbird-widget.js?v=ng1"></script>
-<script src="app.js?v=ng1"></script>
+<script src="config.js?v=ng2"></script>
+<script src="app.js?v=ng2"></script>
 
 
 

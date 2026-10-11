@@ -2499,7 +2499,7 @@ window.addEventListener('offline', updateNetStatus);
 /* ============ Service Worker（離線快取整個網頁） ============ */
 if (navigator.serviceWorker) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=ng3').then(()=>navigator.serviceWorker.ready).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=ng4').then(()=>navigator.serviceWorker.ready).catch(()=>{});
   });
 }
 document.addEventListener('error',e=>{if(e.target?.tagName==='IMG')imageErrorFallback(e.target);},true);
@@ -2999,7 +2999,7 @@ const TENKI_LINKS={
 /* =====================================================================
    v48：收藏／預約狀態／提醒、自駕即時路況、版本與同步比對
    ===================================================================== */
-const APP_VERSION='ng3-2026-10-11';
+const APP_VERSION='ng4-2026-10-11';
 
 /* ---------- 收藏 ★／預約狀態／提醒 ---------- */
 let marksStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_marks'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();

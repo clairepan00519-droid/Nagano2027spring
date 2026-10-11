@@ -2780,3 +2780,30 @@ html body.large-text .ng-hero h1{font-size:min(10.4vw,44px)!important;}
 .ng-hang{top:58px!important;}
 html body .weather-wear-note:has(.wx-chilly){padding-right:74px!important;min-height:72px;}
 html body .weather-wear-note .wx-chilly{position:absolute;float:none;right:10px;top:50%;transform:translateY(-50%);margin:0;}
+
+/* =====================================================================
+   ng4：標頭改成挪威版——滿版插畫、字疊在圖上（左側加深色漸層讓白字清楚），拿掉兩側垂掛紫藤
+   ===================================================================== */
+html body .header.ng-hero2{position:relative!important;display:block!important;padding:0!important;margin:0!important;background:#2C4C40!important;background-image:none!important;color:#fff!important;border-radius:0 0 22px 22px!important;overflow:hidden!important;min-height:clamp(300px,80vw,400px)!important;box-shadow:0 18px 30px -24px rgba(30,48,42,.75)!important;}
+html body .header.ng-hero2::before{content:none!important;display:none!important;}
+.ng2-img{position:absolute;inset:0;width:100%;height:100%;max-width:none!important;object-fit:cover;object-position:86% 55%;z-index:0;}
+html body .header.ng-hero2::after{content:""!important;display:block!important;position:absolute;inset:0;z-index:1;pointer-events:none;opacity:1!important;font-size:0!important;transform:none!important;background:linear-gradient(180deg,rgba(22,40,33,.5) 0,rgba(22,40,33,0) 24%),radial-gradient(90% 72% at 16% 48%,rgba(22,40,33,.72) 0,rgba(22,40,33,.4) 55%,rgba(22,40,33,0) 82%),linear-gradient(0deg,rgba(22,40,33,.65) 0,rgba(22,40,33,0) 38%)!important;}
+html body .ng-hero2 .header-top{position:absolute!important;left:0;right:0;top:0;z-index:3;display:flex!important;justify-content:space-between;align-items:center;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 0!important;margin:0!important;min-height:0!important;}
+html body .ng-hero2 .header-status{position:static!important;display:flex;gap:6px;}
+html body .ng-hero2 .net-status,html body .ng-hero2 .cloud-sync-status{position:static!important;background:rgba(255,255,255,.16)!important;color:#fff!important;border:1px solid rgba(255,255,255,.28)!important;backdrop-filter:blur(6px);}
+html body .ng-hero2 .header-tools{position:static!important;display:flex!important;gap:8px!important;margin-left:auto;}
+html body .ng-hero2 .ht-btn{width:40px!important;height:40px!important;min-width:40px!important;padding:0!important;display:inline-flex!important;align-items:center;justify-content:center;border-radius:50%!important;background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.32)!important;color:#fff!important;backdrop-filter:blur(6px);font-size:15px!important;font-weight:700!important;box-shadow:none!important;position:relative;}
+html body .ng-hero2 .ht-btn.edit,html body .ng-hero2 .ht-btn.on{background:#fff!important;color:var(--forest)!important;}
+html body .ng-hero2 .ht-badge{position:absolute;top:-3px;right:-3px;}
+html body .ng-hero2 .header-title{position:absolute!important;z-index:2;left:22px;right:14px;top:calc(72px + env(safe-area-inset-top,0px));padding:0!important;margin:0!important;text-align:left!important;transform:none!important;}
+html body .ng-hero2 .eyebrow{display:block!important;font-family:'Caveat',cursive!important;font-style:normal!important;font-size:18px!important;letter-spacing:.06em!important;color:#fff!important;margin:0 0 2px!important;font-weight:600!important;text-transform:none!important;text-shadow:0 0 2px rgba(15,30,24,.9),0 1px 8px rgba(15,30,24,.7)!important;}
+html body .ng-hero2 h1{font-family:var(--title)!important;font-weight:400!important;font-size:min(12.4vw,52px)!important;line-height:1.05!important;letter-spacing:.02em!important;white-space:nowrap!important;color:#fff!important;margin:0!important;-webkit-text-stroke:1.1px #fff;text-shadow:0 0 2px rgba(15,30,24,.95),0 2px 6px rgba(15,30,24,.8),0 4px 22px rgba(15,30,24,.6)!important;}
+html body .ng-hero2 h1 small{display:none!important;}
+.ng2-sub{display:inline-block;margin:8px 0 0 -10px;padding:3px 10px;border-radius:999px;background:rgba(22,40,33,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);font-size:min(3.9vw,15px);font-weight:600;letter-spacing:.1em;white-space:nowrap;color:#fff;text-shadow:0 0 2px rgba(15,30,24,.95),0 1px 10px rgba(15,30,24,.75);}
+.ng2-dates{position:absolute;z-index:2;left:22px;bottom:26px;color:#fff;text-shadow:0 0 2px rgba(15,30,24,.95),0 1px 10px rgba(15,30,24,.75);}
+.ng2-dates .hd-range{display:flex;align-items:center;gap:10px;font-size:24px;font-weight:600;letter-spacing:.06em;font-variant-numeric:tabular-nums;}
+.ng2-dates .hd-range i{display:inline-block;width:30px;height:1.5px;background:#fff;opacity:.9;}
+.ng2-dates small{display:block;font-size:12px;letter-spacing:.14em;margin-top:4px;}
+html body .ng-hero2 .preview-note{position:absolute!important;z-index:2;right:16px;bottom:14px;margin:0!important;font-size:10.5px!important;color:rgba(255,255,255,.85)!important;background:none!important;text-align:right;max-width:44%;text-shadow:0 0 2px rgba(15,30,24,.9);}
+html body.large-text .ng-hero2 h1{font-size:min(12.4vw,52px)!important;}
+.ng2-img{object-position:74% 55%!important;}

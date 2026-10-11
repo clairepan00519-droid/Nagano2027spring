@@ -2807,3 +2807,15 @@ html body .ng-hero2 h1 small{display:none!important;}
 html body .ng-hero2 .preview-note{position:absolute!important;z-index:2;right:16px;bottom:14px;margin:0!important;font-size:10.5px!important;color:rgba(255,255,255,.85)!important;background:none!important;text-align:right;max-width:44%;text-shadow:0 0 2px rgba(15,30,24,.9);}
 html body.large-text .ng-hero2 h1{font-size:min(12.4vw,52px)!important;}
 .ng2-img{object-position:74% 55%!important;}
+
+/* ng5：每日卡片換行自然一點（依標點斷行、字小一點），插圖往右移，小羚羊不被字擠到 */
+.ng-dayhead .ph{display:inline-block;max-width:100%;}
+html body .ng-dayhead .region{max-width:60%!important;font-size:min(7vw,28px)!important;line-height:1.35!important;letter-spacing:.04em!important;margin:8px 0 6px!important;}
+html body .ng-dayhead h2{max-width:58%!important;font-size:13.5px!important;line-height:1.7!important;letter-spacing:.06em!important;margin:0 0 40px!important;}
+html body .ng-dayhead .day-eyebrow{max-width:none!important;font-size:13.5px!important;letter-spacing:.12em!important;}
+.ng-dayhead .dh-art{width:60%!important;object-position:58% 50%!important;-webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.35) 14%,rgba(0,0,0,.85) 30%,#000 42%),linear-gradient(180deg,#000 66%,transparent 100%)!important;mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.35) 14%,rgba(0,0,0,.85) 30%,#000 42%),linear-gradient(180deg,#000 66%,transparent 100%)!important;}
+html body.large-text .ng-dayhead .region{font-size:min(7vw,28px)!important;}
+html body .ng-dayhead h2{max-width:62%!important;}
+html body .ng-dayhead .region{max-width:64%!important;}
+.ng-dayhead .dh-art{width:56%!important;}
+html body .ng-dayhead h2{max-width:60%!important;}

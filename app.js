@@ -1844,9 +1844,9 @@ function renderDayContent(){
     <div class="day-card-head ng-dayhead">
       <img class="dh-art" src="${SCENE['d'+activeDay]||''}" alt="" decoding="async" onclick="openAttachModal(this.getAttribute('src'))">
       <div class="day-eyebrow"><span>DAY ${String(d.dayNum).padStart(2,'0')} · ${String(d.date).split('/').map(x=>x.padStart(2,'0')).join('.')}（${d.weekday}）</span><i></i></div>
-      <div class="region">${d.title}</div>
+      <div class="region">${phraseWrapHTML(d.title)}</div>
       ${d.gas ? `<div class="gas-info">${d.gas}</div>` : ''}
-      ${d.dayDesc ? `<h2>${d.dayDesc}</h2>` : ''}
+      ${d.dayDesc ? `<h2>${phraseWrapHTML(d.dayDesc)}</h2>` : ''}
       <div class="weather-strip"><div class="ico${DAY_ICON_IMG[activeDay]!==undefined?' img-ico':''}">${dayIconHTML(activeDay,d.weatherIco)}</div><div class="txt"><b style="font-family:'Zen Kaku Gothic New', sans-serif; font-size:14px;">${d.enRegion}</b><br><span style="font-size:11.5px; opacity:0.85;">${d.wear}</span></div></div>
       ${stayQuickHTML}
       <div id="daySnowSlot">${daySnowBannerHTML(activeDay)}</div>
@@ -2499,7 +2499,7 @@ window.addEventListener('offline', updateNetStatus);
 /* ============ Service Worker（離線快取整個網頁） ============ */
 if (navigator.serviceWorker) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=ng4').then(()=>navigator.serviceWorker.ready).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=ng5').then(()=>navigator.serviceWorker.ready).catch(()=>{});
   });
 }
 document.addEventListener('error',e=>{if(e.target?.tagName==='IMG')imageErrorFallback(e.target);},true);
@@ -2999,7 +2999,7 @@ const TENKI_LINKS={
 /* =====================================================================
    v48：收藏／預約狀態／提醒、自駕即時路況、版本與同步比對
    ===================================================================== */
-const APP_VERSION='ng4-2026-10-11';
+const APP_VERSION='ng5-2026-10-11';
 
 /* ---------- 收藏 ★／預約狀態／提醒 ---------- */
 let marksStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_marks'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();

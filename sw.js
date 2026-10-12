@@ -1,5 +1,5 @@
 /* 長野春旅行程：App Shell、圖片與已瀏覽內容離線快取 */
-const CACHE_VERSION='nagano-trip-ng8';
+const CACHE_VERSION='nagano-trip-ng9';
 const SHELL_CACHE=`nagano-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE=`nagano-runtime-${CACHE_VERSION}`;
 /* 圖片快取獨立於版本：更新網站不會清掉已下載的圖片，也不必重新下載 */

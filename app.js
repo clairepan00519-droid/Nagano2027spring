@@ -2499,7 +2499,7 @@ window.addEventListener('offline', updateNetStatus);
 /* ============ Service Worker（離線快取整個網頁） ============ */
 if (navigator.serviceWorker) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=ng5').then(()=>navigator.serviceWorker.ready).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=ng6').then(()=>navigator.serviceWorker.ready).catch(()=>{});
   });
 }
 document.addEventListener('error',e=>{if(e.target?.tagName==='IMG')imageErrorFallback(e.target);},true);
@@ -2999,7 +2999,7 @@ const TENKI_LINKS={
 /* =====================================================================
    v48：收藏／預約狀態／提醒、自駕即時路況、版本與同步比對
    ===================================================================== */
-const APP_VERSION='ng5-2026-10-11';
+const APP_VERSION='ng6-2026-10-12';
 
 /* ---------- 收藏 ★／預約狀態／提醒 ---------- */
 let marksStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_marks'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
@@ -3686,7 +3686,7 @@ function critterBusy(){
   return document.hidden||reducedMotion()||document.body.classList.contains('mama-open')||document.body.classList.contains('family-locked')||!!document.getElementById('formModal')||!!document.getElementById('toolsSheet')||!!document.getElementById('surpriseCard')||!!document.getElementById('spotEditModal')?.classList.contains('active');
 }
 /* ng2：角落探頭用整隻小羚羊（有道具） */
-const PEEK_IMGS=['wave','peek','gift','laugh','camera','tea','wisteria','guide'].map(n=>`images/sp-${n}.webp`);
+const PEEK_IMGS=['peek','look-back','walk','run','jump','wisteria','stretch','sleep'].map(n=>`images/sp-${n}.webp`);
 function pickCritter(){let img,n=0;do{img=PEEK_IMGS[Math.floor(Math.random()*PEEK_IMGS.length)];n++;}while(img===critter.last&&n<6);critter.last=img;return img;}
 function leafBurst(x,y){
   const l=critterLayer();
@@ -4532,7 +4532,7 @@ function transportAddBarHTML(dayIdx){
 }
 
 /* ---------- 新插圖用在合適的地方 ---------- */
-const SURPRISE_ART={tip:'images/sp-guide.webp',joke:'images/sp-laugh.webp',care:'images/sp-tea.webp',photo:'images/sp-camera.webp'};
+const SURPRISE_ART={tip:'images/sp-wisteria.webp',joke:'images/sp-jump.webp',care:'images/sp-sleep.webp',photo:'images/sp-look-back.webp'};
 (function extendArt(){
   CRITTER_IMGS.push(ART.suitcase,ART.photo,ART.heart,ART.rain,ART.search,ART.car);
 })();

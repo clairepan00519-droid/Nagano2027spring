@@ -17,8 +17,8 @@ window.__repairApp=function(){var done=function(){var u=location.pathname+'?fres
 window.addEventListener('load',function(){setTimeout(function(){if(window.__appReady)return;var b=box();if(!b)return;b.innerHTML='<b>⚠️ 網站程式沒有正常啟動</b><div style="margin:6px 0;font-size:13px;word-break:break-all">'+(window.__appReady?'':'主程式 app.js 沒有跑完。<br>')+errs.slice(0,5).map(function(x){return x.replace(/</g,'&lt;');}).join('<br>')+'<br><small>'+navigator.userAgent.replace(/</g,'')+'</small></div><button type="button" onclick="__repairApp()" style="width:100%;min-height:48px;border:0;border-radius:12px;background:#3B6A5A;color:#fff;font:inherit;font-weight:800">清除舊版快取並重新載入（資料不會刪除）</button><div style="margin-top:6px;font-size:13px">如果還是不行，請把這個畫面截圖傳給我。</div>';},2500);});
 })();</script>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="64x64" href="images/favicon.png?v=ng9">
-<link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=ng9">
+<link rel="icon" type="image/png" sizes="64x64" href="images/favicon.png?v=ng10">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=ng10">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="春光藤花山色">
@@ -32,8 +32,8 @@ window.addEventListener('load',function(){setTimeout(function(){if(window.__appR
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@300;400;700&family=Caveat:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="preload" href="fonts/ChenYuluoyan-Thin-sub.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=ng9">
-<link rel="stylesheet" href="splash.css?v=ng9">
+<link rel="stylesheet" href="style.css?v=ng10">
+<link rel="stylesheet" href="splash.css?v=ng10">
 </head>
 <body class="family-locked">
 <div id="naganoSplash" class="splash" hidden aria-label="春光•藤花•山色 載入中">
@@ -49,7 +49,7 @@ window.addEventListener('load',function(){setTimeout(function(){if(window.__appR
     <div class="splash__title"><strong>春光•藤花•山色</strong><span>背上小背包，去山裡住幾天</span></div>
   </div>
 </div>
-<script src="splash.js?v=ng9"></script>
+<script src="splash.js?v=ng10"></script>
 
 <div id="familyGate" class="family-gate" aria-hidden="false">
   <div class="family-gate-card">
@@ -345,8 +345,8 @@ window.addEventListener('load',function(){setTimeout(function(){if(window.__appR
 
 <input type="file" id="restoreFile" accept="application/json,.json" style="display:none" onchange="restoreBackupFile(event)">
 
-<script src="config.js?v=ng9"></script>
-<script src="app.js?v=ng9"></script>
+<script src="config.js?v=ng10"></script>
+<script src="app.js?v=ng10"></script>
 
 
 

@@ -2856,3 +2856,9 @@ html body #dayScroll .day-chip .m{font-size:11.5px!important;}
 .day-review{position:relative;}
 .ng-deco-review{right:14px;top:10px;width:44px;opacity:.95;}
 .ng-deco-inline{width:30px;height:auto;margin-left:6px;vertical-align:middle;}
+
+/* ng19：路線小條拿掉小圖；標題區留出插圖的高度，路線與穿搭排在插圖下面，不遮到小羊 */
+.ng-dayhead .dh-top{min-height:206px;}
+html body .ng-dayhead h2{margin:0 0 6px!important;}
+html body .ng-dayhead .ng-route-strip{margin-top:0!important;padding:9px 14px!important;background:#F4F0FA!important;backdrop-filter:none!important;}
+.ng-dayhead .dh-art{height:226px!important;-webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.35) 14%,rgba(0,0,0,.85) 30%,#000 42%),linear-gradient(180deg,#000 72%,transparent 100%)!important;mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.35) 14%,rgba(0,0,0,.85) 30%,#000 42%),linear-gradient(180deg,#000 72%,transparent 100%)!important;}

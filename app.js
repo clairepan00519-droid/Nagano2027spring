@@ -198,8 +198,8 @@ function openRouteTransportCard(i){
 document.addEventListener('DOMContentLoaded',initTransportCards);
 
 /* ============ 桌機編輯／手機旅行雙模式 ============ */
-const UI_MODE_KEY='nagano_ui_mode_v1';
-const PREVIEW_WIDTH_KEY='nagano_preview_width_v1';
+const UI_MODE_KEY='shinshu_ui_mode_v1';
+const PREVIEW_WIDTH_KEY='shinshu_preview_width_v1';
 function defaultUiMode(){return window.innerWidth>=1050?'edit':'travel';}
 function setUiMode(mode,{persist=true}={}){
   const next=mode==='edit'?'edit':'travel';
@@ -234,10 +234,10 @@ const SUPABASE_ANON_KEY = ((window.NAGANO_CONFIG||{}).SUPABASE_ANON_KEY||"").tri
 /* ▲▲▲ 兩行都留空時，網站以「單機預覽模式」運作：不需登入、資料只存在這台裝置 ▲▲▲ */
 const CLOUD_CONFIGURED = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
 
-const SYNC_META_KEY = 'nagano_sync_meta_v3';
-const SYNC_KEYS = ['nagano_notes','nagano_info_overrides','nagano_field_overrides','nagano_photos','nagano_covers','nagano_custom_spots','nagano_order','nagano_block_order','nagano_route_maps','nagano_transport_extras','nagano_foliage_maps','nagano_pack','nagano_shop','nagano_rules','nagano_docs','nagano_hidden_fixed_spots','nagano_transport_cards','nagano_eatshop','nagano_photo_pos','nagano_marks','nagano_livelinks','nagano_mama','nagano_surprises','nagano_tips_seen','nagano_eat_area','nagano_eat_plan','nagano_detail_covers','nagano_hidden_orig','nagano_transport_custom','nagano_eat_area_custom','nagano_sub_spots','nagano_spot_day','nagano_eat_area_order','nagano_todos','nagano_reviews'];
-const MEDIA_SYNC_KEYS = new Set(['nagano_photos','nagano_covers','nagano_route_maps','nagano_transport_extras','nagano_foliage_maps']);
-const STRUCTURED_LIST_KEYS = new Set(['nagano_shop','nagano_rules','nagano_todos','nagano_docs','nagano_transport_cards','nagano_eatshop','nagano_livelinks','nagano_surprises']);
+const SYNC_META_KEY = 'shinshu_sync_meta_v3';
+const SYNC_KEYS = ['shinshu_notes','shinshu_info_overrides','shinshu_field_overrides','shinshu_photos','shinshu_covers','shinshu_custom_spots','shinshu_order','shinshu_block_order','shinshu_route_maps','shinshu_transport_extras','shinshu_foliage_maps','shinshu_pack','shinshu_shop','shinshu_rules','shinshu_docs','shinshu_hidden_fixed_spots','shinshu_transport_cards','shinshu_eatshop','shinshu_photo_pos','shinshu_marks','shinshu_livelinks','shinshu_mama','shinshu_surprises','shinshu_tips_seen','shinshu_eat_area','shinshu_eat_plan','shinshu_detail_covers','shinshu_hidden_orig','shinshu_transport_custom','shinshu_eat_area_custom','shinshu_sub_spots','shinshu_spot_day','shinshu_eat_area_order','shinshu_todos','shinshu_reviews'];
+const MEDIA_SYNC_KEYS = new Set(['shinshu_photos','shinshu_covers','shinshu_route_maps','shinshu_transport_extras','shinshu_foliage_maps']);
+const STRUCTURED_LIST_KEYS = new Set(['shinshu_shop','shinshu_rules','shinshu_todos','shinshu_docs','shinshu_transport_cards','shinshu_eatshop','shinshu_livelinks','shinshu_surprises']);
 const cloudSync = {enabled:false, starting:false, applyingRemote:false, pending:{}, timer:null, pollTimer:null, lastError:null, ready:false};
 const MEDIA_BUCKET = 'trip-media';
 
@@ -394,7 +394,7 @@ function mergePreservingLocal(local,remote){
    v46 的「聯集合併」會讓刪除被還原：刪掉的項目、清空的欄位，會被雲端舊資料補回來。
    改成三方合併：記住「上次同步完成時的內容（base）」，再比較 本機／雲端 各自相對 base 改了什麼——
    只有一邊改就採用那一邊（包含刪除）；兩邊改不同項目就都保留；同一項目兩邊都改則以本機為準。 */
-const SYNC_BASE_KEY='nagano_sync_base_v1';
+const SYNC_BASE_KEY='shinshu_sync_base_v1';
 function getSyncBase(){try{return JSON.parse(localStorage.getItem(SYNC_BASE_KEY))||{};}catch(e){return {};}}
 function setSyncBase(key,value){
   const b=getSyncBase();b[key]=value;
@@ -455,25 +455,25 @@ function normalizeStructuredList(key,value){
   value.forEach((raw,index)=>{
     if(!raw||typeof raw!=='object') return;
     const item={...raw};
-    if(key==='nagano_shop'){
+    if(key==='shinshu_shop'){
       item.cat=item.cat||'supermarket';
       item.imgs=mergeUniqueUrls(item.imgs,item.img?[item.img]:[]);
       item.img=null;
       item.id=item.id||stableItemId('shop',[item.cat,item.name,item.location]);
-    }else if(key==='nagano_rules'){
+    }else if(key==='shinshu_rules'){
       item.id=item.id||stableItemId('rule',[item.title,item.text]);
       item.imgs=mergeUniqueUrls(item.imgs,item.img?[item.img]:[]);
       item.img=null;
-    }else if(key==='nagano_docs'){
+    }else if(key==='shinshu_docs'){
       item.id=item.id||stableItemId('doc',[item.ic,item.t,item.s]);
     }
     const fallback=`${key}-${index}`;
     const id=item.id||fallback;
     if(!map.has(id)){ map.set(id,item); return; }
     const prev=map.get(id);
-    if(key==='nagano_rules'){
+    if(key==='shinshu_rules'){
       map.set(id,{...prev,...item,imgs:mergeUniqueUrls(prev.imgs,item.imgs),img:null});
-    }else if(key==='nagano_shop'){
+    }else if(key==='shinshu_shop'){
       map.set(id,{...prev,...item,imgs:mergeUniqueUrls(prev.imgs,item.imgs),qty:Math.max(Number(prev.qty)||1,Number(item.qty)||1),checked:Boolean(prev.checked||item.checked)});
     }else{
       map.set(id,{...prev,...item,img:item.img||prev.img||null});
@@ -676,7 +676,7 @@ function flushPendingDayRender(){
 }
 function applyStoreUpdate(key,jsonStr){
   let parsed;try{parsed=JSON.parse(jsonStr);}catch(e){return;}
-  switch(key){case'nagano_notes':notesStore=parsed;break;case'nagano_info_overrides':infoOverrideStore=parsed||{};break;case'nagano_field_overrides':fieldOverrideStore=parsed||{};break;case'nagano_photos':photoStore=parsed;break;case'nagano_covers':coverStore=parsed;break;case'nagano_custom_spots':customSpotsStore=parsed;break;case'nagano_order':orderStore=parsed;break;case'nagano_block_order':blockOrderStore=parsed;break;case'nagano_route_maps':routeMapStore=parsed;break;case'nagano_transport_extras':transportExtrasStore=parsed||{};break;case'nagano_foliage_maps':foliageMapStore=Array.isArray(parsed)?parsed:[];renderFoliageMaps();return;case'nagano_pack':packData=migratePackCategoryNames(parsed);window._packLive=packData;if(isPackComposerEditing()){window._packRemoteRenderPending=true;}else{renderPackList();}return;case'nagano_shop':shopData=normalizeStructuredList('nagano_shop',parsed);renderShopList();return;case'nagano_rules':rulesData=normalizeStructuredList('nagano_rules',parsed);renderRulesList();return;case'nagano_docs':docsData=mergeDocsWithDefaults(parsed);persistDocs();renderDocsList();return;case'nagano_transport_cards':transportCardsData=normalizeStructuredList('nagano_transport_cards',parsed);renderTransportCards();return;case'nagano_eatshop':eatShopStore=normalizeStructuredList('nagano_eatshop',parsed);if(typeof activeDay==='string')renderDayContent();return;case'nagano_photo_pos':photoPosStore=parsed||{};safeRenderDayContent();return;case'nagano_marks':marksStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};renderMarksBar();safeRenderDayContent();return;case'nagano_livelinks':liveData=normalizeStructuredList('nagano_livelinks',parsed);renderLive();return;case'nagano_surprises':surprisesData=normalizeStructuredList('nagano_surprises',parsed);renderSurpriseAdmin();return;case'nagano_tips_seen':tipsSeen=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};return;case'nagano_transport_custom':transportCustomStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};safeRenderDayContent();return;case'nagano_detail_covers':detailCoverStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};safeRenderDayContent();return;case'nagano_hidden_orig':hiddenOrigStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};safeRenderDayContent();return;case'nagano_eat_plan':eatPlanStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};safeRenderDayContent();return;case'nagano_eat_area':eatAreaStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};if(typeof activeDay==='string')safeRenderDayContent();return;case'nagano_mama':mamaStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};refreshMamaButtons(null);if(document.getElementById('mamaModal'))renderMamaList();return;case'nagano_hidden_fixed_spots':hiddenFixedSpotsStore=parsed||{};safeRenderDayContent();if(typeof updateSpotCount==='function')updateSpotCount();return;case'nagano_sub_spots':subSpotStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};safeRenderDayContent();return;case'nagano_eat_area_custom':eatAreaCustom=Array.isArray(parsed)?parsed:[];safeRenderDayContent();return;case'nagano_spot_day':spotDayStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};renderDayChips();safeRenderDayContent();return;case'nagano_reviews':reviewStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};safeRenderDayContent();return;case'nagano_todos':todoData=normalizeStructuredList('nagano_todos',parsed);renderTodos();return;case'nagano_eat_area_order':eatAreaOrder=Array.isArray(parsed)?parsed:[];safeRenderDayContent();return;default:return;}
+  switch(key){case'shinshu_notes':notesStore=parsed;break;case'shinshu_info_overrides':infoOverrideStore=parsed||{};break;case'shinshu_field_overrides':fieldOverrideStore=parsed||{};break;case'shinshu_photos':photoStore=parsed;break;case'shinshu_covers':coverStore=parsed;break;case'shinshu_custom_spots':customSpotsStore=parsed;break;case'shinshu_order':orderStore=parsed;break;case'shinshu_block_order':blockOrderStore=parsed;break;case'shinshu_route_maps':routeMapStore=parsed;break;case'shinshu_transport_extras':transportExtrasStore=parsed||{};break;case'shinshu_foliage_maps':foliageMapStore=Array.isArray(parsed)?parsed:[];renderFoliageMaps();return;case'shinshu_pack':packData=migratePackCategoryNames(parsed);window._packLive=packData;if(isPackComposerEditing()){window._packRemoteRenderPending=true;}else{renderPackList();}return;case'shinshu_shop':shopData=normalizeStructuredList('shinshu_shop',parsed);renderShopList();return;case'shinshu_rules':rulesData=normalizeStructuredList('shinshu_rules',parsed);renderRulesList();return;case'shinshu_docs':docsData=mergeDocsWithDefaults(parsed);persistDocs();renderDocsList();return;case'shinshu_transport_cards':transportCardsData=normalizeStructuredList('shinshu_transport_cards',parsed);renderTransportCards();return;case'shinshu_eatshop':eatShopStore=normalizeStructuredList('shinshu_eatshop',parsed);if(typeof activeDay==='string')renderDayContent();return;case'shinshu_photo_pos':photoPosStore=parsed||{};safeRenderDayContent();return;case'shinshu_marks':marksStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};renderMarksBar();safeRenderDayContent();return;case'shinshu_livelinks':liveData=normalizeStructuredList('shinshu_livelinks',parsed);renderLive();return;case'shinshu_surprises':surprisesData=normalizeStructuredList('shinshu_surprises',parsed);renderSurpriseAdmin();return;case'shinshu_tips_seen':tipsSeen=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};return;case'shinshu_transport_custom':transportCustomStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};safeRenderDayContent();return;case'shinshu_detail_covers':detailCoverStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};safeRenderDayContent();return;case'shinshu_hidden_orig':hiddenOrigStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};safeRenderDayContent();return;case'shinshu_eat_plan':eatPlanStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};safeRenderDayContent();return;case'shinshu_eat_area':eatAreaStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};if(typeof activeDay==='string')safeRenderDayContent();return;case'shinshu_mama':mamaStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};refreshMamaButtons(null);if(document.getElementById('mamaModal'))renderMamaList();return;case'shinshu_hidden_fixed_spots':hiddenFixedSpotsStore=parsed||{};safeRenderDayContent();if(typeof updateSpotCount==='function')updateSpotCount();return;case'shinshu_sub_spots':subSpotStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};safeRenderDayContent();return;case'shinshu_eat_area_custom':eatAreaCustom=Array.isArray(parsed)?parsed:[];safeRenderDayContent();return;case'shinshu_spot_day':spotDayStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};renderDayChips();safeRenderDayContent();return;case'shinshu_reviews':reviewStore=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))?parsed:{};safeRenderDayContent();return;case'shinshu_todos':todoData=normalizeStructuredList('shinshu_todos',parsed);renderTodos();return;case'shinshu_eat_area_order':eatAreaOrder=Array.isArray(parsed)?parsed:[];safeRenderDayContent();return;default:return;}
   safeRenderDayContent();if(typeof updateSpotCount==='function')updateSpotCount();
 }
 function scheduleCloudPush(key,valueObj){
@@ -771,178 +771,142 @@ function S(name, cat, desc, opts={}){
   return Object.assign({name, cat, desc, tags:[], park:null, tip:null, dur:null, note:null, link:null, linkLabel:'查看網頁', img:null, hours:null, docMap:null, customInfo:null, recDishes:null, fullDesc:null}, opts);
 }
 
-/* ============ 長野春旅：每日行程（Lomä 山湖版／藤井莊溪谷版） ============
-   days 共 14 筆：0–2 兩版共用（高崎三天），3–6 是 Lomä 版 4/27–4/30，7–10 是藤井莊版 4/27–4/30，11–13 兩版共用（橫濱與羽田）。
-   兩版各自用不同的 dayIdx，所以兩版的筆記、照片、自訂景點不會互相蓋到；切換版本只是換顯示哪 10 天。
-   每日鐘點為建議節奏，車程為估算，不是已訂班次。2027 花況、活動、票價、開山及班表需出發前確認。 */
-const PLAN_KEY='nagano_plan_v1';
+/* ============ 雲停下的地方：2027 北阿爾卑斯・信州 12 天每日行程 ============
+   2027.6.3–6.14，富山機場入境、羽田機場離境。6/4 富山→長野新幹線，Toyota 長野店取車；6/12 長野店還車。
+   車程為一般路況估算，不是已訂班次；營業時間、花況、步道開放與天候出發前再確認。
+   PLANS 只留一版（沿用原本兩版切換的程式，切換鈕不再顯示）。 */
+const PLAN_KEY='shinshu_plan_v1';
 const PLANS={
-  loma:{label:'Lomä 山湖版',short:'Lomä 山湖版',theme:'山湖慢住・妙高・戶隱・小布施',stay:'黑姬 Lomä 連住 2 晚',note:'黑姬 Lomä 連住 2 晚，含妙高半日；4/29 戶隱、4/30 小布施。',overview:'images/overview-loma.webp',days:[0,1,2,3,4,5,6,11,12,13]},
-  fujiiso:{label:'藤井莊溪谷版',short:'藤井莊溪谷版',theme:'溪谷慢住・山田溫泉・小布施・戶隱',stay:'山田溫泉 藤井莊 連住 2 晚',note:'山田溫泉藤井莊連住 2 晚，不排妙高；4/29 小布施、4/30 戶隱。',overview:'images/overview-fujiiso.webp',days:[0,1,2,7,8,9,10,11,12,13]}
+  june:{label:'2027 北阿爾卑斯・信州',short:'12 天',theme:'富山・白馬・戶隱・妙高・志賀高原・橫濱',note:'富山進、羽田出，長野取還車。',overview:'',days:[0,1,2,3,4,5,6,7,8,9,10,11]}
 };
-let PLAN=(()=>{try{const v=localStorage.getItem(PLAN_KEY);return PLANS[v]?v:'loma';}catch(e){return 'loma';}})();
+let PLAN='june';
 function planDays(){return PLANS[PLAN].days;}
 function inPlan(i){return planDays().includes(Number(i));}
 function prevPlanDay(i){const a=planDays(),k=a.indexOf(Number(i));return k>0?a[k-1]:-1;}
 function isLastPlanDay(i){const a=planDays();return a[a.length-1]===Number(i);}
-const SCENE=Object.fromEntries(Array.from({length:14},(_,i)=>['d'+i,`images/scene-day${String(i).padStart(2,'0')}.webp`]));
-const H_TAKASAKI='高崎站周邊飯店（待訂）', H_LOMA='Lomä（黑姬・信濃町）', H_FUJII='緑霞山宿 藤井荘（山田溫泉）', H_NAGANO='長野站周邊飯店（待訂）', H_YOKO='橫濱站周邊飯店（待訂）';
+const SCENE=Object.fromEntries(Array.from({length:12},(_,i)=>['d'+i,`images/scene-day${String(i).padStart(2,'0')}.webp`]));
+const H_TOYAMA='富山站周邊飯店（待訂）', H_HAKUBA='白馬 Sierra Resort', H_TOGA='戶隱住宿（待訂）', H_MYOKO='妙高 赤倉観光ホテル', H_SHIGA='志賀高原住宿（待訂）', H_YUDA='湯田中 松籟莊', H_YOKO='橫濱住宿（待訂）';
 const hotel=(name,desc,img,opts={})=>S(name,'hotel',desc,Object.assign({img},opts));
-const TAKASAKI_HOTEL=(desc,first)=>hotel(H_TAKASAKI,desc,SCENE.d0,Object.assign({mapQuery:'高崎駅',fullDesc:'選高崎站步行約 5 至 10 分鐘範圍，帶行李與搭新幹線都方便；4/26 取還車也在車站附近。訂房時比對取消條款。'},first?{tags:['連住3晚']}:{}));
-const NAGANO_HOTEL=(desc,first)=>hotel(H_NAGANO,desc,SCENE.d5,Object.assign({mapQuery:'長野駅',fullDesc:'選長野站步行約 5 至 10 分鐘範圍。這兩晚還有租車，訂房時確認飯店有停車場與停車費；5/1 早上直接搭新幹線。'},first?{tags:['連住2晚']}:{}));
-const YOKO_HOTEL=(desc,first)=>hotel(H_YOKO,desc,SCENE.d11,Object.assign({mapQuery:'横浜駅',fullDesc:'最後兩晚首選橫濱站步行範圍，吃飯購物、搭 JR 去 Outlet、搭京急去羽田都方便；重視港景才改住港未來，但多一次接駁。'},first?{tags:['連住2晚']}:{}));
-const LOMA_HOTEL=(desc,first)=>hotel(H_LOMA,desc,SCENE.d3,Object.assign({mapQuery:'Lomä 信濃町',link:'https://loma-hotels.com/access/',linkLabel:'Lomä 交通',fullDesc:'官方提供自駕路線，信濃町 IC 至飯店約 7 分鐘。訂房先確認 4/27 與 4/28 兩晚都有房、晚餐是否包含與用餐時段、設施是否要預約，以及停車安排。設施以實際房型與方案為準。'},first?{tags:['連住2晚']}:{}));
-const FUJII_HOTEL=(desc,first)=>hotel(H_FUJII,desc,SCENE.d7,Object.assign({mapQuery:'緑霞山宿 藤井荘',link:'https://fujiiso.co.jp/',linkLabel:'藤井莊官網',fullDesc:'山田溫泉的溪谷溫泉旅館。官方目前列免費停車、無須預約，停車使用時段 15 時至 11 時；連住期間白天進出或提前到達，先向旅館確認。訂房確認兩晚餐食是否有變化、午餐是否提供。'},first?{tags:['連住2晚']}:{}));
 const TOGAKUSHI_LINK={link:'https://togakushi-21.jp/',linkLabel:'戶隱觀光・開山消息'};
-const OBUSE_LINK={link:'https://www.obusekanko.jp/season',linkLabel:'小布施季節花況'};
+const SHIGA_LINK={link:'https://www.shigakogen.gr.jp/',linkLabel:'志賀高原觀光協會'};
 const days = [
-/* 0 */ {dayNum:"1",date:"4/24",weekday:"六",region:"成田 → 高崎",enRegion:"成田機場 → 東京站 → 高崎",drive:"🚄 成田Express＋新幹線，約 2.5–3.5 小時",title:"往山的方向去",dayDesc:"列車穿過陌生的城鎮，小羚羊的背包裡裝著十天的期待。",wear:"機上薄外套；4 月下旬早晚約 10°C 上下，帶一件保暖外套",weatherIco:"✈️",spots:[
-    S("台灣 → 成田（航班待訂）","transport","成田機場入境，預留入境與領行李約 90–120 分鐘。",{tags:["成田進"],fullDesc:"成田進、羽田出通常要用多城市方式購票；若維持華航，可優先比桃園至成田與羽田至松山的組合。2027 實際班表及票價公布後再定。以中午或下午早段抵達為佳；若是晚班機抵達，第一晚改住東京站附近，隔天早上再去高崎，並取消部分 4/25 的活動。",img:SCENE.d0}),
-    S("高崎站周邊・車站商場","activity","放好行李，只逛車站商場與附近晚餐，當天不取車。",{tags:["輕鬆"],dur:"傍晚",fullDesc:"第一天以平安抵達為主，不安排賞花或體驗。住高崎站步行範圍，放行李後在車站商場與附近找晚餐，早點休息。",mapQuery:"高崎駅",img:SCENE.d0})
+/* 0 */ {dayNum:"1",date:"6/3",weekday:"四",region:"富山",enRegion:"Toyama",drive:"✈️ 富山機場入境，進市區晚餐",title:"暮色落在富山",dayDesc:"小羚羊收好登機證，沿著城市的燈光，找一處好好吃飯、慢慢落腳的地方。",wear:"6 月初富山白天約 20–25°C，晚上偏涼，帶一件薄外套",weatherIco:"✈️",spots:[
+    S("台灣 → 富山機場（航班待訂）","transport","富山機場入境，領行李後進富山市區。",{tags:["富山進"],fullDesc:"富山進、羽田出要用多城市方式購票。機場到富山站可搭機場巴士，約 20–30 分鐘（估算，依班次）。2027 班表公布後再補上航班與時間。",img:SCENE.d0}),
+    S("富山站周邊晚餐","food","第一晚只安排晚餐和整理行李。",{tags:["晚餐"],fullDesc:"富山灣的白蝦、壽司、富山黑拉麵都在車站周邊找得到。吃完早點休息，隔天搭新幹線。",mapQuery:"富山駅",img:SCENE.d0})
   ],moreSpots:[
-    TAKASAKI_HOTEL("高崎站步行範圍，連住 3 晚。",true)
+    hotel(H_TOYAMA,"富山站步行範圍，住 1 晚。",SCENE.d0,{mapQuery:'富山駅',fullDesc:'選富山站步行範圍，隔天直接搭北陸新幹線去長野。'})
   ]},
-/* 1 */ {dayNum:"2",date:"4/25",weekday:"日",region:"高崎・達摩彩繪",enRegion:"少林山達磨寺・達摩彩繪",drive:"🚕 計程車或公車串接寺院與工房，不租車",title:"願望要畫上眼睛",dayDesc:"小羚羊握起畫筆，想了好久，才決定把願望藏在哪裡。",wear:"洋蔥式穿搭；寺院有階梯，穿好走的鞋",weatherIco:"🎎",spots:[
-    S("少林山達磨寺","attraction","緣起達摩的發源寺，09:30 出發，留約 60–90 分鐘。",{tags:["09:30"],dur:"約60–90分鐘",fullDesc:"搭計程車或適用班次的公車前往。當天是週日，寺院與體驗不要排得太緊。",mapQuery:"少林山達磨寺",img:SCENE.d1}),
-    S("高崎義大利麵／群馬地方料理","food","11:30 午餐，吃高崎義大利麵或群馬地方料理。",{tags:["11:30","午餐"],fullDesc:"高崎有「義大利麵之城」的稱號，車站周邊與市區都有老店；也可以選群馬的地方料理。",mapQuery:"高崎 パスタ",img:SCENE.d1}),
-    S("達摩彩繪體驗","activity","13:30 開始，預留約 1–1.5 小時，替自己的達摩畫上眼睛。",{tags:["13:30","需預約"],dur:"約1–1.5小時",fullDesc:"候選工房為大門屋或今井だるま店 NAYA。先確認成人方案、日期、預約方式及當日是否營業。沒有訂到體驗就保留咖啡與散步，不額外塞入遠距景點。",link:"https://www.takasaki-kankoukyoukai.or.jp/?p=7469",linkLabel:"達摩彩繪體驗",mapQuery:"大門屋 高崎",img:SCENE.d1}),
-    S("高崎市區咖啡・逛店","activity","15:30 以後回高崎市區喝咖啡、逛店，晚餐後早休息。",{tags:["15:30"],fullDesc:"以計程車串接寺院與工房，避免為這一天多租一整天車。",mapQuery:"高崎駅",img:SCENE.d1})
+/* 1 */ {dayNum:"2",date:"6/4",weekday:"五",region:"長野 → 白馬",enRegion:"Toyama → Nagano → Hakuba",drive:"🚄 北陸新幹線到長野，Toyota 長野店取車，走奧林匹克道路到白馬",title:"車窗外的遠方",dayDesc:"列車把山拉近，車窗又把山路展開；今天的終點，是午後三點的庭園。",wear:"白馬海拔較高，早晚約 10°C 上下，帶保暖外套",weatherIco:"🚄",spots:[
+    S("北陸新幹線 富山 → 長野","transport","上午搭北陸新幹線到長野。",{dur:"約1小時（估算）",fullDesc:"選停靠長野的班次，熱門時段先訂指定席。",img:SCENE.d1}),
+    S("Toyota 長野店取車","transport","到長野站附近的 Toyota 租車店取車，租到 6/12。",{tags:["租車"],fullDesc:"取車時確認保險、ETC、導航語言與還車時間，先拍車身照片。",mapQuery:"トヨタレンタカー 長野駅前",img:SCENE.d1}),
+    S("長野午餐","food","取車後在長野吃午餐，再出發。",{tags:["午餐"],fullDesc:"長野站周邊選擇多，蕎麥麵、定食都方便。",mapQuery:"長野駅",img:SCENE.d1}),
+    S("奧林匹克道路","activity","長野往白馬的山路，車窗外是北阿爾卑斯。",{dur:"約1小時（估算）",fullDesc:"1998 年長野冬奧時修建的道路，沿途有山景，看到路邊停車區可以停下來拍照。",mapQuery:"オリンピック道路 白馬",img:SCENE.d1})
   ],moreSpots:[
-    TAKASAKI_HOTEL("高崎第 2 晚，續住。")
+    hotel(H_HAKUBA,"15:00 入住，連住 2 晚。",SCENE.d2,{tags:["連住2晚","15:00入住"],mapQuery:'Sierra Resort Hakuba',fullDesc:'連住兩晚，第二天不開車，留給庭園和溫泉。訂房時確認晚餐、溫泉時間與停車。'})
   ]},
-/* 2 */ {dayNum:"3",date:"4/26",weekday:"一",region:"藤岡・紫藤",enRegion:"高崎取車 → 藤岡 ふじの咲く丘",drive:"🚗 租車 1 天：高崎取車、藤岡賞藤、傍晚高崎還車",title:"今天，風是紫色的",dayDesc:"小羚羊抬起頭，發現春天正從藤棚上輕輕落下。",wear:"花棚下有日照，帶帽子與薄外套",weatherIco:"💜",spots:[
-    S("藤岡 ふじの咲く丘","attraction","藤棚與不同品種的紫藤，上午留約 2 小時。",{tags:["紫藤","花況待確認"],dur:"約2小時",fullDesc:"例年見頃約 4 月下旬至 5 月上旬或中旬，4/26 是否盛開要看 2027 花況；平日早段是比較能避開人潮的安排。若當天大雨而 4/25 天氣較好，可以把紫藤與彩繪日互換，但週日賞花可能較多人。",link:"https://fujioka-kanko.net/spot/fujinosakuoka",linkLabel:"藤岡紫藤與開花資訊",mapQuery:"ふじの咲く丘",img:SCENE.d2}),
-    S("藤岡午餐","food","賞完紫藤在藤岡附近吃午餐。",{tags:["午餐"],fullDesc:"午餐後擇一：去道之驛ららん藤岡買地方點心，或直接回高崎喝咖啡。不要另外插入遠距景點。",mapQuery:"藤岡市 ランチ",img:SCENE.d2}),
-    S("道の駅 ららん藤岡","shopping","可選：買地方點心與農產品。",{tags:["可選"],dur:"約30–60分鐘",fullDesc:"想休息就省略，直接回高崎。",mapQuery:"道の駅 ららん藤岡",img:SCENE.d2})
+/* 2 */ {dayNum:"3",date:"6/5",weekday:"六",region:"白馬",enRegion:"Hakuba",drive:"🚶 今天不開車",title:"今天沒有任務",dayDesc:"沒有出發時間，只有庭園裡的風、暖暖的湯，和一個可以睡長一點的午後。",wear:"室內輕便；庭園散步帶薄外套",weatherIco:"♨️",spots:[
+    S("庭園散步","activity","在住宿的庭園慢慢走，看殘雪的山稜。",{tags:["慢住"],fullDesc:"6 月的北阿爾卑斯山頂還留著殘雪，天氣好時從庭園就看得到。",mapQuery:"Sierra Resort Hakuba",img:SCENE.d2}),
+    S("泡湯、休息","activity","泡湯、午睡、喝茶，今天什麼都不用趕。",{tags:["溫泉"],fullDesc:"這一天的主軸就是休息，不另外安排景點。",mapQuery:"Sierra Resort Hakuba",img:SCENE.d2})
   ],moreSpots:[
-    TAKASAKI_HOTEL("高崎第 3 晚，16–17 時還車後回飯店整理行李。")
+    hotel(H_HAKUBA,"連住第 2 晚，續住。",SCENE.d2,{mapQuery:'Sierra Resort Hakuba'})
   ]},
-/* 3 Lomä */ {plan:'loma',dayNum:"4",date:"4/27",weekday:"二",region:"長野 → Lomä",enRegion:"高崎 → 長野取車 → 黑姬 Lomä",drive:"🚄 北陸新幹線到長野，取車開往黑姬（租車 4 天）",title:"在山腳住下來",dayDesc:"放好背包，推開窗，今天剩下的時間都留給遠山。",wear:"山區比長野市區涼，傍晚加外套",weatherIco:"🏔️",spots:[
-    S("長野站周邊午餐","food","11 時左右長野站取車後，先午餐與補充飲水。",{tags:["午餐"],fullDesc:"取車後再出發往黑姬與信濃町方向，長野至 Lomä 抓約 50–70 分鐘（一般路況估算）。",mapQuery:"長野駅",img:SCENE.d3}),
-    S("野尻湖","attraction","可選：距離入住尚早時，找咖啡或短暫看湖，停留不超過 1 小時。",{tags:["可選"],dur:"1小時內",fullDesc:"依飯店確認的入住時間抵達即可，野尻湖只是順路的小停留。野尻湖曾出土諾曼象化石，湖畔有博物館。",mapQuery:"野尻湖",img:SCENE.d3})
+/* 3 */ {dayNum:"4",date:"6/6",weekday:"日",region:"白馬 → 戶隱",enRegion:"Hakuba → Togakushi",drive:"🚗 10:00 退房，奧林匹克道路接淺川 Loop Line 到戶隱",title:"杉影深處歇腳",dayDesc:"離開庭園，沿著山路轉進杉林；一碗蕎麥麵之後，把腳步留在森林裡。",wear:"戶隱海拔約 1,200 公尺，比長野市區涼，帶外套",weatherIco:"🌲",spots:[
+    S("白馬 → 戶隱","transport","10:00 退房，經奧林匹克道路、淺川 Loop Line 到戶隱。",{dur:"約1.5小時（估算）",fullDesc:"山路彎道多，慢慢開。",img:SCENE.d3}),
+    S("戶隱蕎麥麵","food","到戶隱先吃午餐。",{tags:["午餐"],fullDesc:"戶隱蕎麥常用「ぼっち盛り」，一小束一小束擺在竹篩上。熱門店中午會排隊，可以提早或錯開。",mapQuery:"戸隠 そば",img:SCENE.d3})
   ],moreSpots:[
-    LOMA_HOTEL("連住第 1 晚，下午與晚上留給房間、山景與飯店餐飲。",true)
+    hotel(H_TOGA,"戶隱住宿，連住 2 晚。",SCENE.d4,{tags:["連住2晚"],mapQuery:'戸隠',...TOGAKUSHI_LINK})
   ]},
-/* 4 Lomä */ {plan:'loma',dayNum:"5",date:"4/28",weekday:"三",region:"妙高・いもり池",enRegion:"Lomä → いもり池 → Lomä",drive:"🚗 單程約 25–40 分鐘，只有半日外出",title:"湖裡還住著一座山",dayDesc:"水面很安靜，小羚羊也放輕腳步，怕碰碎山的倒影。",wear:"池邊海拔較高，早上偏冷；步道可能潮濕",weatherIco:"🪞",spots:[
-    S("いもり池","attraction","09:30 出發，看妙高山與湖面倒影，散步約 45–60 分鐘。",{tags:["09:30","妙高山"],dur:"約45–60分鐘",fullDesc:"天氣好時水面會映出整座妙高山。春季水芭蕉是否可看，依當年融雪與花況而定。妙高山被雲遮住或天氣差，就留在飯店，另選野尻湖附近的短程咖啡。",mapQuery:"いもり池",img:SCENE.d4}),
-    S("池の平／赤倉 午餐","food","在池の平或赤倉方向選一家餐廳。",{tags:["午餐"],fullDesc:"只有半日外出，不另外繞高山道路。",mapQuery:"池の平温泉",img:SCENE.d4}),
-    S("回 Lomä 休息","activity","14–15 時回飯店，下午休息、拍照與使用已確認的飯店設施。",{tags:["慢住"],fullDesc:"Lomä 適合租車前往，車子在連住期間保留，不用每天開一整天。",mapQuery:"Lomä 信濃町",img:SCENE.d3})
+/* 4 */ {dayNum:"5",date:"6/7",weekday:"一",region:"戶隱",enRegion:"Togakushi",drive:"🚶 奧社參道與森林植物園都在附近",title:"杉木爺爺作伴",dayDesc:"走過隨神門與高高的杉木，再沿木道慢慢走，聽見葉子與鞋底的小小聲響。",wear:"杉林裡陰涼，穿好走的鞋，木道可能濕滑",weatherIco:"🌲",spots:[
+    S("戶隱神社 奧社參道・隨神門","activity","走奧社參道，穿過隨神門。",{dur:"約1小時",fullDesc:"戶隱神社由奧社、中社、寶光社、九頭龍社、火之御子社五社組成。參道入口到隨神門是比較平緩的一段。",mapQuery:"戸隠神社 随神門",...TOGAKUSHI_LINK,img:SCENE.d4}),
+    S("杉並木（前段）","activity","隨神門後的杉木並木，只走前段就好。",{tags:["杉木"],dur:"約30–60分鐘",fullDesc:"杉木並木的樹齡據說約 400 年。後段到奧社有陡坡，不必走完。",mapQuery:"戸隠神社 杉並木",img:SCENE.d4}),
+    S("戶隱森林植物園 木道","activity","沿森林植物園的木道散步。",{dur:"約1小時",fullDesc:"木道平緩，6 月有新綠和野花。山區有熊出沒的可能，走在步道上、可以帶熊鈴。",mapQuery:"戸隠森林植物園",img:SCENE.d4}),
+    S("蕎麥麵、休息","food","午餐吃蕎麥麵，下午回住宿休息。",{tags:["午餐"],mapQuery:"戸隠 そば",img:SCENE.d4})
   ],moreSpots:[
-    LOMA_HOTEL("連住第 2 晚，續住。")
+    hotel(H_TOGA,"連住第 2 晚，續住。",SCENE.d4,{mapQuery:'戸隠'})
   ]},
-/* 5 Lomä */ {plan:'loma',dayNum:"6",date:"4/29",weekday:"四",region:"戶隱 → 長野",enRegion:"Lomä → 戶隱 → 長野",drive:"🚗 Lomä 至戶隱約 45–60 分鐘；昭和之日預留排隊與停車",title:"杉木爺爺的長長走廊",dayDesc:"走進高高的樹林，風從頭頂經過，腳步聲留在身後。",wear:"杉林裡陰涼，可能有殘雪與泥濘，穿防滑好走的鞋",weatherIco:"🌲",spots:[
-    S("戶隱神社 中社","attraction","09 時出發，首選中社與周邊短遊。",{tags:["國定假日"],dur:"約1小時",fullDesc:"今天是昭和之日，預留排隊與停車緩衝；山路與交通狀況會影響時間。戶隱神社由奧社、中社、寶光社、九頭龍社、火之御子社五社組成。",mapQuery:"戸隠神社 中社",...TOGAKUSHI_LINK,img:SCENE.d5}),
-    S("奧社參道・隨神門・杉木並木","activity","可選：參道開放、雪況與鞋具都適合才走，往返約 1.5–2 小時。",{tags:["看開山資訊"],dur:"約1.5–2小時",fullDesc:"杉木並木的樹齡據說約 400 年。春季可能殘雪、泥濘或尚未開山，需看 2027 公告；不把走完整條奧社路線當必達。",mapQuery:"戸隠神社 随神門",...TOGAKUSHI_LINK,img:SCENE.d5}),
-    S("戶隱蕎麥麵","food","約 11 時用餐，或選可預約的店，避免熱門店長排。",{tags:["午餐","11:00"],fullDesc:"戶隱蕎麥常用「ぼっち盛り」，一小束一小束擺在竹篩上。不排忍者村或忍者博物館。",mapQuery:"戸隠 そば",img:SCENE.d10}),
-    S("善光寺","attraction","可選：14–15 時離開戶隱回長野，還有精神再去善光寺附近短散步。",{tags:["可選"],dur:"約1小時",fullDesc:"不安排額外山區景點。善光寺不屬於單一宗派，自古接納各宗派的參拜者。",mapQuery:"善光寺",img:SCENE.d5})
+/* 5 */ {dayNum:"6",date:"6/8",weekday:"二",region:"鏡池 → 妙高",enRegion:"Kagami-ike → Myoko",drive:"🚗 清晨鏡池，10:00 退房後去いもり池，15:00 妙高入住",title:"遠山掉進池裡",dayDesc:"清晨先向鏡池借一面鏡子，再去いもり池，看遠山如何安靜地住進水裡。",wear:"清晨池邊偏冷，加一件外套",weatherIco:"🪞",spots:[
+    S("鏡池（清晨）","attraction","清晨水面最平靜，戶隱連峰倒映在池裡。",{tags:["清晨"],dur:"約30–60分鐘",fullDesc:"風小的清晨倒影最清楚。從戶隱住宿開車很近，看完回去吃早餐、10:00 退房。",mapQuery:"鏡池 戸隠",img:SCENE.d5}),
+    S("いもり池 短環線","activity","繞いもり池走一圈，看妙高山的倒影。",{dur:"約30–45分鐘",fullDesc:"天氣好時水面會映出妙高山。池邊有平緩的步道，繞一圈不用太久。",mapQuery:"いもり池",img:SCENE.d5}),
+    S("妙高午餐","food","池の平或赤倉一帶吃午餐。",{tags:["午餐"],mapQuery:"池の平温泉",img:SCENE.d5})
   ],moreSpots:[
-    NAGANO_HOTEL("長野站步行範圍，連住 2 晚。",true)
+    hotel(H_MYOKO,"15:00 入住，住 1 晚。",SCENE.d5,{tags:["15:00入住"],mapQuery:'赤倉観光ホテル',fullDesc:'高原上的老牌飯店，天氣好時可以看到遠山與雲海。'})
   ]},
-/* 6 Lomä */ {plan:'loma',dayNum:"7",date:"4/30",weekday:"五",region:"小布施・八重櫻",enRegion:"千曲川桜堤 → 小布施 → 長野還車",drive:"🚗 長野出發，傍晚 16–17 時長野還車",title:"口袋裡的一點栗子香",dayDesc:"吃完甜點再拐個彎，說不定下一條小巷也值得停下。",wear:"白天較暖，洋蔥式穿搭；帶防曬",weatherIco:"🌸",spots:[
-    S("千曲川堤防 八重櫻（桜堤）","attraction","08:30 出發，平日早段散步與拍照。",{tags:["08:30","花況待確認"],dur:"約1小時",fullDesc:"八重櫻例年約 4 月下旬至 5 月上旬，若已落花就刪掉這站。",mapQuery:"小布施 千曲川 桜堤",...OBUSE_LINK,img:SCENE.d6}),
-    S("小布施街區","attraction","10:30–14:00 慢逛，栗子點心與午餐。",{tags:["10:30"],dur:"約3小時",fullDesc:"小布施以栗子聞名；不要把每間店都列為必去，逛累了就找咖啡坐下。",mapQuery:"小布施",...OBUSE_LINK,img:SCENE.d6}),
-    S("北齋館","attraction","可選：北齋館或咖啡擇一。",{tags:["可選"],dur:"約1小時",fullDesc:"葛飾北齋晚年曾多次到小布施，北齋館展示他的肉筆畫與祭屋台天井畫。",mapQuery:"北斎館",img:SCENE.d6}),
-    S("小布施栗子甜點","food","栗子點心老店多，挑一兩家就好。",{tags:["甜點"],fullDesc:"可以外帶，也可以在店內配茶慢慢吃。",mapQuery:"小布施 栗菓子",img:SCENE.d6})
+/* 6 */ {dayNum:"7",date:"6/9",weekday:"三",region:"中野 → 志賀高原",enRegion:"Nakano → Shiga Kogen",drive:"🚗 11:00 退房，中野看玫瑰，國道 292 上志賀高原",title:"玫瑰捎來口信",dayDesc:"玫瑰替上午留了香氣，午後再沿山路上行，把傍晚交給濕原的白色絮影。",wear:"中野白天溫暖；志賀高原海拔高、傍晚冷，帶厚一點的外套",weatherIco:"🌹",spots:[
+    S("一本木公園 玫瑰","attraction","中野市一本木公園的玫瑰園，停留約 30–40 分鐘。",{tags:["玫瑰","花況待確認"],dur:"約30–40分鐘",fullDesc:"每年 5 月下旬到 6 月是玫瑰季，2027 花況出發前再確認。",mapQuery:"一本木公園 中野市",img:SCENE.d6}),
+    S("中野午餐","food","在中野吃午餐，再上山。",{tags:["午餐"],mapQuery:"中野市",img:SCENE.d6}),
+    S("國道 292 → 志賀高原","transport","沿國道 292 上志賀高原，15:00 入住。",{dur:"約1小時（估算）",fullDesc:"山路彎道多，路況與開放時間出發前查一下。",img:SCENE.d6}),
+    S("ワタスゲ平（傍晚）","activity","傍晚到ワタスゲ平看棉菅。",{tags:["傍晚","棉菅"],dur:"約30–60分鐘",fullDesc:"ワタスゲ（棉菅）白色的絮球通常在 6 月中下旬到 7 月最多，6/9 可能還早，看當年狀況。",mapQuery:"ワタスゲ平",...SHIGA_LINK,img:SCENE.d7})
   ],moreSpots:[
-    NAGANO_HOTEL("長野第 2 晚，續住；整理行李與隔日車票。")
+    hotel(H_SHIGA,"15:00 入住，連住 2 晚。",SCENE.d7,{tags:["連住2晚"],mapQuery:'志賀高原',...SHIGA_LINK})
   ]},
-/* 7 藤井莊 */ {plan:'fujiiso',dayNum:"4",date:"4/27",weekday:"二",region:"長野 → 藤井莊",enRegion:"高崎 → 長野取車 → 山田溫泉",drive:"🚄 北陸新幹線到長野，取車往須坂・高山村（租車 4 天）",title:"溪聲帶我們回房間",dayDesc:"沿著山路走到暖亮的窗前，今晚有熱湯，也有一夜好眠。",wear:"山區溪谷比市區涼，傍晚加外套",weatherIco:"♨️",spots:[
-    S("長野站周邊午餐","food","到站取車，午餐後往須坂、高山村及山田溫泉方向。",{tags:["午餐"],fullDesc:"長野至藤井莊抓約 50–70 分鐘（規劃估算）。",mapQuery:"長野駅",img:SCENE.d7}),
-    S("高山村櫻花（擇一）","attraction","可選：時間充裕時，看一處當年仍在花期的櫻花。",{tags:["可選","花況待確認"],dur:"約30–60分鐘",fullDesc:"花期不合就省略，直接上山；不繞完整五大櫻路線。",mapQuery:"高山村 桜",img:SCENE.d7}),
-    S("山田溫泉・松川溪谷","activity","依旅館入住時間抵達，泡山田溫泉、看松川溪谷。",{tags:["溫泉"],fullDesc:"晚餐以訂房方案為準。",mapQuery:"山田温泉",img:SCENE.d8})
+/* 7 */ {dayNum:"8",date:"6/10",weekday:"四",region:"志賀高原",enRegion:"Shiga Kogen",drive:"🚶 木戸池到田ノ原濕原步道",title:"木道慢慢走呀",dayDesc:"木道從池邊伸向草間，棉菅隨風輕晃；走累了，就讓雲陪我們坐一會兒。",wear:"高原早晚冷、白天日照強，帶外套、帽子和防曬",weatherIco:"🌾",spots:[
+    S("木戸池 → 田ノ原濕原步道","activity","從木戸池沿木道走到田ノ原濕原，約 1–2 小時。",{tags:["木道"],dur:"約1–2小時",fullDesc:"平緩的濕原木道。志賀高原是聯合國教科文組織的生物圈保護區（Biosphere Reserve）。",mapQuery:"木戸池",...SHIGA_LINK,img:SCENE.d7}),
+    S("寄大行李到橫濱","activity","把大行李寄到橫濱的住宿，後面兩天輕裝。",{tags:["行李"],fullDesc:"依住宿與宅配業者實際受理條件安排，先確認橫濱住宿可以代收。",img:SCENE.d7})
   ],moreSpots:[
-    FUJII_HOTEL("溪谷溫泉旅館，連住第 1 晚。",true)
+    hotel(H_SHIGA,"連住第 2 晚，續住。",SCENE.d7,{mapQuery:'志賀高原'})
   ]},
-/* 8 藤井莊 */ {plan:'fujiiso',dayNum:"5",date:"4/28",weekday:"三",region:"山田溫泉・松川溪谷",enRegion:"山田溫泉慢住",drive:"🚶 今天主軸是連住，外出 1–2 小時就夠",title:"今天沒有出發時間",dayDesc:"茶還熱著，山谷就在窗外，晚一點再決定要做什麼。",wear:"室內浴衣，外出加外套；溪谷步道可能潮濕",weatherIco:"🍵",spots:[
-    S("山田溫泉街散步","activity","早餐後在溫泉街短散步，或在旅館看溪谷。",{tags:["慢住"],dur:"約1–2小時",fullDesc:"這天主軸是連住，安排 1 至 2 小時外出已足夠。",mapQuery:"山田温泉",img:SCENE.d8}),
-    S("午餐（旅館或溫泉街／須坂）","food","先確認旅館是否提供午餐或需另訂。",{tags:["午餐","先確認"],fullDesc:"若旅館沒有午餐，提前選好溫泉街或須坂方向的餐廳，避免到現場才發現休業。",mapQuery:"山田温泉 食事",img:SCENE.d8}),
-    S("回旅館泡湯、慢住","activity","下午回旅館泡湯、閱讀、喝茶。",{tags:["溫泉"],fullDesc:"高海拔新綠未必已展開，期待放在溪谷景觀及住宿。",mapQuery:"緑霞山宿 藤井荘",img:SCENE.d8}),
-    S("松川溪谷周邊","attraction","可選：只有天氣與道路適合才短訪。",{tags:["可選"],fullDesc:"不預設雷瀧步道已開放，不走志賀高原跨山道路，也不為了妙高往返長距離開車。",mapQuery:"松川渓谷",img:SCENE.d7})
+/* 8 */ {dayNum:"9",date:"6/11",weekday:"五",region:"志賀高原 → 湯田中",enRegion:"Shiga Kogen → Yudanaka",drive:"🚗 退房後短走一沼、琵琶池，下山到湯田中",title:"一簾湯煙入夢",dayDesc:"先繞過一沼與琵琶池，再循著湯煙下山；今晚，讓暖湯接住走過木道的腳。",wear:"下山後比較暖，洋蔥式穿搭",weatherIco:"♨️",spots:[
+    S("一沼・琵琶池","activity","退房後在一沼、琵琶池短走。",{dur:"約30–60分鐘",fullDesc:"兩個池子都在路邊不遠，挑一個走就好。",mapQuery:"一沼 志賀高原",img:SCENE.d8}),
+    S("湯田中午餐","food","下山到湯田中吃午餐。",{tags:["午餐"],mapQuery:"湯田中温泉",img:SCENE.d8}),
+    S("湯田中溫泉","activity","15:00 入住，泡湯休息。",{tags:["溫泉"],fullDesc:"湯田中附近的地獄谷野猿公苑以泡溫泉的猴子聞名，有興趣可以另外排。",mapQuery:"湯田中温泉",img:SCENE.d8})
   ],moreSpots:[
-    FUJII_HOTEL("連住第 2 晚，續住。")
+    hotel(H_YUDA,"15:00 入住，住 1 晚。",SCENE.d8,{tags:["15:00入住"],mapQuery:'湯田中温泉 松籟荘'})
   ]},
-/* 9 藤井莊 */ {plan:'fujiiso',dayNum:"6",date:"4/29",weekday:"四",region:"小布施 → 長野",enRegion:"藤井莊 → 小布施 → 長野",drive:"🚗 10–11 時退房下山，旅館至小布施約 30–45 分鐘",title:"口袋裡的一點栗子香",dayDesc:"吃完甜點再拐個彎，說不定下一條小巷也值得停下。",wear:"白天較暖，洋蔥式穿搭；帶防曬",weatherIco:"🌰",spots:[
-    S("小布施街區","attraction","中午到小布施，午餐、栗子點心與街區散步。",{tags:["國定假日"],dur:"約3小時",fullDesc:"昭和之日人較多，可以先把行李留在車上，再分區慢走。",mapQuery:"小布施",...OBUSE_LINK,img:SCENE.d9}),
-    S("小布施栗子甜點","food","栗子點心老店多，挑一兩家就好。",{tags:["甜點"],fullDesc:"可以外帶，也可以在店內配茶慢慢吃。",mapQuery:"小布施 栗菓子",img:SCENE.d9}),
-    S("北齋館","attraction","北齋館與咖啡擇一。",{tags:["可選"],dur:"約1小時",fullDesc:"葛飾北齋晚年曾多次到小布施，北齋館展示他的肉筆畫與祭屋台天井畫。",mapQuery:"北斎館",img:SCENE.d9}),
-    S("千曲川堤防 八重櫻（桜堤）","attraction","可選：依花況去看八重櫻，或直接回長野休息。",{tags:["可選","花況待確認"],dur:"約1小時",fullDesc:"八重櫻例年約 4 月下旬至 5 月上旬，若已落花就省略。不要同天再加戶隱。",mapQuery:"小布施 千曲川 桜堤",...OBUSE_LINK,img:SCENE.d9})
+/* 9 */ {dayNum:"10",date:"6/12",weekday:"六",region:"長野 → 橫濱",enRegion:"Nagano → Tokyo → Yokohama",drive:"🚗 11:00 退房，長野 Toyota 店還車，新幹線到東京轉橫濱",title:"換海風來帶路",dayDesc:"把車鑰匙還回去，把山路收進記憶裡；列車越過城市，港邊的風正等著。",wear:"橫濱比山上溫暖潮濕，帶折疊傘",weatherIco:"🚄",spots:[
+    S("Toyota 長野店還車","transport","11:00 退房，開回長野還車，還車前加滿油。",{tags:["還車"],mapQuery:"トヨタレンタカー 長野駅前",img:SCENE.d9}),
+    S("長野午餐","food","還車後在長野站吃午餐。",{tags:["午餐"],mapQuery:"長野駅",img:SCENE.d9}),
+    S("北陸新幹線 → 東京 → 橫濱","transport","長野搭新幹線到東京，轉 JR 到橫濱。",{dur:"約2–2.5小時（估算）",fullDesc:"熱門時段先訂指定席。",img:SCENE.d9})
   ],moreSpots:[
-    NAGANO_HOTEL("長野站步行範圍，連住 2 晚；戶隱留到 4/30 平日。",true)
+    hotel(H_YOKO,"橫濱住宿，連住 2 晚。",SCENE.d10,{tags:["連住2晚"],mapQuery:'横浜駅'})
   ]},
-/* 10 藤井莊 */ {plan:'fujiiso',dayNum:"7",date:"4/30",weekday:"五",region:"戶隱",enRegion:"長野 → 戶隱 → 長野還車",drive:"🚗 08 時出發，長野至戶隱約 60–75 分鐘；傍晚長野還車",title:"杉木爺爺的長長走廊",dayDesc:"走進高高的樹林，風從頭頂經過，腳步聲留在身後。",wear:"杉林裡陰涼，可能有殘雪與泥濘，穿防滑好走的鞋",weatherIco:"🌲",spots:[
-    S("戶隱神社 中社","attraction","以中社或開放且適合步行的杉木參道擇一為主。",{tags:["08:00 出發"],dur:"約1小時",fullDesc:"早出發可減少熱門停車場及午餐排隊，但仍屬黃金週期間。戶隱神社由奧社、中社、寶光社、九頭龍社、火之御子社五社組成。不安排忍者景點。",mapQuery:"戸隠神社 中社",...TOGAKUSHI_LINK,img:SCENE.d10}),
-    S("奧社參道・杉木並木","activity","可選：參道開放且適合步行才走。",{tags:["看開山資訊"],dur:"約1.5–2小時",fullDesc:"奧社春季可能殘雪、泥濘或尚未開山，需看 2027 公告。杉木並木的樹齡據說約 400 年。",mapQuery:"戸隠神社 随神門",...TOGAKUSHI_LINK,img:SCENE.d5}),
-    S("戶隱蕎麥麵","food","11 時左右吃戶隱蕎麥麵。",{tags:["午餐","11:00"],fullDesc:"若要蕎麥麵製作體驗，先確認接待店與預約，並用體驗取代參道健行，保持一天一個重點。蕎麥體驗是可替換選項，不是已確認 2027 可訂的活動。",mapQuery:"戸隠 そば",img:SCENE.d10})
+/* 10 */ {dayNum:"11",date:"6/13",weekday:"日",region:"橫濱",enRegion:"Yokohama",drive:"🚶 山下公園、港邊、元町步行",title:"港邊拾起日光",dayDesc:"從山下公園走到元町，看看船、逛逛街，再用一頓洋食，把午後慢慢拉長。",wear:"港邊風大、日照強，帶帽子；可能下梅雨",weatherIco:"⚓",spots:[
+    S("山下公園・冰川丸","attraction","港邊散步，看停在公園旁的冰川丸。",{dur:"約1小時",fullDesc:"冰川丸是 1930 年完工的遠洋客船，現在停在山下公園旁開放參觀。公園的玫瑰園在 5–6 月也有花。",mapQuery:"山下公園",img:SCENE.d10}),
+    S("元町","shopping","沿元町商店街慢慢逛。",{dur:"約1–2小時",mapQuery:"元町ショッピングストリート",img:SCENE.d10}),
+    S("洋食午餐","food","在橫濱吃一頓洋食。",{tags:["午餐"],fullDesc:"橫濱是日本洋食的發源地之一，蛋包飯、拿坡里義大利麵都很經典。",mapQuery:"横浜 洋食",img:SCENE.d10})
   ],moreSpots:[
-    NAGANO_HOTEL("長野第 2 晚，續住；14–17 時早段回長野，加油並在營業時間內還車。")
+    hotel(H_YOKO,"連住第 2 晚，續住。",SCENE.d10,{mapQuery:'横浜駅'})
   ]},
-/* 11 */ {dayNum:"8",date:"5/1",weekday:"六",region:"長野 → 橫濱",enRegion:"長野 → 東京 → 橫濱",drive:"🚄 北陸新幹線＋JR，全段約 2.5–3 小時",title:"山風送我們去看海",dayDesc:"遠山慢慢退出車窗，港邊的風接住了接下來的旅程。",wear:"港邊風大，帶一件防風外套",weatherIco:"🌊",spots:[
-    S("橫濱站周邊午餐","food","中午把行李交給飯店，在橫濱午餐。",{tags:["午餐"],fullDesc:"橫濱站周邊的商場與地下街選擇多，帶著行李也好找。",mapQuery:"横浜駅",img:SCENE.d11}),
-    S("港未來海邊散步","attraction","下午到晚上，只選港未來海邊散步與咖啡，或橫濱站商場慢逛。",{tags:["港景"],dur:"約2小時",fullDesc:"黃昏的港未來最好看，看完就回飯店休息。",mapQuery:"みなとみらい 臨港パーク",img:SCENE.d11}),
-    S("紅磚倉庫・中華街","attraction","可刪：黃金週可能很擁擠。",{tags:["可刪"],fullDesc:"橫濱紅磚倉庫原本是港口的保稅倉庫，建於明治末到大正初年。遇到人潮就留到下次。",mapQuery:"横浜赤レンガ倉庫",img:SCENE.d11})
-  ],moreSpots:[
-    YOKO_HOTEL("橫濱站步行範圍，連住 2 晚。",true)
-  ]},
-/* 12 */ {dayNum:"9",date:"5/2",weekday:"日",region:"橫濱 Bayside",enRegion:"橫濱 → 新杉田 → 鳥濱 Outlet",drive:"🚃 JR 根岸線＋金澤 Seaside Line，約 45–60 分鐘",title:"找一件帶回家的喜歡",dayDesc:"小羚羊提著袋子沿碼頭走，偶爾停下來看看船。",wear:"海邊日照強，帶帽子；好走的鞋",weatherIco:"🛍️",spots:[
-    S("三井 Outlet Park 橫濱 Bayside","shopping","接近開門時抵達，購物留 2–3 小時，午餐提早或延後。",{tags:["黃金週"],dur:"約2–3小時",fullDesc:"5/2 是黃金週週日，Outlet 仍可能很多人；搭電車只是避開道路與停車壅塞。營業時間依出發前公布為準。",link:"https://mitsui-shopping-park.com/mop/yokohama/access/",linkLabel:"Bayside 交通",mapQuery:"三井アウトレットパーク 横浜ベイサイド",img:SCENE.d12}),
-    S("回飯店休息・整理戰利品","activity","下午回飯店休息；已經逛夠就取消 Outlet，改橫濱站百貨與咖啡。",{tags:["慢活"],fullDesc:"不要同一天加八景島或鎌倉。",mapQuery:"横浜駅",img:SCENE.d12})
-  ],moreSpots:[
-    YOKO_HOTEL("橫濱第 2 晚，續住。")
-  ]},
-/* 13 */ {dayNum:"10",date:"5/3",weekday:"一",region:"羽田 → 台灣",enRegion:"橫濱 → 京急 → 羽田第 3 航廈",drive:"🚃 京急線約 60–90 分鐘（含退房到航廈）",title:"背包比出發時滿了一點",dayDesc:"裝進去的有小禮物，還有藤花、溪聲和幾個捨不得的午後。",wear:"機艙備薄外套",weatherIco:"💌",spots:[
-    S("飯店周邊散步","activity","簡單早餐，視班機時間在飯店周邊走走，不安排遠距景點。",{tags:["憲法紀念日"],fullDesc:"今天是憲法紀念日。國際線預留起飛前約 3 小時到機場；若 15 時起飛，約 11 時從橫濱飯店出發（示例，實際依航空公司及航廈要求倒推）。",mapQuery:"横浜駅",img:SCENE.d13}),
-    S("羽田 → 台灣（航班待訂）","transport","羽田機場第 3 航廈出境。",{tags:["羽田出"],fullDesc:"成田進、羽田出通常要用多城市方式購票；若維持華航，可優先比桃園至成田與羽田至松山的組合。2027 實際班表公布後再補上航班與時間。",img:SCENE.d13})
+/* 11 */ {dayNum:"12",date:"6/14",weekday:"一",region:"羽田 → 台灣",enRegion:"Haneda → Taiwan",drive:"🚃 京急線到羽田機場第 3 航廈",title:"歸途仍有餘溫",dayDesc:"背包裡多了玫瑰的香、杉林的聲音，還有幾個想再回去的地方。",wear:"機艙備薄外套",weatherIco:"💌",spots:[
+    S("前往羽田機場","transport","京急線到羽田機場第 3 航廈。",{fullDesc:"國際線預留起飛前約 3 小時到機場，依班機時間倒推出發時間。",mapQuery:"羽田空港 第3ターミナル",img:SCENE.d11}),
+    S("羽田 → 台灣（航班待訂）","transport","羽田機場第 3 航廈出境。",{tags:["羽田出"],fullDesc:"2027 班表公布後再補上航班與時間。",img:SCENE.d11})
   ],moreSpots:[]}
 ];
 
-/* 每日交通速查（index 與 days 相同；可在「🚉 交通」自行新增） */
+/* 每日交通速查（index 與 days 相同；車程為估算） */
 const transportPlans = [
-  {summary:'成田入境後搭鐵路到高崎，全程約 2.5–3.5 小時（含轉乘，估算）。', alert:'預留入境及領行李約 90–120 分鐘；東京站從地下機場列車月台走到新幹線，留 35–45 分鐘。選有停高崎的新幹線班次。', routes:[
-    {from:'成田機場',to:'東京站',mode:'🚆 成田Express',time:'約 1 小時',note:'也可改 Skyliner 到京成上野，步行到 JR 上野再搭新幹線；帶大行李時東京站方案較容易沿站內指標走'},
-    {from:'東京站',to:'高崎站',mode:'🚄 上越或北陸新幹線',time:'約 50–60 分',note:'選停靠高崎的班次'},
-    {from:'高崎站',to:'高崎飯店',mode:'🚶 步行',time:'約 5–10 分',note:'當天不取車'}]},
-  {summary:'用計程車或公車串接少林山達磨寺與彩繪工房，不租車。', alert:'週日公車班次較少，回程可以請工房或寺院幫忙叫車。', routes:[
-    {from:'高崎站',to:'少林山達磨寺',mode:'🚕 計程車或公車',time:'09:30 出發',note:'公車先查適用班次'},
-    {from:'少林山達磨寺',to:'彩繪工房',mode:'🚕 計程車',time:'13:30 前抵達',note:'候選：大門屋、今井だるま店 NAYA'},
-    {from:'彩繪工房',to:'高崎市區',mode:'🚕 計程車',time:'15:30 以後',note:''}]},
-  {summary:'高崎站附近取車，開往藤岡賞藤，16–17 時回高崎還車（租車約 1 天）。', alert:'一般路況單程約 40–60 分鐘（估算）；黃金週前的平日早段比較不塞。', routes:[
-    {from:'高崎站附近租車店',to:'藤岡 ふじの咲く丘',mode:'🚗 自駕',time:'08:00–09:00 取車後出發',note:'約 40–60 分'},
-    {from:'藤岡',to:'高崎站附近租車店',mode:'🚗 自駕',time:'16:00–17:00 還車',note:'可順路去ららん藤岡'}]},
-  {summary:'高崎搭北陸新幹線到長野，長野站取車，開往黑姬 Lomä（租車 4 天，4/30 長野還車）。', alert:'不要誤搭只往新潟方向的上越新幹線。高崎至長野約 50–60 分鐘，依班次調整。', routes:[
-    {from:'高崎站',to:'JR 長野站',mode:'🚄 北陸新幹線',time:'09:30 退房後',note:'約 50–60 分'},
-    {from:'長野站',to:'長野站租車店',mode:'🚗 取車',time:'11:00 左右',note:'先午餐與補充飲水'},
-    {from:'長野站',to:'Lomä（黑姬）',mode:'🚗 自駕',time:'約 50–70 分',note:'信濃町 IC 至飯店約 7 分；可順路野尻湖'}]},
-  {summary:'Lomä 開到いもり池，半日外出，14–15 時回飯店。', alert:'妙高山被雲遮住或天氣差就留飯店。', routes:[
-    {from:'Lomä',to:'いもり池',mode:'🚗 自駕',time:'09:30 出發',note:'約 25–40 分'},
-    {from:'池の平／赤倉',to:'Lomä',mode:'🚗 自駕',time:'14:00–15:00',note:''}]},
-  {summary:'Lomä 退房開往戶隱，下午回長野入住。', alert:'今天是昭和之日，戶隱停車場與蕎麥麵店可能排隊；山路時間會受交通影響。', routes:[
-    {from:'Lomä',to:'戶隱神社 中社',mode:'🚗 自駕',time:'09:00 出發',note:'約 45–60 分'},
-    {from:'戶隱',to:'長野站周邊飯店',mode:'🚗 自駕',time:'14:00–15:00 離開',note:'確認飯店停車場'}]},
-  {summary:'長野出發去千曲川桜堤與小布施，傍晚回長野加油還車。', alert:'租車店營業時間內還車；加油後再還。', routes:[
-    {from:'長野',to:'千曲川堤防 桜堤',mode:'🚗 自駕',time:'08:30 出發',note:''},
-    {from:'小布施',to:'長野站租車店',mode:'🚗 自駕＋加油',time:'16:00–17:00 還車',note:'辦理行李與隔日車票'}]},
-  {summary:'高崎搭北陸新幹線到長野，長野站取車，往須坂・高山村方向到山田溫泉（租車 4 天，4/30 長野還車）。', alert:'選停靠長野的北陸新幹線班次。藤井莊停車時段 15 時至 11 時，提前到達先向旅館確認。', routes:[
-    {from:'高崎站',to:'JR 長野站',mode:'🚄 北陸新幹線',time:'09:30 退房後',note:'約 50–60 分'},
-    {from:'長野站',to:'長野站租車店',mode:'🚗 取車',time:'到站後',note:'午餐後出發'},
-    {from:'長野站',to:'緑霞山宿 藤井荘',mode:'🚗 自駕',time:'約 50–70 分',note:'經須坂、高山村'}]},
-  {summary:'連住日，車子停在旅館；外出只排 1–2 小時。', alert:'不走志賀高原跨山道路；雨雪時取消高處步道。', routes:[
-    {from:'藤井莊',to:'山田溫泉街',mode:'🚶 步行',time:'早餐後',note:''}]},
-  {summary:'10–11 時退房下山到小布施，下午回長野入住。', alert:'昭和之日小布施人多，停好車後分區慢走。', routes:[
-    {from:'藤井莊',to:'小布施',mode:'🚗 自駕',time:'10:00–11:00 退房後',note:'約 30–45 分'},
-    {from:'小布施',to:'長野站周邊飯店',mode:'🚗 自駕',time:'下午',note:'確認飯店停車場'}]},
-  {summary:'08 時長野出發去戶隱，早段回長野加油還車。', alert:'仍屬黃金週，早出發可以少排停車與午餐。', routes:[
-    {from:'長野',to:'戶隱神社 中社',mode:'🚗 自駕',time:'08:00 出發',note:'約 60–75 分'},
-    {from:'戶隱',to:'長野站租車店',mode:'🚗 自駕＋加油',time:'14:00–17:00 還車',note:'租車店營業時間內'}]},
-  {summary:'長野搭北陸新幹線到東京，轉 JR 到橫濱，全段約 2.5–3 小時。', alert:'5/1 起只用鐵路；熱門日期先訂新幹線指定席。', routes:[
-    {from:'長野站',to:'東京站',mode:'🚄 北陸新幹線',time:'09:00–10:00 出發',note:'約 1.5 小時'},
-    {from:'東京站',to:'橫濱站',mode:'🚆 JR 東海道線等',time:'約 25–30 分',note:'依實際車次調整'}]},
-  {summary:'JR 根岸線到新杉田，轉金澤 Seaside Line 到鳥濱，步行約 5 分鐘。', alert:'黃金週週日，接近開門抵達。', routes:[
-    {from:'橫濱站',to:'新杉田站',mode:'🚃 JR 根岸線',time:'約 25 分',note:''},
-    {from:'新杉田站',to:'鳥濱站',mode:'🚝 金澤 Seaside Line',time:'約 5 分',note:'下車步行約 5 分到 Outlet'}]},
-  {summary:'橫濱站搭京急到羽田機場第 3 航廈，退房到航廈約 60–90 分鐘。', alert:'國際線預留起飛前約 3 小時到機場；部分班次需在京急蒲田轉車，優先挑直通列車。', routes:[
-    {from:'橫濱站',to:'羽田機場第 3 航廈',mode:'🚃 京急線',time:'依班機倒推',note:'例：15 時起飛 → 約 11 時從飯店出發'}]}
+  {summary:'富山機場入境，搭機場巴士進富山市區。', alert:'預留入境及領行李時間；機場巴士班次依航班調整。', routes:[
+    {from:'富山機場',to:'富山站',mode:'🚌 機場巴士',time:'約 20–30 分（估算）',note:'依班次'}]},
+  {summary:'北陸新幹線到長野，Toyota 長野店取車，走奧林匹克道路到白馬。', alert:'租車到 6/12 長野店還車；15:00 白馬入住。', routes:[
+    {from:'富山站',to:'JR 長野站',mode:'🚄 北陸新幹線',time:'約 1 小時（估算）',note:'選停靠長野的班次'},
+    {from:'長野站',to:'Toyota 長野店',mode:'🚗 取車',time:'上午',note:''},
+    {from:'長野',to:'白馬 Sierra Resort',mode:'🚗 奧林匹克道路',time:'約 1 小時（估算）',note:'15:00 入住'}]},
+  null,
+  {summary:'10:00 退房，奧林匹克道路接淺川 Loop Line 到戶隱。', alert:'山路彎道多，慢慢開。', routes:[
+    {from:'白馬',to:'戶隱',mode:'🚗 奧林匹克道路＋淺川 Loop Line',time:'約 1.5 小時（估算）',note:'10:00 退房'}]},
+  {summary:'奧社參道、隨神門、森林植物園都在附近，開車或步行。', alert:'奧社停車場假日容易滿，早點出門。', routes:[
+    {from:'戶隱住宿',to:'奧社入口',mode:'🚗 自駕',time:'約 10 分（估算）',note:''},
+    {from:'奧社入口',to:'戶隱森林植物園',mode:'🚶 步行',time:'就在附近',note:''}]},
+  {summary:'清晨鏡池，10:00 退房後去いもり池，15:00 妙高入住。', alert:'鏡池停車位不多，清晨比較好停。', routes:[
+    {from:'戶隱住宿',to:'鏡池',mode:'🚗 自駕',time:'約 10 分（估算）',note:'清晨'},
+    {from:'戶隱',to:'いもり池',mode:'🚗 自駕',time:'約 40 分（估算）',note:'10:00 退房後'},
+    {from:'いもり池',to:'赤倉観光ホテル',mode:'🚗 自駕',time:'約 15 分（估算）',note:'15:00 入住'}]},
+  {summary:'11:00 退房，中野看玫瑰、吃午餐，國道 292 上志賀高原。', alert:'國道 292 山路，出發前查路況。', routes:[
+    {from:'妙高',to:'一本木公園（中野）',mode:'🚗 自駕',time:'約 45 分（估算）',note:'11:00 退房'},
+    {from:'中野',to:'志賀高原',mode:'🚗 國道 292',time:'約 1 小時（估算）',note:'15:00 入住'}]},
+  {summary:'木戸池到田ノ原濕原步道；寄大行李到橫濱。', alert:'', routes:[
+    {from:'志賀高原住宿',to:'木戸池',mode:'🚗 自駕',time:'約 10–20 分（估算）',note:''}]},
+  {summary:'退房後短走一沼、琵琶池，下山到湯田中。', alert:'', routes:[
+    {from:'志賀高原',to:'湯田中',mode:'🚗 自駕',time:'約 40 分（估算）',note:'15:00 入住'}]},
+  {summary:'11:00 退房，長野 Toyota 店還車，新幹線到東京轉橫濱。', alert:'還車前加滿油；新幹線先訂指定席。', routes:[
+    {from:'湯田中',to:'Toyota 長野店',mode:'🚗 自駕',time:'約 40 分（估算）',note:'11:00 退房'},
+    {from:'JR 長野站',to:'東京站',mode:'🚄 北陸新幹線',time:'約 1.5 小時（估算）',note:''},
+    {from:'東京站',to:'橫濱站',mode:'🚆 JR 東海道線等',time:'約 30 分（估算）',note:''}]},
+  {summary:'山下公園、港邊、元町都可以步行或搭港未來線。', alert:'', routes:[
+    {from:'橫濱站',to:'元町・中華街站',mode:'🚇 港未來線',time:'約 10 分（估算）',note:'山下公園就在附近'}]},
+  {summary:'京急線到羽田機場第 3 航廈。', alert:'國際線預留起飛前約 3 小時到機場。', routes:[
+    {from:'橫濱站',to:'羽田機場第 3 航廈',mode:'🚃 京急線',time:'約 30 分（估算）',note:'依班機倒推'}]}
 ];
-const transportGeneralTips = ['準備 Suica 等 IC 卡，JR、京急、Seaside Line 都能刷','4/29 昭和之日、5/1–5/3 黃金週，移動日預留緩衝'];
+const transportGeneralTips = ['準備 Suica 等 IC 卡','6 月可能進入梅雨季，山路雨天慢慢開'];
 
 
 /* ============ 筆記/照片/自訂景點系統 (LocalStorage 永久保存) ============ */
@@ -983,30 +947,30 @@ function offerUndo(message,restore){
 function showToast(message){offerUndo(message,null);}
 function escHtml(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
-const NOTE_DRAFT_KEY='nagano_note_drafts_v1';
+const NOTE_DRAFT_KEY='shinshu_note_drafts_v1';
 function readNoteDrafts(){try{return JSON.parse(localStorage.getItem(NOTE_DRAFT_KEY)||'{}');}catch(e){return {};}}
 function saveNoteDraft(key,value){const d=readNoteDrafts();if(value)d[key]=value;else delete d[key];try{localStorage.setItem(NOTE_DRAFT_KEY,JSON.stringify(d));}catch(e){}}
 const openNoteEditors=new Set();
 
-let notesStore = JSON.parse(localStorage.getItem('nagano_notes')) || {};
+let notesStore = JSON.parse(localStorage.getItem('shinshu_notes')) || {};
 /* 相容舊版資料：以前每個景點只能存一則筆記（字串），現在改成可以新增多筆 */
 Object.keys(notesStore).forEach(k=>{
   if (typeof notesStore[k] === 'string') {
     notesStore[k] = notesStore[k].trim() ? [notesStore[k].trim()] : [];
   }
 });
-function persistNotes(){ safeSetItem('nagano_notes', notesStore); }
+function persistNotes(){ safeSetItem('shinshu_notes', notesStore); }
 
 /* 內建「評論與資訊」也可由使用者修改或刪除。undefined=沿用預設、null=隱藏、字串=自訂版本。 */
-let infoOverrideStore = JSON.parse(localStorage.getItem('nagano_info_overrides') || '{}');
-function persistInfoOverrides(){ safeSetItem('nagano_info_overrides', infoOverrideStore); }
+let infoOverrideStore = JSON.parse(localStorage.getItem('shinshu_info_overrides') || '{}');
+function persistInfoOverrides(){ safeSetItem('shinshu_info_overrides', infoOverrideStore); }
 function currentBuiltInInfo(key, fallback){
   return Object.prototype.hasOwnProperty.call(infoOverrideStore,key) ? infoOverrideStore[key] : fallback;
 }
 /* 內建「營業／開放時間」與「重要提點／門票」也可由使用者編輯或清空。
    undefined=沿用預設、null=清空（隱藏）、字串=自訂版本。 */
-let fieldOverrideStore = JSON.parse(localStorage.getItem('nagano_field_overrides') || '{}');
-function persistFieldOverrides(){ safeSetItem('nagano_field_overrides', fieldOverrideStore); }
+let fieldOverrideStore = JSON.parse(localStorage.getItem('shinshu_field_overrides') || '{}');
+function persistFieldOverrides(){ safeSetItem('shinshu_field_overrides', fieldOverrideStore); }
 function fieldOverrideKey(idx, field){ return idx + '::' + field; }
 function currentFieldValue(idx, field, fallback){
   const k = fieldOverrideKey(idx, field);
@@ -1155,22 +1119,22 @@ function toggleEditNote(event, key) {
 /* 景點照片：改用 base64 存進 LocalStorage，重新整理／關閉頁面後仍會保留。
    上傳時會先自動壓縮（最長邊 1600px、JPEG 品質 0.82），
    避免手機原圖動輒 3-8MB，很快就把裝置的 localStorage 容量塞滿導致上傳失敗。 */
-let photoStore = JSON.parse(localStorage.getItem('nagano_photos')) || {};
-function persistPhotos(){ return safeSetItem('nagano_photos', photoStore); }
+let photoStore = JSON.parse(localStorage.getItem('shinshu_photos')) || {};
+function persistPhotos(){ return safeSetItem('shinshu_photos', photoStore); }
 
 /* 景點封面：使用者可指定某張照片（或原始配圖）作為主要亮點卡片的封面，
    而不是每次上傳新照片就自動覆蓋原本的封面 */
-let coverStore = JSON.parse(localStorage.getItem('nagano_covers')) || {};
-function persistCover(){ safeSetItem('nagano_covers', coverStore); }
+let coverStore = JSON.parse(localStorage.getItem('shinshu_covers')) || {};
+function persistCover(){ safeSetItem('shinshu_covers', coverStore); }
 /* (v54 已改寫) */
 
 /* 自訂新增景點：依「天」儲存在 LocalStorage，重新整理後仍會保留 */
-let customSpotsStore = JSON.parse(localStorage.getItem('nagano_custom_spots')) || {};
-let hiddenFixedSpotsStore = JSON.parse(localStorage.getItem('nagano_hidden_fixed_spots')) || {};
-function persistHiddenFixedSpots(){ safeSetItem('nagano_hidden_fixed_spots', hiddenFixedSpotsStore); }
+let customSpotsStore = JSON.parse(localStorage.getItem('shinshu_custom_spots')) || {};
+let hiddenFixedSpotsStore = JSON.parse(localStorage.getItem('shinshu_hidden_fixed_spots')) || {};
+function persistHiddenFixedSpots(){ safeSetItem('shinshu_hidden_fixed_spots', hiddenFixedSpotsStore); }
 function hideFixedSpot(dayIdx,key){ if(!confirm('要從這一天隱藏此項目嗎？'))return; if(!hiddenFixedSpotsStore[dayIdx])hiddenFixedSpotsStore[dayIdx]=[]; if(!hiddenFixedSpotsStore[dayIdx].includes(key))hiddenFixedSpotsStore[dayIdx].push(key); persistHiddenFixedSpots(); renderDayContent(); updateSpotCount();offerUndo('已隱藏行程項目',()=>{hiddenFixedSpotsStore[dayIdx]=(hiddenFixedSpotsStore[dayIdx]||[]).filter(k=>k!==key);persistHiddenFixedSpots();renderDayContent();updateSpotCount();}); }
 function restoreFixedSpots(dayIdx){ delete hiddenFixedSpotsStore[dayIdx]; persistHiddenFixedSpots(); renderDayContent(); updateSpotCount(); }
-function persistCustomSpots(){ safeSetItem('nagano_custom_spots', customSpotsStore); }
+function persistCustomSpots(){ safeSetItem('shinshu_custom_spots', customSpotsStore); }
 function getCustomSpots(dayIdx){ return customSpotsStore[dayIdx] || []; }
 
 /* 依關鍵字與分類，自動組出一段景點簡介（離線生成，不需要網路，句型會隨機變化避免制式感） */
@@ -1303,8 +1267,8 @@ function updateSpotCount(){
 /* hk28：航班卡片放回「今日亮點」；其他交通卡片已移除（交通資訊都在「交通」分頁） */
 const MAIN_CATS = ['attraction','activity','transport'];
 const LIFE_CATS = ['food','shopping','hotel'];
-let orderStore = JSON.parse(localStorage.getItem('nagano_order')) || {};
-function persistOrder(){ safeSetItem('nagano_order', orderStore); }
+let orderStore = JSON.parse(localStorage.getItem('shinshu_order')) || {};
+function persistOrder(){ safeSetItem('shinshu_order', orderStore); }
 function getOrderKey(dayIdx, listType){ return dayIdx + '-' + listType; }
 
 /* (v52 已改寫) */
@@ -1340,8 +1304,8 @@ function moveSpot(dayIdx, listType, key, dir){
 }
 
 /* ============ 景點內「資訊與評論」區塊排序 (LocalStorage 永久保存) ============ */
-let blockOrderStore = JSON.parse(localStorage.getItem('nagano_block_order')) || {};
-function persistBlockOrder(){ safeSetItem('nagano_block_order', blockOrderStore); }
+let blockOrderStore = JSON.parse(localStorage.getItem('shinshu_block_order')) || {};
+function persistBlockOrder(){ safeSetItem('shinshu_block_order', blockOrderStore); }
 function moveBlock(spotKey, blockId, dir, hasBadges, hasInfo){
   const naturalIds = [];
   if(hasBadges) naturalIds.push('badges');
@@ -1363,8 +1327,8 @@ function moveBlock(spotKey, blockId, dir, hasBadges, hasInfo){
 }
 
 
-let routeMapStore = JSON.parse(localStorage.getItem('nagano_route_maps')) || {};
-function persistRouteMaps(){ safeSetItem('nagano_route_maps', routeMapStore); }
+let routeMapStore = JSON.parse(localStorage.getItem('shinshu_route_maps')) || {};
+function persistRouteMaps(){ safeSetItem('shinshu_route_maps', routeMapStore); }
 async function handleRouteMapUpload(e, dayIdx){
   const files = Array.from(e.target.files || []); e.target.value='';
   if(!files.length) return;
@@ -1384,14 +1348,14 @@ function removeRouteMap(dayIdx, i){
 }
 
 /* 每日交通補充：可自行新增集合地點、導航位置、文字提醒及上車點／時刻表圖片。 */
-let transportExtrasStore = JSON.parse(localStorage.getItem('nagano_transport_extras')) || {};
+let transportExtrasStore = JSON.parse(localStorage.getItem('shinshu_transport_extras')) || {};
 function transportExtrasFor(dayIdx){
   if(!transportExtrasStore[dayIdx])transportExtrasStore[dayIdx]={notes:[],images:[]};
   transportExtrasStore[dayIdx].notes=Array.isArray(transportExtrasStore[dayIdx].notes)?transportExtrasStore[dayIdx].notes:[];
   transportExtrasStore[dayIdx].images=Array.isArray(transportExtrasStore[dayIdx].images)?transportExtrasStore[dayIdx].images:[];
   return transportExtrasStore[dayIdx];
 }
-function persistTransportExtras(){safeSetItem('nagano_transport_extras',transportExtrasStore);}
+function persistTransportExtras(){safeSetItem('shinshu_transport_extras',transportExtrasStore);}
 function addTransportExtra(dayIdx,segmentKey='other'){
   const fieldKey=`${dayIdx}-${segmentKey}`;
   const title=document.getElementById(`transportExtraTitle-${fieldKey}`)?.value.trim();
@@ -1443,7 +1407,7 @@ const dayScroll = document.getElementById('dayScroll');
 const dayContent = document.getElementById('dayContent');
 let activeDay = 0;
 
-const FALLBACK_IMAGE='data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#EDE5D3"/><stop offset="1" stop-color="#A6D1C2"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><path d="M0 520 L260 330 L430 450 L640 260 L900 480 L1200 360 V700 H0Z" fill="#83BCA9" opacity=".55"/><path d="M0 600 Q300 520 600 590 T1200 580 V700 H0Z" fill="#F7F3EA"/><text x="600" y="315" text-anchor="middle" font-size="58" font-family="sans-serif" fill="#3B6A5A">長野春旅</text><text x="600" y="380" text-anchor="middle" font-size="26" font-family="sans-serif" fill="#3B6A5A">圖片暫時無法載入</text></svg>`);
+const FALLBACK_IMAGE='data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#EDE5D3"/><stop offset="1" stop-color="#A6D1C2"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><path d="M0 520 L260 330 L430 450 L640 260 L900 480 L1200 360 V700 H0Z" fill="#83BCA9" opacity=".55"/><path d="M0 600 Q300 520 600 590 T1200 580 V700 H0Z" fill="#F7F3EA"/><text x="600" y="315" text-anchor="middle" font-size="58" font-family="sans-serif" fill="#3B6A5A">北阿爾卑斯・信州</text><text x="600" y="380" text-anchor="middle" font-size="26" font-family="sans-serif" fill="#3B6A5A">圖片暫時無法載入</text></svg>`);
 function imageErrorFallback(img){if(!img||img.dataset.fallbackApplied)return;img.dataset.fallbackApplied='1';img.src=FALLBACK_IMAGE;}
 function mapsLink(value){
   const v=String(value||'').trim();
@@ -1459,7 +1423,7 @@ function tripTodayIndex(now=new Date()){
 }
 function goToToday(){
   const i=tripTodayIndex();setActiveDay(i>=0?i:0);
-  if(i<0){const now=new Date();showToast(now<new Date(2027,3,24)?'旅程還沒開始，先顯示第 1 天（4/24）':'旅程已結束，顯示第 1 天');}
+  if(i<0){const now=new Date();showToast(now<new Date(2027,5,3)?'旅程還沒開始，先顯示第 1 天（6/3）':'旅程已結束，顯示第 1 天');}
 }
 /* 旅途中 App 放在背景過夜，隔天打開時自動切到「今天」（使用者正在看別天時不打擾，只在停在昨天時切換） */
 let _lastSeenDate=new Date().toDateString();
@@ -1821,7 +1785,7 @@ function renderDayContent(){
         <select id="newSpotCat-${activeDay}" style="padding:10px 12px; border:1px solid var(--line); border-radius:8px; font-family:inherit; font-size:13px;">
           ${Object.keys(CAT).map(k=>`<option value="${k}">${CAT[k].emoji} ${CAT[k].label}</option>`).join('')}
         </select>
-        <input type="text" id="newSpotKw-${activeDay}" placeholder="關鍵字，如：紫藤、蕎麥麵、溪谷（可留空）" style="padding:10px 12px; border:1px solid var(--line); border-radius:8px; font-family:inherit; font-size:13px;">
+        <input type="text" id="newSpotKw-${activeDay}" placeholder="關鍵字，如：玫瑰、蕎麥麵、濕原（可留空）" style="padding:10px 12px; border:1px solid var(--line); border-radius:8px; font-family:inherit; font-size:13px;">
         <input type="text" id="newSpotDur-${activeDay}" placeholder="建議停留時間，如：約1小時（可留空）" style="padding:10px 12px; border:1px solid var(--line); border-radius:8px; font-family:inherit; font-size:13px;">
         <button id="addSpotBtn-${activeDay}" onclick="addCustomSpot(${activeDay})" style="background:linear-gradient(135deg, var(--blue), #3B6A5A); color:#fff; border:none; padding:11px; border-radius:999px; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer;">＋ 新增並自動生成簡介</button>
       </div>
@@ -1878,14 +1842,16 @@ function renderDayContent(){
 
 /* ============ RENDER: ENHANCED LIVE WEATHER & OUTFIT ============ */
 const CITIES = {
-  'Takasaki': {lat:36.3219, lon:139.0033, label:'高崎／藤岡'},
-  'Kurohime': {lat:36.8060, lon:138.2070, label:'黑姬／妙高', plan:'loma'},
-  'Yamada': {lat:36.6690, lon:138.3920, label:'山田溫泉', plan:'fujiiso'},
-  'Nagano': {lat:36.6431, lon:138.1886, label:'長野／小布施'},
+  'Toyama': {lat:36.7013, lon:137.2133, label:'富山'},
+  'Hakuba': {lat:36.6982, lon:137.8619, label:'白馬'},
   'Togakushi': {lat:36.7456, lon:138.0839, label:'戶隱'},
+  'Myoko': {lat:36.8870, lon:138.1700, label:'妙高'},
+  'Shiga': {lat:36.7060, lon:138.5050, label:'志賀高原'},
+  'Yudanaka': {lat:36.7430, lon:138.4170, label:'湯田中'},
+  'Nagano': {lat:36.6431, lon:138.1886, label:'長野／中野'},
   'Yokohama': {lat:35.4658, lon:139.6223, label:'橫濱／羽田'},
 };
-/* 只顯示目前版本會去的地點（Lomä 版不顯示山田溫泉，藤井莊版不顯示黑姬） */
+/* 天氣地點清單（舊版有依版本過濾，現在只有一版） */
 function cityKeys(){return Object.keys(CITIES).filter(k=>!CITIES[k].plan||CITIES[k].plan===PLAN);}
 const WMO = {
   0:['☀️','晴朗'],1:['🌤️','大致晴朗'],2:['⛅','局部多雲'],3:['☁️','多雲'],
@@ -1940,7 +1906,7 @@ function getUVStars(uv) {
 let liveWeatherCache = {};
 
 /* ---- 天氣離線快取 (localStorage) ---- */
-const WEATHER_CACHE_KEY = 'nagano_weather_cache_v1';
+const WEATHER_CACHE_KEY = 'shinshu_weather_cache_v1';
 function loadWeatherCache(){
   try{ return JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY)) || {}; }catch(e){ return {}; }
 }
@@ -2064,7 +2030,7 @@ function renderOneLiveCity(k){
     ? `<span class="live-badge stale"><span class="dot"></span>快取${entry.fetchedAt ? '・' + new Date(entry.fetchedAt).toLocaleString('zh-TW',{hour12:false, month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'}) : ''}</span>`
     : `<span class="live-badge"><span class="dot"></span>即時</span>`;
 
-  const MW_TIMES = { Takasaki:'關東平野早晚溫差大，白天可能到 20°C 以上，早晚只有 10°C 左右。', Kurohime:'黑姬與妙高海拔較高，早晚可能只有個位數，池邊步道潮濕。', Yamada:'溪谷旅館比長野市區涼，泡完湯外出記得加外套。', Nagano:'長野盆地白天舒服、早晚涼；小布施街區日照強，記得防曬。', Togakushi:'戶隱海拔約 1,200 公尺，比長野市區冷很多，參道可能殘雪與泥濘。', Yokohama:'港邊風大，黃昏散步帶一件防風外套。' };
+  const MW_TIMES = { Toyama:'富山靠海，6 月白天舒服、晚上偏涼；梅雨季可能下雨。', Hakuba:'白馬海拔高，早晚可能只有 10°C 上下，山頂還有殘雪。', Togakushi:'戶隱海拔約 1,200 公尺，杉林裡陰涼，木道雨後濕滑。', Myoko:'池邊清晨偏冷，妙高山常被雲遮住，早上比較有機會看到。', Shiga:'志賀高原海拔約 1,500–2,000 公尺，早晚冷、白天日照強。', Yudanaka:'溫泉街在山腳，比高原溫暖。', Nagano:'長野盆地白天溫暖，早晚涼。', Yokohama:'港邊潮濕、風大，梅雨季帶折疊傘。' };
 
   const isOpen=(window._weatherOpen||(window._weatherOpen=new Set())).has(k);
   el.innerHTML = `
@@ -2108,14 +2074,16 @@ function snowLineHTML(){return '';}
 
 /* ============ hk12：即時氣象分得更細（各城市底下的景點：氣溫、體感、風、天氣） ============ */
 const LIVE_SPOTS={
-  Takasaki:[['高崎站',36.3228,139.0127],['少林山達磨寺',36.3290,138.9630],['藤岡 ふじの咲く丘',36.2440,139.0560]],
-  Kurohime:[['野尻湖',36.8270,138.2240],['いもり池',36.8870,138.1700]],
-  Yamada:[['山田溫泉',36.6690,138.3920],['松川溪谷',36.6640,138.4150]],
-  Nagano:[['長野站・善光寺',36.6610,138.1880],['小布施',36.6975,138.3140]],
-  Togakushi:[['戶隱神社 中社',36.7456,138.0839],['戶隱神社 奧社',36.7680,138.0720]],
-  Yokohama:[['橫濱站',35.4658,139.6223],['港未來',35.4560,139.6320],['橫濱 Bayside',35.3870,139.6370]]
+  Toyama:[['富山站',36.7013,137.2133],['富山機場',36.6483,137.1875]],
+  Hakuba:[['白馬村',36.6982,137.8619]],
+  Togakushi:[['戶隱神社 奧社',36.7680,138.0720],['鏡池',36.7535,138.0735]],
+  Myoko:[['いもり池',36.8870,138.1700],['赤倉',36.8880,138.1800]],
+  Shiga:[['木戸池',36.7250,138.4960],['ワタスゲ平',36.7080,138.5150]],
+  Yudanaka:[['湯田中溫泉',36.7430,138.4170]],
+  Nagano:[['長野站',36.6431,138.1886],['一本木公園',36.7440,138.3720]],
+  Yokohama:[['橫濱站',35.4658,139.6223],['山下公園',35.4460,139.6500],['羽田機場',35.5494,139.7798]]
 };
-const SPOTS_WX_KEY='nagano_spots_wx_v1';
+const SPOTS_WX_KEY='shinshu_spots_wx_v1';
 var spotsWx=(()=>{try{return JSON.parse(localStorage.getItem(SPOTS_WX_KEY))||{};}catch(e){return {};}})();
 async function fetchSpotsWeather(force){
   if(!navigator.onLine)return false;
@@ -2154,8 +2122,8 @@ function refreshRainRadar(){
     if(timeEl) timeEl.textContent='Windy 即時圖需要網路連線。';
     return;
   }
-  const src='https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=%C2%B0C&metricWind=km%2Fh&zoom=5&overlay=satellite&product=satellite&level=surface&lat=36.3&lon=138.8';
-  el.innerHTML=`<iframe class="windy-satellite-frame" src="${src}" title="長野・關東 Windy 即時圖" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
+  const src='https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=%C2%B0C&metricWind=km%2Fh&zoom=5&overlay=satellite&product=satellite&level=surface&lat=36.6&lon=138.3';
+  el.innerHTML=`<iframe class="windy-satellite-frame" src="${src}" title="北陸・長野 Windy 即時圖" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
   if(timeEl) timeEl.textContent='Windy 即時天氣圖';
   simplifyMetServiceButton();
 }
@@ -2178,9 +2146,9 @@ const PACK_SUBCATS = {
 function jsQuote(v){ return String(v).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
 const defaultPackData = {
-  '🎒 隨身背包':[{name:'護照＋機票／訂房憑證',qty:1,checked:false},{name:'Suica 交通卡（手機或實體）',qty:1,checked:false},{name:'駕照＋國際駕照（日文譯本）',qty:1,checked:false},{name:'行動電源＋充電線',qty:2,checked:false},{name:'常備藥品',qty:1,checked:false},{name:'折疊傘',qty:1,checked:false},{name:'防曬乳＋帽子',qty:1,checked:false}],
+  '🎒 隨身背包':[{name:'護照＋機票／訂房憑證',qty:1,checked:false},{name:'Suica 交通卡（手機或實體）',qty:1,checked:false},{name:'駕照＋國際駕照（日文譯本）',qty:1,checked:false},{name:'行動電源＋充電線',qty:2,checked:false},{name:'常備藥品',qty:1,checked:false},{name:'折疊傘',qty:1,checked:false},{name:'防曬乳＋帽子',qty:1,checked:false},{name:'防蚊液',qty:1,checked:false}],
   '👜 手提行李':[{name:'相機＋備用電池',qty:1,checked:false},{name:'機上薄外套',qty:1,checked:false},{name:'貴重物品',qty:1,checked:false}],
-  '🧳 託運行李':[{name:'防風薄外套（山區早晚與港邊）',qty:1,checked:false},{name:'薄毛衣或刷毛中層',qty:2,checked:false},{name:'長袖上衣',qty:4,checked:false},{name:'好走的防滑鞋（戶隱參道可能泥濘）',qty:1,checked:false},{name:'襪子',qty:5,checked:false},{name:'溫泉用小毛巾與保養品',qty:1,checked:false},{name:'購物用摺疊袋',qty:1,checked:false}]
+  '🧳 託運行李':[{name:'防風防水外套（高原早晚冷、梅雨）',qty:1,checked:false},{name:'刷毛或薄羽絨（志賀高原、白馬早晚）',qty:1,checked:false},{name:'長袖上衣',qty:4,checked:false},{name:'短袖上衣',qty:3,checked:false},{name:'好走的防滑鞋（木道、參道）',qty:1,checked:false},{name:'襪子',qty:6,checked:false},{name:'溫泉用小毛巾與保養品',qty:1,checked:false},{name:'熊鈴（山區步道）',qty:1,checked:false},{name:'購物用摺疊袋',qty:1,checked:false}]
 };
 function migratePackCategoryNames(data){
   // 相容舊資料：把舊版類別名稱「🧳 托運行李（衣物防寒）」自動搬到新的簡化名稱「🧳 託運行李」
@@ -2195,13 +2163,13 @@ function migratePackCategoryNames(data){
   });
   return data;
 }
-let packData = migratePackCategoryNames(JSON.parse(localStorage.getItem('nagano_pack')) || structuredClone(defaultPackData));
+let packData = migratePackCategoryNames(JSON.parse(localStorage.getItem('shinshu_pack')) || structuredClone(defaultPackData));
 window._packLive = packData;
-function persistPack(){ safeSetItem('nagano_pack', packData); }
+function persistPack(){ safeSetItem('shinshu_pack', packData); }
 
-const defaultShopData = [{name:'小布施 栗子甜點（栗菓子）',qty:1,checked:false,img:null,cat:'souvenir',location:'小布施'},{name:'高崎達摩不倒翁',qty:1,checked:false,img:null,cat:'souvenir',location:'高崎・少林山達磨寺'},{name:'戶隱蕎麥（乾麵）',qty:1,checked:false,img:null,cat:'souvenir',location:'戶隱'},{name:'七味唐辛子（八幡屋礒五郎）',qty:1,checked:false,img:null,cat:'souvenir',location:'長野・善光寺'},{name:'信州蘋果點心',qty:1,checked:false,img:null,cat:'snack',location:'長野站'},{name:'橫濱伴手禮',qty:1,checked:false,img:null,cat:'souvenir',location:'橫濱站'}];
-let shopData = normalizeStructuredList('nagano_shop', JSON.parse(localStorage.getItem('nagano_shop')) || defaultShopData);
-function persistShop(){ safeSetItem('nagano_shop', shopData); }
+const defaultShopData = [{name:'富山 白蝦仙貝',qty:1,checked:false,img:null,cat:'souvenir',location:'富山'},{name:'戶隱蕎麥（乾麵）',qty:1,checked:false,img:null,cat:'souvenir',location:'戶隱'},{name:'七味唐辛子（八幡屋礒五郎）',qty:1,checked:false,img:null,cat:'souvenir',location:'長野站'},{name:'信州蘋果點心',qty:1,checked:false,img:null,cat:'snack',location:'長野站'},{name:'橫濱伴手禮',qty:1,checked:false,img:null,cat:'souvenir',location:'橫濱'}];
+let shopData = normalizeStructuredList('shinshu_shop', JSON.parse(localStorage.getItem('shinshu_shop')) || defaultShopData);
+function persistShop(){ safeSetItem('shinshu_shop', shopData); }
 const SHOP_CATS = {supermarket:{label:'🛒 超市', color:'#406A5C'}, drugstore:{label:'💊 藥妝', color:'#569580'}, snack:{label:'🍬 零食飲料', color:'#589782'}, icecream:{label:'🍦 冰品', color:'#67A590'}, souvenir:{label:'🎁 紀念品', color:'#4D7A6B'}};
 
 const listSectionOpen = { pack:{}, shop:{supermarket:false, souvenir:false} };
@@ -2307,13 +2275,13 @@ function setShopLocation(i, val){ shopData[i].location = val; persistShop(); }
 
 /* ============ CUSTOM TRAVEL RULES ============ */
 const defaultRulesData = [
-  {title:'🎌 黃金週人潮',text:'4/29 昭和之日、5/1–5/3 黃金週連假，住宿、餐廳、停車場與 Outlet 都可能排隊；熱門店盡量提早或錯開用餐時間。',img:null},
-  {title:'🚗 山區自駕',text:'出發前查戶隱、妙高或高山村道路狀況，向租車店確認適合的輪胎；雨雪時取消高處步道，不以跨山捷徑節省時間，駕車以白天移動為主。',img:null},
-  {title:'🌸 花況每年不同',text:'藤岡紫藤與小布施八重櫻都依當年氣溫調整；落花或未開就刪掉，不另外補遠距景點。',img:null},
-  {title:'🧳 行李',text:'每天依入住時間寄放，連住以同房為優先。高崎至長野可自行帶上新幹線；租車前比對人數、行李件數與後車廂。',img:null}
+  {title:'☔ 梅雨季',text:'6 月上中旬可能進入梅雨季，帶折疊傘與防水外套；雨天木道、參道濕滑，慢慢走。',img:null},
+  {title:'🚗 山區自駕',text:'奧林匹克道路、淺川 Loop Line、國道 292 都是山路，出發前查路況；雨霧大時減速，駕車以白天移動為主。',img:null},
+  {title:'🐻 山區步道',text:'戶隱、志賀高原步道有熊出沒的可能，走在步道上、結伴同行，可以帶熊鈴；看到告示依指示。',img:null},
+  {title:'🧳 行李',text:'6/10 在志賀高原把大行李寄到橫濱住宿，後兩天輕裝；先確認住宿可代收。',img:null}
 ];
-let rulesData = normalizeStructuredList('nagano_rules', JSON.parse(localStorage.getItem('nagano_rules')) || defaultRulesData);
-function persistRules(){ safeSetItem('nagano_rules', rulesData); }
+let rulesData = normalizeStructuredList('shinshu_rules', JSON.parse(localStorage.getItem('shinshu_rules')) || defaultRulesData);
+function persistRules(){ safeSetItem('shinshu_rules', rulesData); }
 
 function renderRulesList() {
   const wrap = document.getElementById('rulesListWrap');
@@ -2380,19 +2348,21 @@ function addRuleItem() {
 
 /* ============ DYNAMIC DOCS/VOUCHERS ============ */
 const defaultDocsData = [
-  {ic:'✈️',t:'去程 台灣 → 成田（航班待訂）',s:'4/24',chip:'航班',link:'',img:null,confirmed:false},
-  {ic:'🏨',t:'高崎站周邊飯店',s:'4/24–4/26・3 晚',chip:'住宿',link:'',img:null,confirmed:false},
-  {ic:'🚗',t:'租車 1：高崎取還（1 天）',s:'4/26',chip:'租車',link:'',img:null,confirmed:false},
-  {ic:'🚄',t:'北陸新幹線 高崎 → 長野',s:'4/27',chip:'車票',link:'',img:null,confirmed:false},
-  {ic:'🚗',t:'租車 2：長野取還（4 天）',s:'4/27–4/30',chip:'租車',link:'',img:null,confirmed:false},
-  {ic:'🏨',t:'Lomä（Lomä 版）／藤井莊（藤井莊版）',s:'4/27–4/28・2 晚',chip:'住宿',link:'',img:null,confirmed:false},
-  {ic:'🏨',t:'長野站周邊飯店',s:'4/29–4/30・2 晚',chip:'住宿',link:'',img:null,confirmed:false},
-  {ic:'🚄',t:'北陸新幹線 長野 → 東京',s:'5/1',chip:'車票',link:'',img:null,confirmed:false},
-  {ic:'🏨',t:'橫濱站周邊飯店',s:'5/1–5/2・2 晚',chip:'住宿',link:'',img:null,confirmed:false},
-  {ic:'✈️',t:'回程 羽田 → 台灣（航班待訂）',s:'5/3',chip:'航班',link:'',img:null,confirmed:false}
+  {ic:'✈️',t:'去程 台灣 → 富山（航班待訂）',s:'6/3',chip:'航班',link:'',img:null,confirmed:false},
+  {ic:'🏨',t:'富山站周邊飯店',s:'6/3・1 晚',chip:'住宿',link:'',img:null,confirmed:false},
+  {ic:'🚄',t:'北陸新幹線 富山 → 長野',s:'6/4',chip:'車票',link:'',img:null,confirmed:false},
+  {ic:'🚗',t:'Toyota 長野店租車',s:'6/4–6/12',chip:'租車',link:'',img:null,confirmed:false},
+  {ic:'🏨',t:'白馬 Sierra Resort',s:'6/4–6/5・2 晚',chip:'住宿',link:'',img:null,confirmed:false},
+  {ic:'🏨',t:'戶隱住宿',s:'6/6–6/7・2 晚',chip:'住宿',link:'',img:null,confirmed:false},
+  {ic:'🏨',t:'妙高 赤倉観光ホテル',s:'6/8・1 晚',chip:'住宿',link:'',img:null,confirmed:false},
+  {ic:'🏨',t:'志賀高原住宿',s:'6/9–6/10・2 晚',chip:'住宿',link:'',img:null,confirmed:false},
+  {ic:'🏨',t:'湯田中 松籟莊',s:'6/11・1 晚',chip:'住宿',link:'',img:null,confirmed:false},
+  {ic:'🚄',t:'北陸新幹線 長野 → 東京',s:'6/12',chip:'車票',link:'',img:null,confirmed:false},
+  {ic:'🏨',t:'橫濱住宿',s:'6/12–6/13・2 晚',chip:'住宿',link:'',img:null,confirmed:false},
+  {ic:'✈️',t:'回程 羽田 → 台灣（航班待訂）',s:'6/14',chip:'航班',link:'',img:null,confirmed:false}
 ];
 function mergeDocsWithDefaults(value){
-  const existing=normalizeStructuredList('nagano_docs', Array.isArray(value)?value:[]);
+  const existing=normalizeStructuredList('shinshu_docs', Array.isArray(value)?value:[]);
   const map=new Map(existing.map(d=>[String(d.t||'').trim(),d]));
   defaultDocsData.forEach(def=>{
     const key=String(def.t||'').trim();
@@ -2400,10 +2370,10 @@ function mergeDocsWithDefaults(value){
   });
   return [...map.values()];
 }
-let docsData = mergeDocsWithDefaults(JSON.parse(localStorage.getItem('nagano_docs')||'null'));
+let docsData = mergeDocsWithDefaults(JSON.parse(localStorage.getItem('shinshu_docs')||'null'));
 /* 把舊版缺少的住宿卡補回本機／雲端。 */
 setTimeout(()=>persistDocs(),0);
-function persistDocs(){ safeSetItem('nagano_docs', docsData); }
+function persistDocs(){ safeSetItem('shinshu_docs', docsData); }
 
 const DOC_ICON_MAP={'🏨':'lodging','🚗':'route','🚙':'route','🚕':'route','🍽️':'food','🛍️':'shopping'};
 function docIconHTML(ic){const k=DOC_ICON_MAP[ic]||'itinerary';return `<img class="doc-ic" src="${NAV_IC[k]}" alt="" width="34" height="34">`;}
@@ -2441,26 +2411,26 @@ async function migrateLegacyMediaToCloud(){
   if(CLOUD_CONFIGURED&&!navigator.onLine) return false;
   const progress={done:0,total:0};
   const stores={
-    nagano_photos:photoStore,
-    nagano_covers:coverStore,
-    nagano_route_maps:routeMapStore,
-    nagano_transport_extras:transportExtrasStore,
-    nagano_shop:shopData,
-    nagano_rules:rulesData,
-    nagano_docs:docsData
+    shinshu_photos:photoStore,
+    shinshu_covers:coverStore,
+    shinshu_route_maps:routeMapStore,
+    shinshu_transport_extras:transportExtrasStore,
+    shinshu_shop:shopData,
+    shinshu_rules:rulesData,
+    shinshu_docs:docsData
   };
   let changed=false;
   for(const [key,value] of Object.entries(stores)){
     const before=JSON.stringify(value);
     const migrated=await migrateMediaTree(value,`legacy/local/${key}`,progress);
     if(JSON.stringify(migrated)!==before) changed=true;
-    if(key==='nagano_photos') photoStore=migrated;
-    else if(key==='nagano_covers') coverStore=migrated;
-    else if(key==='nagano_route_maps') routeMapStore=migrated;
-    else if(key==='nagano_transport_extras') transportExtrasStore=migrated||{};
-    else if(key==='nagano_shop') shopData=migrated;
-    else if(key==='nagano_rules') rulesData=migrated;
-    else if(key==='nagano_docs') docsData=migrated;
+    if(key==='shinshu_photos') photoStore=migrated;
+    else if(key==='shinshu_covers') coverStore=migrated;
+    else if(key==='shinshu_route_maps') routeMapStore=migrated;
+    else if(key==='shinshu_transport_extras') transportExtrasStore=migrated||{};
+    else if(key==='shinshu_shop') shopData=migrated;
+    else if(key==='shinshu_rules') rulesData=migrated;
+    else if(key==='shinshu_docs') docsData=migrated;
     replaceLocalJson(key,migrated);
   }
   if(changed){
@@ -2499,7 +2469,7 @@ window.addEventListener('offline', updateNetStatus);
 /* ============ Service Worker（離線快取整個網頁） ============ */
 if (navigator.serviceWorker) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=ng10').then(()=>navigator.serviceWorker.ready).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=ng11').then(()=>navigator.serviceWorker.ready).catch(()=>{});
   });
 }
 document.addEventListener('error',e=>{if(e.target?.tagName==='IMG')imageErrorFallback(e.target);},true);
@@ -2522,11 +2492,11 @@ function toggleRouteSummary(force){
   const collapsed = typeof force === 'boolean' ? force : !card.classList.contains('collapsed');
   card.classList.toggle('collapsed', collapsed);
   if(heading) heading.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-  try{ localStorage.setItem('nagano_route_summary_collapsed', collapsed ? '1' : '0'); }catch(e){}
+  try{ localStorage.setItem('shinshu_route_summary_collapsed', collapsed ? '1' : '0'); }catch(e){}
 }
 (function initRouteSummaryState(){
   let collapsed = false;
-  try{ collapsed = localStorage.getItem('nagano_route_summary_collapsed') === '1'; }catch(e){}
+  try{ collapsed = localStorage.getItem('shinshu_route_summary_collapsed') === '1'; }catch(e){}
   document.addEventListener('DOMContentLoaded', () => toggleRouteSummary(collapsed));
 })();
 
@@ -2613,10 +2583,10 @@ function setTextSize(level,{persist=true}={}){
   const big=Number(level)>=1;
   document.body.classList.toggle('large-text',big);
   document.body.classList.remove('xlarge-text');
-  if(persist)try{localStorage.setItem('nagano_text_size_v2',big?'1':'0');}catch(e){}
+  if(persist)try{localStorage.setItem('shinshu_text_size_v2',big?'1':'0');}catch(e){}
   if(typeof syncHeaderControls==='function')syncHeaderControls();
 }
-(function(){let v=null;try{v=localStorage.getItem('nagano_text_size_v2');}catch(e){}if(v==null)v=localStorage.getItem('nagano_large_text_v1')==='1'?'1':'0';setTextSize(Number(v)>=1?1:0,{persist:false});})();
+(function(){let v=null;try{v=localStorage.getItem('shinshu_text_size_v2');}catch(e){}if(v==null)v=localStorage.getItem('shinshu_large_text_v1')==='1'?'1':'0';setTextSize(Number(v)>=1?1:0,{persist:false});})();
 document.addEventListener('DOMContentLoaded',()=>setTextSize(document.body.classList.contains('large-text')?1:0,{persist:false}));
 
 
@@ -2658,8 +2628,8 @@ function dayStays(i){
 }
 
 /* ---------- 10. 照片位置調整 ---------- */
-let photoPosStore=(()=>{try{return JSON.parse(localStorage.getItem('nagano_photo_pos'))||{};}catch(e){return {};}})();
-function persistPhotoPos(){safeSetItem('nagano_photo_pos',photoPosStore);}
+let photoPosStore=(()=>{try{return JSON.parse(localStorage.getItem('shinshu_photo_pos'))||{};}catch(e){return {};}})();
+function persistPhotoPos(){safeSetItem('shinshu_photo_pos',photoPosStore);}
 function photoPosAttr(url){
   const p=photoPosStore[url];if(!p)return '';
   const fit=p.fit==='contain'?'contain':'cover';
@@ -2721,11 +2691,11 @@ function parseTransportSeed(){
 }
 function initTransportCards(){
   _transportSeed=parseTransportSeed();
-  let stored=null;try{stored=JSON.parse(localStorage.getItem('nagano_transport_cards'));}catch(e){}
-  transportCardsData=Array.isArray(stored)?normalizeStructuredList('nagano_transport_cards',stored):structuredClone(_transportSeed);
+  let stored=null;try{stored=JSON.parse(localStorage.getItem('shinshu_transport_cards'));}catch(e){}
+  transportCardsData=Array.isArray(stored)?normalizeStructuredList('shinshu_transport_cards',stored):structuredClone(_transportSeed);
   renderTransportCards();
 }
-function persistTransportCards(){safeSetItem('nagano_transport_cards',transportCardsData);}
+function persistTransportCards(){safeSetItem('shinshu_transport_cards',transportCardsData);}
 const openTransportIds=new Set();
 function tcLinksHTML(links){
   const ok=(links||[]).filter(l=>safeUrl(l.url));
@@ -2802,8 +2772,8 @@ function restoreTransportSteps(dayIdx){
 }
 
 /* ---------- 9. 吃·旅途／逛·旅途 ---------- */
-let eatShopStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_eatshop'));return Array.isArray(v)?v:[];}catch(e){return [];}})();
-function persistEatShop(){safeSetItem('nagano_eatshop',eatShopStore);}
+let eatShopStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_eatshop'));return Array.isArray(v)?v:[];}catch(e){return [];}})();
+function persistEatShop(){safeSetItem('shinshu_eatshop',eatShopStore);}
 /* (v51 已改寫) */
 /* (v49 已改寫，見檔案後段) */
 function walkLink(fromQ,toQ){
@@ -2908,7 +2878,7 @@ function editPackItem(cat,i){
 
 
 /* ---------- 備份／還原／每日本機快照（參考紐西蘭版） ---------- */
-const SNAPSHOT_KEY='nagano_snapshots_v1';
+const SNAPSHOT_KEY='shinshu_snapshots_v1';
 function collectBackup(){
   const data={};
   SYNC_KEYS.forEach(k=>{const v=localValueForKey(k);if(v!=null)data[k]=v;});
@@ -2917,7 +2887,7 @@ function collectBackup(){
 function backupSummary(b){
   const d=(b&&b.data)||{};
   const n=k=>{const v=d[k];return !v?0:Array.isArray(v)?v.length:Object.keys(v).length;};
-  return `筆記 ${n('nagano_notes')}・自訂景點 ${Object.values(d.nagano_custom_spots||{}).reduce((a,x)=>a+(x||[]).length,0)}・購物 ${n('nagano_shop')}・行李 ${Object.values(d.nagano_pack||{}).reduce((a,x)=>a+(x||[]).length,0)}・交通提醒 ${n('nagano_transport_cards')}`;
+  return `筆記 ${n('shinshu_notes')}・自訂景點 ${Object.values(d.shinshu_custom_spots||{}).reduce((a,x)=>a+(x||[]).length,0)}・購物 ${n('shinshu_shop')}・行李 ${Object.values(d.shinshu_pack||{}).reduce((a,x)=>a+(x||[]).length,0)}・交通提醒 ${n('shinshu_transport_cards')}`;
 }
 function downloadBackup(){
   const b=collectBackup();
@@ -2988,22 +2958,24 @@ setTimeout(()=>{try{saveSnapshot();}catch(e){}},4000);
 
 /* ---------- 8. 天氣：JMA 模型＋ tenki.jp 連結 ---------- */
 const TENKI_LINKS={
-  Takasaki:'https://tenki.jp/forecast/3/13/4210/10202/',
-  Kurohime:'https://tenki.jp/forecast/3/23/4810/20583/',
-  Yamada:'https://tenki.jp/forecast/3/23/4810/20543/',
-  Nagano:'https://tenki.jp/forecast/3/23/4810/20201/',
+  Toyama:'https://tenki.jp/search/?keyword=%E5%AF%8C%E5%B1%B1%E5%B8%82',
+  Hakuba:'https://tenki.jp/search/?keyword=%E7%99%BD%E9%A6%AC%E6%9D%91',
   Togakushi:'https://tenki.jp/forecast/3/23/4810/20201/',
+  Myoko:'https://tenki.jp/search/?keyword=%E5%A6%99%E9%AB%98%E5%B8%82',
+  Shiga:'https://tenki.jp/search/?keyword=%E5%B1%B1%E3%83%8E%E5%86%85%E7%94%BA',
+  Yudanaka:'https://tenki.jp/search/?keyword=%E5%B1%B1%E3%83%8E%E5%86%85%E7%94%BA',
+  Nagano:'https://tenki.jp/forecast/3/23/4810/20201/',
   Yokohama:'https://tenki.jp/forecast/3/17/4610/14100/'
 };
 
 /* =====================================================================
    v48：收藏／預約狀態／提醒、自駕即時路況、版本與同步比對
    ===================================================================== */
-const APP_VERSION='ng10-2026-10-13';
+const APP_VERSION='ng11-2026-10-18';
 
 /* ---------- 收藏 ★／預約狀態／提醒 ---------- */
-let marksStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_marks'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
-function persistMarks(){safeSetItem('nagano_marks',marksStore);}
+let marksStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_marks'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
+function persistMarks(){safeSetItem('shinshu_marks',marksStore);}
 const BOOK_STATUS={todo:{label:'🔖 待訂',cls:'todo'},booked:{label:'✅ 已訂',cls:'booked'},paid:{label:'💳 已付款',cls:'paid'}};
 function marksFor(key){return marksStore[key]||{};}
 function setMark(key,patch){
@@ -3078,18 +3050,18 @@ function todayRemindHTML(){
 /* ---------- 自駕即時路況與緊急聯絡（可修改、刪除、新增、還原） ---------- */
 const LIVE_SEED=[
   {id:'lv-jr',kind:'link',group:'交通即時狀況',title:'JR 東日本 列車運行情報',text:'新幹線與在來線的停駛、延誤以此為準；移動日早上先看一次。',url:'https://traininfo.jreast.co.jp/train_info/'},
-  {id:'lv-road',kind:'link',group:'交通即時狀況',title:'JARTIC 日本道路交通情報',text:'全國道路壅塞與規制；自駕去戶隱、妙高、山田溫泉前確認。',url:'https://www.jartic.or.jp/'},
+  {id:'lv-road',kind:'link',group:'交通即時狀況',title:'JARTIC 日本道路交通情報',text:'全國道路壅塞與規制；自駕去白馬、戶隱、妙高、志賀高原前確認。',url:'https://www.jartic.or.jp/'},
   {id:'lv-nexco',kind:'link',group:'交通即時狀況',title:'NEXCO 東日本 道路交通情報',text:'上信越道、關越道的塞車與施工規制。',url:'https://www.driveplaza.com/traffic/'},
-  {id:'lv-nrt',kind:'link',group:'交通即時狀況',title:'成田機場 官方網站',text:'4/24 去程確認航班狀態與機場交通。',url:'https://www.narita-airport.jp/'},
-  {id:'lv-hnd',kind:'link',group:'交通即時狀況',title:'羽田機場 官方網站',text:'5/3 回程確認航班狀態與第 3 航廈交通。',url:'https://tokyo-haneda.com/'},
+  {id:'lv-tym',kind:'link',group:'交通即時狀況',title:'富山機場 官方網站',text:'6/3 去程確認航班狀態與機場巴士。',url:'https://www.toyama-airport.jp/'},
+  {id:'lv-hnd',kind:'link',group:'交通即時狀況',title:'羽田機場 官方網站',text:'6/14 回程確認航班狀態與第 3 航廈交通。',url:'https://tokyo-haneda.com/'},
   {id:'lv-togakushi',kind:'link',group:'交通即時狀況',title:'戶隱觀光・開山消息',text:'奧社參道開放、殘雪與停車資訊。',url:'https://togakushi-21.jp/'},
-  {id:'lv-jma',kind:'link',group:'天氣警報',title:'氣象廳 警報・注意報',text:'大雨、強風、雷雨警報以此為準；可切換到長野縣、群馬縣、神奈川縣。',url:'https://www.jma.go.jp/bosai/warning/'},
-  {id:'lv-rule',kind:'rule',group:'看到警示時怎麼決定',title:'雨天與人潮判斷順序',text:'1. 大雨或山區道路規制：取消戶隱奧社、妙高步道等高處行程，改飯店休息或市區咖啡。\n2. 黃金週塞車：提早出門，熱門停車場滿了就換下一個點，不在車陣裡硬等。\n3. 新幹線停駛：先看 JR 東日本恢復預估，必要時改搭其他班次並重新劃位。\n4. 回程日：提早前往羽田，並先查航空公司改票規定。'}
+  {id:'lv-jma',kind:'link',group:'天氣警報',title:'氣象廳 警報・注意報',text:'大雨、強風、雷雨警報以此為準；可切換到富山縣、長野縣、新潟縣、神奈川縣。',url:'https://www.jma.go.jp/bosai/warning/'},
+  {id:'lv-rule',kind:'rule',group:'看到警示時怎麼決定',title:'雨天判斷順序',text:'1. 大雨或山區道路規制：取消戶隱、志賀高原的步道，改住宿休息或泡湯。\n2. 濃霧：山路減速，能晚點出發就晚點出發，不趕行程。\n3. 新幹線停駛：先看 JR 東日本恢復預估，必要時改搭其他班次並重新劃位。\n4. 回程日：提早前往羽田，並先查航空公司改票規定。'}
 ];
 let liveData=[];
 function initLive(){
-  let stored=null;try{stored=JSON.parse(localStorage.getItem('nagano_livelinks'));}catch(e){}
-  liveData=Array.isArray(stored)?normalizeStructuredList('nagano_livelinks',stored):structuredClone(LIVE_SEED);
+  let stored=null;try{stored=JSON.parse(localStorage.getItem('shinshu_livelinks'));}catch(e){}
+  liveData=Array.isArray(stored)?normalizeStructuredList('shinshu_livelinks',stored):structuredClone(LIVE_SEED);
   /* hk28：北の道ナビ網址已改（2024/3/29），舊網址自動換新 */
   let fixedUrl=false;liveData.forEach(x=>{if(x&&typeof x.url==='string'&&/\/\/(www\.)?northern-road\.jp\//.test(x.url)){x.url=x.url.replace(/\/\/(www\.)?northern-road\.jp\//,'//northern-road.ceri.go.jp/');fixedUrl=true;}});
   if(fixedUrl&&Array.isArray(stored))persistLive();
@@ -3098,7 +3070,7 @@ function initLive(){
   if(Array.isArray(stored)&&liveData.length!==before)persistLive();
   renderLive();
 }
-function persistLive(){safeSetItem('nagano_livelinks',liveData);}
+function persistLive(){safeSetItem('shinshu_livelinks',liveData);}
 function renderLive(){
   const wrap=document.getElementById('liveRoadWrap');if(!wrap)return;
   const groups=[];liveData.forEach(it=>{let g=groups.find(x=>x.name===it.group);if(!g){g={name:it.group||'其他',items:[]};groups.push(g);}g.items.push(it);});
@@ -3175,7 +3147,7 @@ async function diagnoseCloud(){
   closeFormModal(true);
   const wrap=document.createElement('div');wrap.className='spot-edit-modal active';wrap.id='formModal';
   wrap.addEventListener('click',e=>{if(e.target===wrap)closeFormModal();});
-  wrap.innerHTML=`<div class="spot-edit-modal-card"><div class="spot-edit-modal-head"><h3>🔍 這台 vs 雲端</h3><button class="spot-edit-modal-close" type="button" data-close>✕</button></div><div class="spot-edit-modal-body"><p class="pp-help">${diffs.length?`有 ${diffs.length} 項不一致。通常按「立即同步」就會自動合併；若仍不一致，可選擇以哪一邊為準（系統會先自動存一份快照，可救回）。`:'✅ 這台與雲端完全一致。'}</p>${res.map(x=>`<div class="ds-row"><span>${escHtml(x.k.replace('nagano_',''))}</span><b>${label[x.st]}</b></div>`).join('')}${diffs.length?'<div class="pp-fit"><button type="button" data-pull>☁️ 以雲端為準（覆蓋這台）</button><button type="button" data-push>📱 以這台為準（覆蓋雲端）</button></div>':''}</div></div>`;
+  wrap.innerHTML=`<div class="spot-edit-modal-card"><div class="spot-edit-modal-head"><h3>🔍 這台 vs 雲端</h3><button class="spot-edit-modal-close" type="button" data-close>✕</button></div><div class="spot-edit-modal-body"><p class="pp-help">${diffs.length?`有 ${diffs.length} 項不一致。通常按「立即同步」就會自動合併；若仍不一致，可選擇以哪一邊為準（系統會先自動存一份快照，可救回）。`:'✅ 這台與雲端完全一致。'}</p>${res.map(x=>`<div class="ds-row"><span>${escHtml(x.k.replace('shinshu_',''))}</span><b>${label[x.st]}</b></div>`).join('')}${diffs.length?'<div class="pp-fit"><button type="button" data-pull>☁️ 以雲端為準（覆蓋這台）</button><button type="button" data-push>📱 以這台為準（覆蓋雲端）</button></div>':''}</div></div>`;
   document.body.appendChild(wrap);
   wrap.querySelector('[data-close]').onclick=()=>closeFormModal();
   const pull=wrap.querySelector('[data-pull]'),push=wrap.querySelector('[data-push]');
@@ -3210,27 +3182,27 @@ function showUpdateBanner(){
   document.getElementById('updateBannerClose').onclick=()=>b.remove();
 }
 if(navigator.serviceWorker){
-  navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.type==='SW_ACTIVATED'&&sessionStorage.getItem('nagano_sw_seen'))showUpdateBanner();sessionStorage.setItem('nagano_sw_seen','1');});
+  navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.type==='SW_ACTIVATED'&&sessionStorage.getItem('shinshu_sw_seen'))showUpdateBanner();sessionStorage.setItem('shinshu_sw_seen','1');});
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)navigator.serviceWorker.getRegistration().then(r=>r&&r.update()).catch(()=>{});});
 }
 /* 版本改變時，自動先存一份快照，萬一新版有問題可救回 */
 (function(){
-  let old=null;try{old=localStorage.getItem('nagano_app_version');}catch(e){}
+  let old=null;try{old=localStorage.getItem('shinshu_app_version');}catch(e){}
   if(old&&old!==APP_VERSION){try{saveSnapshot(`更新前自動備份（${old}→${APP_VERSION}）`,true);}catch(e){}}
-  try{localStorage.setItem('nagano_app_version',APP_VERSION);}catch(e){}
+  try{localStorage.setItem('shinshu_app_version',APP_VERSION);}catch(e){}
 })();
 document.addEventListener('DOMContentLoaded',()=>{initLive();renderMarksBar();renderDeviceStatus();});
 
 /* =====================================================================
    v49：手機優先改版（新標頭與圖示、逛吃畫廊、MaMa 專頁、App 安裝）
    ===================================================================== */
-const DAY_CITIES=[['Takasaki'],['Takasaki'],['Takasaki'],['Nagano','Kurohime'],['Kurohime'],['Togakushi','Nagano'],['Nagano'],['Nagano','Yamada'],['Yamada'],['Nagano'],['Togakushi','Nagano'],['Nagano','Yokohama'],['Yokohama'],['Yokohama']];
+const DAY_CITIES=[['Toyama'],['Nagano','Hakuba'],['Hakuba'],['Hakuba','Togakushi'],['Togakushi'],['Togakushi','Myoko'],['Nagano','Shiga'],['Shiga'],['Shiga','Yudanaka'],['Nagano','Yokohama'],['Yokohama'],['Yokohama']];
 const NAV_IC={itinerary:'images/nav-itinerary.webp',route:'images/nav-route.webp',guide:'images/nav-guide.webp',weather:'images/nav-weather.webp',food:'images/nav-food.webp',shopping:'images/nav-shopping.webp',lodging:'images/nav-lodging.webp'};
 /* hk19：每天「交通」分頁最上方的即時狀況大按鈕（網址沿用環線頁「即時交通與警報」，在那裡改了這裡也跟著變） */
 function tpLiveBarHTML(dayIdx){
   const by=id=>(typeof liveData!=='undefined'&&Array.isArray(liveData)?liveData.find(x=>x.id===id&&x.url):null)||(typeof LIVE_SEED!=='undefined'?LIVE_SEED.find(x=>x.id===id):null);
-  const flight=dayIdx===0||dayIdx===13;
-  const air=dayIdx===0?['lv-nrt','✈️','成田機場']:['lv-hnd','✈️','羽田機場'];
+  const flight=dayIdx===0||dayIdx===11;
+  const air=dayIdx===0?['lv-tym','✈️','富山機場']:['lv-hnd','✈️','羽田機場'];
   const items=[['lv-jr','🚆','JR 運行情報'],air,['lv-road','🛣️','道路路況'],['lv-jma','⚠️','天氣警報']];
   if(flight)items.unshift(items.splice(1,1)[0]);
   const btns=items.map(([id,ic,label])=>{const x=by(id);return x&&x.url?`<a class="tp-live-btn${flight&&id===air[0]?' hot':''}" href="${escAttr(x.url)}" target="_blank" rel="noopener"><span>${ic}</span>${escHtml(label)}</a>`:'';}).join('');
@@ -3243,9 +3215,9 @@ function currentUiMode(){return document.body.classList.contains('mode-edit')?'e
 /* hk11：按鈕寫「按了會做什麼」；進入編輯模式先確認一次，避免長輩誤觸後看到一堆刪除鈕 */
 function toggleUiMode(){
   if(currentUiMode()==='edit'){setUiMode('travel');return;}
-  let asked=false;try{asked=sessionStorage.getItem('nagano_edit_confirmed')==='1';}catch(e){}
+  let asked=false;try{asked=sessionStorage.getItem('shinshu_edit_confirmed')==='1';}catch(e){}
   if(!asked&&!confirm('要進入「編輯模式」嗎？\n\n編輯模式可以修改、新增、刪除行程內容。\n只想看行程的話，請按「取消」。'))return;
-  try{sessionStorage.setItem('nagano_edit_confirmed','1');}catch(e){}
+  try{sessionStorage.setItem('shinshu_edit_confirmed','1');}catch(e){}
   setUiMode('edit');
 }
 function toggleTextSize(){setTextSize(document.body.classList.contains('large-text')?0:1);}
@@ -3353,8 +3325,8 @@ function switchSubTab(dayIdx,tabType){
 }
 
 /* ---------- MaMa 專頁（可貼上整篇部落格文章） ---------- */
-let mamaStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_mama'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
-function persistMama(){safeSetItem('nagano_mama',mamaStore);}
+let mamaStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_mama'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
+function persistMama(){safeSetItem('shinshu_mama',mamaStore);}
 function mamaCount(key){return (mamaStore[key]||[]).length;}
 /* (v51 已改寫) */
 function linkifyText(t){return escHtml(t).replace(/(https?:\/\/[^\s<>"']+)/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`);}
@@ -3458,12 +3430,12 @@ function markLabel(key){
 }
 
 /* ---------- 吃·逛旅途：依區域分組 ---------- */
-const EAT_AREAS=['高崎・藤岡','長野・小布施','黑姬・妙高','山田溫泉','戶隱','橫濱'];
-let eatAreaCustom=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_eat_area_custom'));return Array.isArray(v)?v:[];}catch(e){return [];}})();
-function persistEatAreaCustom(){safeSetItem('nagano_eat_area_custom',eatAreaCustom);}
+const EAT_AREAS=['富山','白馬','戶隱','妙高','中野・長野','志賀高原・湯田中','橫濱'];
+let eatAreaCustom=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_eat_area_custom'));return Array.isArray(v)?v:[];}catch(e){return [];}})();
+function persistEatAreaCustom(){safeSetItem('shinshu_eat_area_custom',eatAreaCustom);}
 /* v76：區域順序可以自己調整（編輯模式的 ▲▼），同步給家人 */
-var eatAreaOrder=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_eat_area_order'));return Array.isArray(v)?v:[];}catch(e){return [];}})();
-function persistEatAreaOrder(){safeSetItem('nagano_eat_area_order',eatAreaOrder);}
+var eatAreaOrder=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_eat_area_order'));return Array.isArray(v)?v:[];}catch(e){return [];}})();
+function persistEatAreaOrder(){safeSetItem('shinshu_eat_area_order',eatAreaOrder);}
 function allEatAreas(){
   const base=[...EAT_AREAS,...eatAreaCustom.filter(x=>!EAT_AREAS.includes(x))];
   const ord=(eatAreaOrder||[]).filter(a=>base.includes(a));
@@ -3478,11 +3450,11 @@ function moveEatArea(name,dir){
 }
 /* hk11 */
 function isCustomArea(a){return !EAT_AREAS.includes(a);}
-const AREA_ORIGIN={'高崎・藤岡':'高崎駅','長野・小布施':'長野駅','黑姬・妙高':'Lomä 信濃町','山田溫泉':'緑霞山宿 藤井荘','戶隱':'戸隠神社 中社','橫濱':'横浜駅'};
-const EAT_DAY_AREA={0:'高崎・藤岡',1:'高崎・藤岡',2:'高崎・藤岡',3:'長野・小布施',4:'黑姬・妙高',5:'戶隱',6:'長野・小布施',7:'長野・小布施',8:'山田溫泉',9:'長野・小布施',10:'戶隱',11:'橫濱',12:'橫濱',13:'橫濱'};
+const AREA_ORIGIN={'富山':'富山駅','白馬':'Sierra Resort Hakuba','戶隱':'戸隠','妙高':'赤倉観光ホテル','中野・長野':'長野駅','志賀高原・湯田中':'湯田中温泉','橫濱':'横浜駅'};
+const EAT_DAY_AREA={0:'富山',1:'中野・長野',2:'白馬',3:'戶隱',4:'戶隱',5:'妙高',6:'中野・長野',7:'志賀高原・湯田中',8:'志賀高原・湯田中',9:'中野・長野',10:'橫濱',11:'橫濱'};
 const EAT_NAME_AREA={};
-let eatAreaStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_eat_area'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
-function persistEatArea(){safeSetItem('nagano_eat_area',eatAreaStore);}
+let eatAreaStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_eat_area'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
+function persistEatArea(){safeSetItem('shinshu_eat_area',eatAreaStore);}
 function eatAreaFor(o){
   const ov=eatAreaStore[o.key];
   if(ov==='none')return null;
@@ -3572,44 +3544,37 @@ function dayWeatherPanelHTML(i){
 /* ---------- 小驚喜（點角落的小動物：小知識、笑話、旅程照片；同帳號盡量不重複） ---------- */
 const SURPRISE_SEED=[
   {id:'sd-t01',type:'tip',text:'日本鬣羚（カモシカ）是日本的特別天然紀念物，也是長野縣的縣獸。牠其實是牛科，不是鹿喔。'},
-  {id:'sd-t02',type:'tip',text:'高崎是達摩不倒翁的主要產地，一般說法是全國約八成的達摩來自高崎。'},
-  {id:'sd-t03',type:'tip',text:'許願時先替達摩畫上一隻眼睛，願望實現後再畫另一隻。'},
-  {id:'sd-t04',type:'tip',text:'妙高山海拔 2,454 公尺，因為山形端正，被稱作「越後富士」。'},
-  {id:'sd-t05',type:'tip',text:'野尻湖曾經挖出諾曼象（ナウマンゾウ）的化石，湖畔有專門的博物館。'},
+  {id:'sd-t02',type:'tip',text:'1998 年長野冬季奧運時，白馬村舉辦了跳台滑雪等比賽。'},
+  {id:'sd-t03',type:'tip',text:'志賀高原被聯合國教科文組織登錄為生物圈保護區。'},
+  {id:'sd-t04',type:'tip',text:'ワタスゲ（棉菅）的白色絮球其實是果實，不是花。'},
+  {id:'sd-t05',type:'tip',text:'湯田中附近的地獄谷野猿公苑，以會泡溫泉的猴子聞名。'},
   {id:'sd-t06',type:'tip',text:'戶隱神社由奧社、中社、寶光社、九頭龍社、火之御子社五社組成。'},
   {id:'sd-t07',type:'tip',text:'戶隱奧社參道的杉木並木，樹齡據說約 400 年。'},
   {id:'sd-t08',type:'tip',text:'戶隱蕎麥常用「ぼっち盛り」，一小束一小束擺在竹篩上。'},
-  {id:'sd-t09',type:'tip',text:'葛飾北齋晚年曾多次到小布施，北齋館收藏他的肉筆畫與祭屋台天井畫。'},
-  {id:'sd-t10',type:'tip',text:'善光寺不屬於單一宗派，自古接納各宗派的參拜者。'},
-  {id:'sd-t11',type:'tip',text:'藤岡市的市花就是紫藤。'},
-  {id:'sd-t12',type:'tip',text:'橫濱紅磚倉庫原本是港口的保稅倉庫，建於明治末到大正初年。'},
+  {id:'sd-t09',type:'tip',text:'妙高山海拔 2,454 公尺，因為山形端正，被稱作「越後富士」。'},
+  {id:'sd-t10',type:'tip',text:'山下公園旁的冰川丸是 1930 年完工的遠洋客船，現在開放參觀。'},
+  {id:'sd-t11',type:'tip',text:'天氣好時，從富山市區就能看到立山連峰。'},
+  {id:'sd-t12',type:'tip',text:'鏡池在風小的清晨最平靜，戶隱連峰會倒映在水面上。'},
   {id:'sd-j01',type:'joke',text:'小羚羊為什麼不怕爬坡？因為牠的腿天生就是登山鞋。'},
-  {id:'sd-j02',type:'joke',text:'達摩為什麼總是一隻眼睛？因為牠還在等你的願望實現。'},
-  {id:'sd-j03',type:'joke',text:'行李箱最怕聽到什麼？「你怎麼回程又變重了？」（栗子甜點表示：不是我。）'},
-  {id:'sd-j04',type:'joke',text:'紫藤為什麼都往下長？因為它想跟每一個抬頭的人打招呼。'},
+  {id:'sd-j02',type:'joke',text:'棉菅為什麼毛茸茸？因為它想跟小羚羊比蓬鬆。'},
+  {id:'sd-j03',type:'joke',text:'行李箱最怕聽到什麼？「你怎麼回程又變重了？」（蕎麥麵表示：不是我。）'},
+  {id:'sd-j04',type:'joke',text:'鏡池為什麼那麼安靜？因為它怕一說話，山的倒影就碎了。'},
   {id:'sd-w01',type:'tip',text:'走累了就找間咖啡館坐一下，山不會跑，花也會等你。'},
   {id:'sd-k01',type:'joke',text:'我不是山羊，是羚羊。差在我比較會擺姿勢。'},
-  {id:'sd-k02',type:'joke',text:'我的角很短，因為長太長會勾到紫藤。'},
-  {id:'sd-k03',type:'joke',text:'今天的步數，請把去買栗子甜點的那段算成勇敢。'},
   {id:'sd-k04',type:'joke',text:'我的導航只有兩個目的地：好吃的，和好看的。'},
-  {id:'sd-k05',type:'joke',text:'紫藤垂下來的時候，我都會低頭讓它先過。'},
   {id:'sd-k06',type:'joke',text:'背包裡有地圖、零食，和一點點想再住一晚的心。'},
   {id:'sd-k07',type:'joke',text:'我在山裡長大，所以看到樓梯不會怕，看到排隊會。'},
   {id:'sd-k08',type:'joke',text:'蕎麥麵一束一束擺好，我一口一口吃好。'},
-  {id:'sd-k09',type:'joke',text:'達摩說要先畫一隻眼睛許願，我說要先吃午餐。'},
   {id:'sd-k10',type:'joke',text:'我的毛很蓬，不是胖，是山上的春天還有點冷。'},
   {id:'sd-k11',type:'joke',text:'在杉木步道上，我覺得自己很小，胃口還是很大。'},
   {id:'sd-k12',type:'joke',text:'湖面很安靜，我也放輕腳步，怕吵醒山的倒影。'},
   {id:'sd-k13',type:'joke',text:'泡湯是你們的行程，發呆是我的專長。'},
   {id:'sd-k14',type:'joke',text:'今天沒有出發時間，所以我一直出發去冰箱。'},
-  {id:'sd-k15',type:'joke',text:'栗子的殼很硬，栗子甜點很溫柔。'},
   {id:'sd-k16',type:'joke',text:'我把地圖打開了，結果先找到咖啡店。'},
   {id:'sd-k17',type:'joke',text:'如果行程趕不上，就先趕上自己的好心情。'},
   {id:'sd-k18',type:'joke',text:'今天沒有迷路，只是在收集沒有排進去的風景。'},
   {id:'sd-k19',type:'joke',text:'出門前看天氣，出門後看甜點。'},
-  {id:'sd-k20',type:'joke',text:'黃金週人很多，我負責站在角落，看起來很悠閒。'},
   {id:'sd-k21',type:'joke',text:'新幹線很快，我的午睡更快。'},
-  {id:'sd-k22',type:'joke',text:'在 Outlet 我沒有購物清單，只有購物的勇氣。'},
   {id:'sd-k23',type:'joke',text:'伴手禮的本質，是把旅行再吃一次。'},
   {id:'sd-k24',type:'joke',text:'那不是發呆，是我在替下一個景點留白。'},
   {id:'sd-k25',type:'joke',text:'我把疲勞寄放在旅館，出門只帶胃口。'},
@@ -3628,13 +3593,13 @@ const SURPRISE_SEED=[
   {id:'sd-k38',type:'joke',text:'看到美食先拍照，是我對它最後的禮貌。'}
 ];
 let surprisesData=[];
-let tipsSeen=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_tips_seen'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
+let tipsSeen=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_tips_seen'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
 function initSurprises(){
-  let stored=null;try{stored=JSON.parse(localStorage.getItem('nagano_surprises'));}catch(e){}
-  surprisesData=Array.isArray(stored)?normalizeStructuredList('nagano_surprises',stored):structuredClone(SURPRISE_SEED);
+  let stored=null;try{stored=JSON.parse(localStorage.getItem('shinshu_surprises'));}catch(e){}
+  surprisesData=Array.isArray(stored)?normalizeStructuredList('shinshu_surprises',stored):structuredClone(SURPRISE_SEED);
   renderSurpriseAdmin();
 }
-function persistSurprises(){safeSetItem('nagano_surprises',surprisesData);}
+function persistSurprises(){safeSetItem('shinshu_surprises',surprisesData);}
 function hash36(str){let h=5381;for(let i=0;i<str.length;i++)h=((h<<5)+h+str.charCodeAt(i))|0;return (h>>>0).toString(36);}
 function accountKey(){
   let email='';
@@ -3678,7 +3643,7 @@ function restoreSurprises(){
 /* ---------- 角落的小動物：不常出現，只從左下／右下角邊緣探頭，點了才有小驚喜 ---------- */
 const CRITTER_IMGS=['images/serow-welcome.webp','images/serow-point.webp','images/serow-camera.webp','images/serow-peek.webp','images/serow-shop.webp'];
 /* 每張角落插圖配一句不同的話，索引對齊 CRITTER_IMGS（之後加進來的插圖沿用最後一句） */
-const END_NOTE_QUOTES=['今天也慢慢走，山不會跑。','累了就坐下來喝杯茶，風景會等你。','抬頭看看，紫藤正在往下長。','今天辛苦了，泡個湯早點睡。','山路慢慢開，下一個彎有好風景。','背包裡多了一點今天的喜歡。','早晚還涼，記得加件外套。','花開不開都沒關係，一起來就很好。'];
+const END_NOTE_QUOTES=['今天也慢慢走，山不會跑。','累了就坐下來喝杯茶，風景會等你。','抬頭看看，雲正停在山頂上。','今天辛苦了，泡個湯早點睡。','山路慢慢開，下一個彎有好風景。','背包裡多了一點今天的喜歡。','早晚還涼，記得加件外套。','下雨也沒關係，慢慢走就好。'];
 const critter={last:'',timer:null};
 function reducedMotion(){return !!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);}
 function critterLayer(){let l=document.getElementById('critterLayer');if(!l){l=document.createElement('div');l.id='critterLayer';l.setAttribute('aria-hidden','true');document.body.appendChild(l);}return l;}
@@ -3722,8 +3687,8 @@ document.addEventListener('DOMContentLoaded',()=>{initSurprises();startCritters(
 function brText(t){return escHtml(String(t==null?'':t).replace(/<br\s*\/?>/gi,'\n'));}
 
 /* ---------- 吃逛資料本體與「排入日期」 ---------- */
-let eatPlanStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_eat_plan'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
-function persistEatPlan(){safeSetItem('nagano_eat_plan',eatPlanStore);}
+let eatPlanStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_eat_plan'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
+function persistEatPlan(){safeSetItem('shinshu_eat_plan',eatPlanStore);}
 function eatCustomSpot(c){return S(c.name,c.kind==='shop'?'shopping':'food',c.note||'',{mapQuery:c.mapQuery||null});}
 /* hk15（移植 v78）：自己新增的吃逛項目，卡片用詳情頁上傳的照片當封面，名稱／簡介以詳情頁修改後的為準 */
 function esCardData(c){
@@ -3964,14 +3929,14 @@ if(navigator.serviceWorker){
     const d=e.data||{};
     if(d.type==='PRECACHE_PROGRESS'){
       precacheState.done=d.done;precacheState.failed=d.failed;precacheState.total=d.total;
-      if(d.done+d.failed>=d.total){precacheState.running=false;try{localStorage.setItem('nagano_precache_at',String(Date.now()));}catch(_e){}}
+      if(d.done+d.failed>=d.total){precacheState.running=false;try{localStorage.setItem('shinshu_precache_at',String(Date.now()));}catch(_e){}}
       updateOfflineRow();
     }
   });
 }
 function maybeAutoPrecache(){
   try{
-    const last=Number(localStorage.getItem('nagano_precache_at')||0);
+    const last=Number(localStorage.getItem('shinshu_precache_at')||0);
     if(Date.now()-last<20*3600*1000)return;
     if(navigator.connection&&navigator.connection.saveData)return;
     startOfflinePrecache(false);
@@ -3987,13 +3952,13 @@ function builtinIndex(){
 }
 function checkBuiltinIndex(){
   try{
-    const now=builtinIndex(),raw=localStorage.getItem('nagano_builtin_index_v1');
+    const now=builtinIndex(),raw=localStorage.getItem('shinshu_builtin_index_v1');
     if(raw){
       const old=JSON.parse(raw);let changed=0;
       Object.keys(old).forEach(k=>{if(now[k]!==old[k])changed++;});
       if(changed){try{saveSnapshot('內建行程調整前備份（'+changed+' 處）',true);}catch(e){}window._builtinChanged=changed;}
     }
-    localStorage.setItem('nagano_builtin_index_v1',JSON.stringify(now));
+    localStorage.setItem('shinshu_builtin_index_v1',JSON.stringify(now));
   }catch(e){}
 }
 checkBuiltinIndex();
@@ -4001,10 +3966,10 @@ checkBuiltinIndex();
 /* =====================================================================
    v54：照片管理（封面／展開大圖／新增／刪除）、住宿空白卡、天氣整齊、小驚喜分類、紅葉地圖主次
    ===================================================================== */
-let detailCoverStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_detail_covers'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
-let hiddenOrigStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_hidden_orig'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
-function persistDetailCovers(){safeSetItem('nagano_detail_covers',detailCoverStore);}
-function persistHiddenOrig(){safeSetItem('nagano_hidden_orig',hiddenOrigStore);}
+let detailCoverStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_detail_covers'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
+let hiddenOrigStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_hidden_orig'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
+function persistDetailCovers(){safeSetItem('shinshu_detail_covers',detailCoverStore);}
+function persistHiddenOrig(){safeSetItem('shinshu_hidden_orig',hiddenOrigStore);}
 
 /* 一個景點可用的照片：原圖（可隱藏）＋你上傳的照片 */
 function spotPhotoList(idx,spot){
@@ -4080,7 +4045,7 @@ function coverImgHTML(cls,url){return `<img class="${cls}" src="${escAttr(url)}"
 
 /* ---------- 今晚住宿：還沒新增時顯示空白卡，可直接新增，之後自動變成住宿卡 ---------- */
 function addStayForDay(dayIdx){
-  openFormModal({title:'新增住宿',fields:[{id:'name',label:'住宿名稱',value:'',placeholder:'例：Lomä Shinanomachi'},{id:'nav',label:'導航位置（地址、Google Maps 網址或關鍵字；留空＝用名稱）',value:''}],saveText:'新增',
+  openFormModal({title:'新增住宿',fields:[{id:'name',label:'住宿名稱',value:'',placeholder:'例：Sierra Resort Hakuba'},{id:'nav',label:'導航位置（地址、Google Maps 網址或關鍵字；留空＝用名稱）',value:''}],saveText:'新增',
     onSave:v=>{
       if(!v.name){alert('請輸入住宿名稱');return false;}
       const g=generateAutoDesc(v.name,'hotel','',null);
@@ -4128,10 +4093,10 @@ const SURPRISE_CARE_SEED=[
 ];
 SURPRISE_SEED.push(...SURPRISE_CARE_SEED);
 function mergeNewSeeds(){
-  let seen=[];try{seen=JSON.parse(localStorage.getItem('nagano_seed_seen_v1'))||[];}catch(e){}
+  let seen=[];try{seen=JSON.parse(localStorage.getItem('shinshu_seed_seen_v1'))||[];}catch(e){}
   const ids=new Set(surprisesData.map(x=>x.id));let added=0;
   SURPRISE_SEED.forEach(x=>{if(!seen.includes(x.id)){if(!ids.has(x.id)){surprisesData.push(structuredClone(x));added++;}seen.push(x.id);}});
-  try{localStorage.setItem('nagano_seed_seen_v1',JSON.stringify(seen));}catch(e){}
+  try{localStorage.setItem('shinshu_seed_seen_v1',JSON.stringify(seen));}catch(e){}
   if(added)persistSurprises();
 }
 function pickWeightedType(mode){
@@ -4154,7 +4119,7 @@ function nextSurprise(mode){
   const pick=pool[Math.floor(Math.random()*pool.length)];
   seen.add(pick.id);
   tipsSeen[acct]=[...seen];
-  safeSetItem('nagano_tips_seen',tipsSeen);
+  safeSetItem('shinshu_tips_seen',tipsSeen);
   return pick;
 }
 /* 依標點切成一小段一小段，換行盡量落在逗號、句號之後 */
@@ -4331,7 +4296,7 @@ function openNavFixModal(idx){
   const key=fieldOverrideKey(idx,'mapQuery');
   const finish=()=>{persistFieldOverrides();safeRenderDayContent();reopenCard(idx);};
   openFormModal({title:'修正導航'+(name?'：'+name:''),
-    fields:[{id:'q',label:'貼上 Google 地圖網址（地圖 App：點店家 →「分享」→「複製連結」），也可以貼地址或座標；留空＝用名稱搜尋',type:'textarea',rows:3,value:cur,placeholder:'例：https://maps.app.goo.gl/xxxx　或　長野県上高井郡小布施町'}],
+    fields:[{id:'q',label:'貼上 Google 地圖網址（地圖 App：點店家 →「分享」→「複製連結」），也可以貼地址或座標；留空＝用名稱搜尋',type:'textarea',rows:3,value:cur,placeholder:'例：https://maps.app.goo.gl/xxxx　或　長野県下高井郡山ノ内町'}],
     saveText:'儲存',
     onSave:v=>{
       let q=v.q.replace(/\s+/g,' ').trim();
@@ -4410,8 +4375,8 @@ function pvStep(e,el,d){
 }
 
 /* ---------- 每日「交通」：不再有交通摘要；可新增步驟、刪除、加文字與圖片 ---------- */
-let transportCustomStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_transport_custom'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
-function persistTransportCustom(){safeSetItem('nagano_transport_custom',transportCustomStore);}
+let transportCustomStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_transport_custom'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
+function persistTransportCustom(){safeSetItem('shinshu_transport_custom',transportCustomStore);}
 function customTransportHTML(dayIdx){
   const list=transportCustomStore[dayIdx]||[];
   if(!list.length)return '';
@@ -4470,28 +4435,26 @@ function tpGoButtonsHTML(dayIdx,r,isLast){
 /* 給司機看的日文資料（日文名稱、在哪裡下車）。可在編輯模式修改，修改會同步給家人。
    地址只放有確認過的；不確定的就不寫，避免讓司機開錯地方。比對時名稱包含關鍵字即可。 */
 const DRIVER_INFO=[
-  ['高崎站周邊',{ja:'高崎駅',drop:'高崎駅の近くのホテルまでお願いします。',dropZh:'到高崎站附近的飯店。'}],
-  ['少林山',{ja:'少林山達磨寺'}],
-  ['達摩彩繪',{ja:'だるま絵付け体験の工房'}],
-  ['ふじの咲く丘',{ja:'ふじの咲く丘（藤岡市）'}],
-  ['Lomä',{ja:'Lomä（長野県信濃町）',drop:'ホテルの正面入口までお願いします。',dropZh:'到飯店正門口。'}],
-  ['藤井荘',{ja:'緑霞山宿 藤井荘（山田温泉）',drop:'旅館の玄関までお願いします。',dropZh:'到旅館玄關。'}],
-  ['長野站周邊',{ja:'長野駅',drop:'長野駅の近くのホテルまでお願いします。',dropZh:'到長野站附近的飯店。'}],
-  ['橫濱站周邊',{ja:'横浜駅',drop:'横浜駅の近くのホテルまでお願いします。',dropZh:'到橫濱站附近的飯店。'}],
+  ['富山站周邊',{ja:'富山駅',drop:'富山駅の近くのホテルまでお願いします。',dropZh:'到富山站附近的飯店。'}],
+  ['Sierra Resort',{ja:'シェラリゾート白馬',drop:'ホテルの正面入口までお願いします。',dropZh:'到飯店正門口。'}],
+  ['戶隱住宿',{ja:'戸隠',drop:'宿の入口までお願いします。',dropZh:'到住宿入口。'}],
+  ['赤倉観光ホテル',{ja:'赤倉観光ホテル',drop:'ホテルの正面入口までお願いします。',dropZh:'到飯店正門口。'}],
+  ['志賀高原住宿',{ja:'志賀高原',drop:'宿の入口までお願いします。',dropZh:'到住宿入口。'}],
+  ['松籟莊',{ja:'湯田中温泉 松籟荘',drop:'旅館の玄関までお願いします。',dropZh:'到旅館玄關。'}],
+  ['橫濱住宿',{ja:'横浜駅',drop:'横浜駅の近くのホテルまでお願いします。',dropZh:'到橫濱站附近的飯店。'}],
+  ['隨神門',{ja:'戸隠神社 随神門'}],
+  ['森林植物園',{ja:'戸隠森林植物園'}],
+  ['鏡池',{ja:'鏡池（戸隠）'}],
   ['いもり池',{ja:'いもり池（妙高高原）'}],
-  ['野尻湖',{ja:'野尻湖'}],
-  ['戶隱神社 中社',{ja:'戸隠神社 中社'}],
-  ['奧社',{ja:'戸隠神社 奥社 入口'}],
-  ['善光寺',{ja:'善光寺'}],
-  ['北齋館',{ja:'北斎館'}],
-  ['小布施',{ja:'小布施'}],
-  ['港未來',{ja:'みなとみらい'}],
-  ['紅磚倉庫',{ja:'横浜赤レンガ倉庫'}],
-  ['Bayside',{ja:'三井アウトレットパーク 横浜ベイサイド'}],
+  ['一本木公園',{ja:'一本木公園（中野市）'}],
+  ['ワタスゲ平',{ja:'ワタスゲ平（志賀高原）'}],
+  ['木戸池',{ja:'木戸池（志賀高原）'}],
+  ['一沼',{ja:'一沼（志賀高原）'}],
+  ['山下公園',{ja:'山下公園'}],
+  ['元町',{ja:'元町ショッピングストリート'}],
   ['羽田',{ja:'羽田空港 第3ターミナル',drop:'第3ターミナル（国際線）でお願いします。',dropZh:'到第 3 航廈（國際線）。'}],
-  ['成田',{ja:'成田空港'}],
   ['長野站',{ja:'JR長野駅'}],
-  ['高崎站',{ja:'JR高崎駅'}],
+  ['富山站',{ja:'JR富山駅'}],
   ['橫濱站',{ja:'JR横浜駅'}]
 ];
 const DRIVER_FIELDS=['ja','addr','drop','dropZh'];
@@ -4521,7 +4484,7 @@ function showDriverCard(name,nav){
 function editDriverInfo(name,nav){
   const info=driverInfo(name),key='drv:'+name;
   openFormModal({title:'給司機看：'+name,fields:[
-    {id:'ja',label:'日文名稱（司機看的大字）',value:info.ja||'',placeholder:'例：緑霞山宿 藤井荘'},
+    {id:'ja',label:'日文名稱（司機看的大字）',value:info.ja||'',placeholder:'例：赤倉観光ホテル'},
     {id:'addr',label:'日文地址（選填）',value:info.addr||''},
     {id:'drop',label:'在哪裡下車（日文，給司機看）',type:'textarea',rows:2,value:info.drop||'',placeholder:'例：正面入口までお願いします。'},
     {id:'dropZh',label:'在哪裡下車（中文，給自己看）',type:'textarea',rows:2,value:info.dropZh||''}],saveText:'儲存',
@@ -4557,7 +4520,7 @@ function dayIconSVG(emoji){
 }
 
 /* 每日交通提示條的圖示：改用你提供的主題插畫（依當天路線挑選），沒有對應插畫的日子維持線條小圖示。 */
-const DAY_ICON_IMG=Object.fromEntries(Array.from({length:14},(_,i)=>[i,`images/day${String(i).padStart(2,'0')}.webp`]));
+const DAY_ICON_IMG=Object.fromEntries(Array.from({length:12},(_,i)=>[i,`images/day${String(i).padStart(2,'0')}.webp`]));
 function dayIconHTML(dayIdx,emoji){
   const img=DAY_ICON_IMG[dayIdx];
   if(img)return `<img src="${img}" alt="" loading="lazy">`;
@@ -4589,11 +4552,11 @@ function addEatArea(){
       if(!v.name){alert('請輸入區域名稱');return false;}
       if(allEatAreas().includes(v.name)){alert('已經有同名的區域了');return false;}
       eatAreaCustom.push(v.name);persistEatAreaCustom();
-      if(v.origin){AREA_ORIGIN[v.name]=v.origin;const o=readAreaOrigins();o[v.name]=v.origin;try{localStorage.setItem('nagano_area_origin',JSON.stringify(o));}catch(e){}}
+      if(v.origin){AREA_ORIGIN[v.name]=v.origin;const o=readAreaOrigins();o[v.name]=v.origin;try{localStorage.setItem('shinshu_area_origin',JSON.stringify(o));}catch(e){}}
       safeRenderDayContent();
     }});
 }
-function readAreaOrigins(){try{return JSON.parse(localStorage.getItem('nagano_area_origin'))||{};}catch(e){return {};}}
+function readAreaOrigins(){try{return JSON.parse(localStorage.getItem('shinshu_area_origin'))||{};}catch(e){return {};}}
 Object.assign(AREA_ORIGIN,readAreaOrigins());
 function renameEatArea(name){
   openFormModal({title:'區域改名',fields:[{id:'name',label:'新的區域名稱',value:name}],saveText:'儲存',
@@ -4615,11 +4578,11 @@ function deleteEatArea(name){
 }
 
 /* ---------- 副景點：在景點卡片展開後，可再新增掛在底下的小景點 ---------- */
-let subSpotStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_sub_spots'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
-function persistSubSpots(){safeSetItem('nagano_sub_spots',subSpotStore);}
+let subSpotStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_sub_spots'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
+function persistSubSpots(){safeSetItem('shinshu_sub_spots',subSpotStore);}
 function subSpotsFor(key){return Array.isArray(subSpotStore[key])?subSpotStore[key]:[];}
 function subSpotFields(r){return [
-  {id:'name',label:'副景點名稱（必填）',value:r.name||'',placeholder:'例：小布施堂 本店'},
+  {id:'name',label:'副景點名稱（必填）',value:r.name||'',placeholder:'例：戸隠 そば処'},
   {id:'dur',label:'建議停留時間（選填）',value:r.dur||'',placeholder:'例：約 40 分鐘'},
   {id:'note',label:'介紹／備註（選填，可換行）',type:'textarea',rows:6,value:r.note||'',placeholder:'例：參道旁的茶屋可以吃剛烤好的栗子點心。'},
   {id:'nav',label:'導航位置（選填：Google 地圖網址、地址或座標；留空＝用名稱搜尋）',value:r.nav||''},
@@ -4689,8 +4652,8 @@ function deleteSubSpot(key,id,skipConfirm){
 }
 
 /* ---------- 景點改日期 ---------- */
-var spotDayStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_spot_day'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
-function persistSpotDay(){safeSetItem('nagano_spot_day',spotDayStore);}
+var spotDayStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_spot_day'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
+function persistSpotDay(){safeSetItem('shinshu_spot_day',spotDayStore);}
 function naturalDayOf(key){const m=String(key).match(/^d(\d+)-[msc]\d+$/);return m&&days[Number(m[1])]?Number(m[1]):null;}
 function spotDayOf(key){
   const v=(spotDayStore||{})[key];
@@ -4727,27 +4690,26 @@ function openSpotDayModal(key){
 
 /* ============ hk19（移植京丹雅行 v85）：出發前待辦（全家共用，誰勾的會顯示名字） ============ */
 const TODO_SEED=[
-  {id:'todo-plan',text:'全家決定走 Lomä 山湖版還是藤井莊溪谷版（右上切換可以比較）',due:'2026-12-31'},
-  {id:'todo-stay2',text:'先訂連住兩晚的旅館：確認 4/27、4/28 都有房、兩晚餐食與設施預約',due:'2027-01-15'},
-  {id:'todo-hotels',text:'訂高崎（3 晚）、長野（2 晚，要有停車場）、橫濱（2 晚）車站步行範圍的飯店，比對取消條款',due:'2027-01-31'},
-  {id:'todo-flight',text:'2027 班表公布後，用多城市方式買「台灣 → 成田、羽田 → 台灣」機票',due:'2027-01-31'},
-  {id:'todo-car',text:'預約租車：4/26 高崎 1 天、4/27–4/30 長野 4 天；比對人數、行李件數與後車廂，詢問輪胎',due:'2027-02-28'},
-  {id:'todo-license',text:'每位駕駛準備駕照日文譯本（國際駕照），確認有效期限',due:'2027-03-31'},
-  {id:'todo-daruma',text:'達摩彩繪工房（大門屋或今井だるま店 NAYA）：確認 4/25 成人方案與預約方式',due:'2027-03-31'},
-  {id:'todo-insurance',text:'保旅遊平安險＋旅遊不便險',due:'2027-04-10'},
-  {id:'todo-vjw',text:'每個人填好 Visit Japan Web（入境與海關資料），截圖 QR Code',due:'2027-04-17'},
-  {id:'todo-shinkansen',text:'新幹線指定席：搭乘日前 1 個月開售，熱門日期與班次先訂（4/24、4/27、5/1）',due:'2027-04-01'},
-  {id:'todo-flowers',text:'查 2027 藤岡紫藤、小布施八重櫻的花況，決定 4/25、4/26 要不要互換',due:'2027-04-20'},
-  {id:'todo-togakushi',text:'查戶隱奧社參道開山與殘雪消息、山區道路狀況',due:'2027-04-22'},
-  {id:'todo-ic',text:'準備 Suica（手機或實體卡），先儲值',due:'2027-04-17'},
-  {id:'todo-sim',text:'買網卡／eSIM，或開通漫遊',due:'2027-04-17'},
-  {id:'todo-yen',text:'換日幣（小額現金：寺院、小店、停車場）',due:'2027-04-17'},
-  {id:'todo-hotel-check',text:'確認每間飯店的入住時間、行李寄放、早晚餐與停車',due:'2027-04-17'},
-  {id:'todo-login',text:'每位家人都用自己的手機登入這個網站一次，並在 ⚙️ 下載離線圖片',due:'2027-04-20'},
-  {id:'todo-checkin',text:'去程航班線上報到',due:'2027-04-23'}
+  {id:'todo-flight6',text:'2027 班表公布後，用多城市方式買「台灣 → 富山、羽田 → 台灣」機票',due:'2027-01-31'},
+  {id:'todo-hakuba',text:'白馬 Sierra Resort：確認 6/4–6/5 兩晚、晚餐與溫泉時間',due:'2027-02-28'},
+  {id:'todo-hotels6',text:'訂富山、戶隱（2 晚）、志賀高原（2 晚）、橫濱（2 晚）住宿；確認赤倉観光ホテル、松籟莊',due:'2027-02-28'},
+  {id:'todo-car6',text:'預約 Toyota 長野店租車 6/4–6/12；比對人數、行李件數與後車廂',due:'2027-03-31'},
+  {id:'todo-license',text:'每位駕駛準備駕照日文譯本（國際駕照），確認有效期限',due:'2027-04-30'},
+  {id:'todo-shinkansen6',text:'新幹線指定席：搭乘日前 1 個月開售，6/4 富山→長野、6/12 長野→東京先訂',due:'2027-05-04'},
+  {id:'todo-luggage',text:'確認 6/10 志賀高原寄大行李到橫濱：住宿是否受理、橫濱住宿能否代收',due:'2027-05-15'},
+  {id:'todo-insurance',text:'保旅遊平安險＋旅遊不便險',due:'2027-05-20'},
+  {id:'todo-vjw',text:'每個人填好 Visit Japan Web（入境與海關資料），截圖 QR Code',due:'2027-05-27'},
+  {id:'todo-flowers6',text:'查 2027 一本木公園玫瑰與志賀高原棉菅的花況',due:'2027-05-31'},
+  {id:'todo-roads6',text:'查戶隱、志賀高原（國道 292）步道與道路開放狀況',due:'2027-06-01'},
+  {id:'todo-ic',text:'準備 Suica（手機或實體卡），先儲值',due:'2027-05-27'},
+  {id:'todo-sim',text:'買網卡／eSIM，或開通漫遊',due:'2027-05-27'},
+  {id:'todo-yen',text:'換日幣（小額現金：小店、停車場）',due:'2027-05-27'},
+  {id:'todo-hotel-check',text:'確認每間住宿的入住時間、早晚餐與停車',due:'2027-05-27'},
+  {id:'todo-login',text:'每位家人都用自己的手機登入這個網站一次，並在 ⚙️ 下載離線圖片',due:'2027-05-31'},
+  {id:'todo-checkin',text:'去程航班線上報到',due:'2027-06-02'}
 ].map(t=>({...t,done:false,note:''}));
-let todoData=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_todos'));return Array.isArray(v)?normalizeStructuredList('nagano_todos',v):structuredClone(TODO_SEED);}catch(e){return structuredClone(TODO_SEED);}})();
-function persistTodos(){safeSetItem('nagano_todos',todoData);}
+let todoData=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_todos'));return Array.isArray(v)?normalizeStructuredList('shinshu_todos',v):structuredClone(TODO_SEED);}catch(e){return structuredClone(TODO_SEED);}})();
+function persistTodos(){safeSetItem('shinshu_todos',todoData);}
 function todoWho(){
   try{const e=(familyAuthSession&&familyAuthSession.email)||(readAuthSession()&&readAuthSession().email)||'';return e?e.split('@')[0]:'';}catch(e){return '';}
 }
@@ -4782,7 +4744,7 @@ function renderTodos(){
   }
   /* 收合時標題下仍顯示進度 */
   const sec=document.getElementById('todoSection');
-  if(sec&&!sec.dataset.init){sec.dataset.init='1';let o=null;try{o=localStorage.getItem('nagano_todo_open');}catch(e){}sec.open=o==='1';}
+  if(sec&&!sec.dataset.init){sec.dataset.init='1';let o=null;try{o=localStorage.getItem('shinshu_todo_open');}catch(e){}sec.open=o==='1';}
   const sum=document.getElementById('todoSumLine');
   if(sum){const soon=todoData.filter(t=>!t.done&&(n=>n!=null&&n<=3)(todoDaysLeft(t.due))).length;sum.textContent=left?`還有 ${left} 項／共 ${total} 項${soon?`・${soon} 項快到期`:''}`:`全部完成 🎉（${total} 項）`;sum.classList.toggle('alert',!!soon);}
   renderTodoBanner();
@@ -4823,18 +4785,18 @@ function goToTodos(){const sec=document.getElementById('todoSection');if(sec)sec
 /* v99：自己按的按鈕一定立即重畫（不走背景同步的「正在打字」保護） */
 function userRender(){const go=()=>{if(document.getElementById('formModal'))return void setTimeout(go,60);window._dayRemoteRenderPending=false;renderDayContent();};go();}
 /* ============ hk22（移植京丹雅行 v92–v95）：每日回顧（每個帳號各寫一則，全家都看得到） ============ */
-var reviewStore=(()=>{try{const v=JSON.parse(localStorage.getItem('nagano_reviews'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
-function persistReviews(){safeSetItem('nagano_reviews',reviewStore);}
+var reviewStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_reviews'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
+function persistReviews(){safeSetItem('shinshu_reviews',reviewStore);}
 /* v94：小羚羊心情（圖片 icon）；舊版的 great/good/ok/tired 自動對應 */
 const REVIEW_MOODS=[
   ['happy','開心','角角都在笑','今天真開心','#D9772B'],
   ['relaxed','放鬆','慢慢吃草就好','慢慢走也很好','#3E8E6A'],
   ['amazed','驚喜','耳朵豎起來','撿到意外的風景','#2E86B5'],
   ['satisfied','滿足','肚子圓滾滾','吃飽喝足，剛剛好','#B5651D'],
-  ['accomplished','成就感','插上小旗子','今天的路都走完了','#4F7A3A'],
-  ['tired','累了','腳腳走痠了','有點累，但很值得','#8A6E55'],
-  ['sleepy','想睡','窩著打個盹','先讓我睡一下','#7A62B8'],
-  ['rainy','雨天小失落','撐著紫藤傘','下雨了，下次再來！','#5D7FB5']];
+  ['accomplished','心滿意足','插上小旗子','今天的路都走完了','#4F7A3A'],
+  ['tired','走累了','腳腳走痠了','有點累，但很值得','#8A6E55'],
+  ['sleepy','想睡了','窩著打個盹','先讓我睡一下','#7A62B8'],
+  ['rainy','雨中慢走','撐著小葉傘','下雨也慢慢走','#5D7FB5']];
 /* hk26：拿掉「低落」「不順心」，改成「有點可惜」；更早期的心情代碼自動對應 */
 const OLD_MOOD_MAP={great:'happy',good:'relaxed',ok:'relaxed',excited:'happy',moved:'amazed',content:'satisfied',touched:'amazed',surprised:'amazed',snowtired:'tired',sad:'rainy',frustrated:'rainy',disappointed:'rainy'};
 function moodInfo(m){m=OLD_MOOD_MAP[m]||m;const x=REVIEW_MOODS.find(z=>z[0]===m);return x?{key:x[0],label:x[1],title:x[2],sub:x[3],color:x[4],img:`images/mood-${x[0]}.webp`}:null;}
@@ -4863,7 +4825,7 @@ function editMyReview(i){
   const me=accountKey(),cur=(reviewStore[i]||{})[me]||{};
   openFormModal({title:`🌸 D${days[i].dayNum}・${days[i].date} 的我`,fields:[
     {id:'mood',type:'custom',label:'今天的心情是哪幾隻小羚羊？（可以選好幾隻喔）',html:moodPickerHTML(cur.mood),init:initMoodPicker,noFocus:true},
-    {id:'text',label:'今天最喜歡的瞬間是…？',type:'textarea',rows:5,value:cur.text||'',placeholder:'例如：紫藤花棚下的風真的是紫色的！'},
+    {id:'text',label:'今天最喜歡的瞬間是…？',type:'textarea',rows:5,value:cur.text||'',placeholder:'例如：鏡池裡真的住著一座山！'},
     {id:'file',label:cur.img?'換一張照片（選填；不選就保留原本的）':'放一張今天最喜歡的照片（選填）',type:'file'},
     {id:'name',label:'大家看到的名字',value:cur.name||myReviewName()}],saveText:'存起來 🌸',
     onSave:v=>{
@@ -4884,7 +4846,7 @@ function maybeNightReviewPrompt(){
     const now=new Date();if(now.getHours()<22)return;
     const i=tripTodayIndex(now);if(i<0)return;
     const mine=(reviewStore[i]||{})[accountKey()];if(mine&&(mine.text||mine.img||mine.mood))return;
-    const k='nagano_rv_nag_'+i,snooze=Number(localStorage.getItem(k)||0);if(Date.now()<snooze)return;
+    const k='shinshu_rv_nag_'+i,snooze=Number(localStorage.getItem(k)||0);if(Date.now()<snooze)return;
     if(document.getElementById('formModal')||document.getElementById('nightReview'))return;
     const w=document.createElement('div');w.id='nightReview';w.className='night-rv';
     w.innerHTML=`<div class="night-rv-card" role="dialog" aria-label="寫今日回顧"><img src="images/mood-sleepy.webp" alt="" width="150" height="100"><h3>今天辛苦了～</h3><p>睡覺前，跟小羚羊說說今天吧！<br>選個心情、寫一句話就好 🌸</p><button type="button" class="night-go">好呀，現在寫</button><button type="button" class="night-later">等一下再說</button></div>`;
@@ -4902,7 +4864,7 @@ async function logoutFamily(){
   if(!confirm(`${email?`目前登入：${email}\n\n`:''}要登出，換成別的帳號嗎？\n行程資料會留在這支手機上，不會不見。`))return;
   try{if(typeof cloudSync!=='undefined'&&cloudSync.enabled&&navigator.onLine)await Promise.race([flushCloudPush(),new Promise(r=>setTimeout(r,4000))]);}catch(e){}
   saveAuthSession(null);
-  try{localStorage.removeItem('nagano_rv_nag_'+tripTodayIndex());}catch(e){}
+  try{localStorage.removeItem('shinshu_rv_nag_'+tripTodayIndex());}catch(e){}
   location.reload();
 }
 function deleteMyReview(i){
@@ -4931,9 +4893,9 @@ initRainRadar();
 
 
 /* 花況與會場地圖：可新增、改名、替換與刪除。 */
-let foliageMapStore = JSON.parse(localStorage.getItem('nagano_foliage_maps')) || [];
+let foliageMapStore = JSON.parse(localStorage.getItem('shinshu_foliage_maps')) || [];
 foliageMapStore = foliageMapStore.map((item,i)=> typeof item==='string' ? {url:item,title:`花況地圖 ${i+1}`} : item);
-function persistFoliageMaps(){ safeSetItem('nagano_foliage_maps',foliageMapStore); }
+function persistFoliageMaps(){ safeSetItem('shinshu_foliage_maps',foliageMapStore); }
 /* (v54 已改寫) */
 async function handleFoliageMapUpload(e){
   const files=[...(e.target.files||[])];
@@ -4965,18 +4927,16 @@ function renderRouteTimeline(){
 }
 renderRouteTimeline();
 
-/* ============ 兩版行程切換（Lomä 山湖版／藤井莊溪谷版） ============
+/* ============ 行程版本（現在只有一版，保留舊的切換程式） ============
    只換顯示哪 10 天；兩版各自的筆記、照片、自訂景點都保留，切回去還在。選擇只記在這支手機上。 */
-const MTN_SVG='<img class="ps-mtn" src="images/deco/mountains-snowcap.webp" alt="" aria-hidden="true">';
-const PLAN_GMAPS={
-  loma:'https://www.google.com/maps/dir/Narita+Airport/Takasaki+Station/Fujinosakuoka+Fujioka/Nagano+Station/Lake+Nojiri/Imoriike+Myoko/Togakushi+Shrine+Chusha/Obuse/Yokohama+Station/Haneda+Airport+Terminal+3',
-  fujiiso:'https://www.google.com/maps/dir/Narita+Airport/Takasaki+Station/Fujinosakuoka+Fujioka/Nagano+Station/Yamada+Onsen+Takayama+Nagano/Obuse/Togakushi+Shrine+Chusha/Yokohama+Station/Haneda+Airport+Terminal+3'
-};
+const MTN_SVG='<img class="ps-mtn" src="images/deco/mountain.webp" alt="" aria-hidden="true">';
+const PLAN_GMAPS={june:'https://www.google.com/maps/dir/Toyama+Station/Nagano+Station/Hakuba/Togakushi+Shrine/Kagamiike+Togakushi/Imoriike/Ichibongi+Park+Nakano/Shiga+Kogen/Yudanaka+Onsen/Nagano+Station/Yokohama+Station/Haneda+Airport+Terminal+3'};
+
 function renderPlanSwitch(){
+  /* 只有一版行程：不顯示切換鈕，只留主題小字 */
   const el=document.getElementById('planSwitch');
-  if(el)el.innerHTML=`<span class="ps-label">行程版本</span><div class="ps-seg">${Object.entries(PLANS).map(([k,p])=>`<button type="button" role="radio" aria-checked="${k===PLAN}" class="${k===PLAN?'on':''}" onclick="setPlan('${k}')">${escHtml(p.short)}</button>`).join('')}</div><div class="ps-theme"><i></i><span>${escHtml(PLANS[PLAN].theme)}</span><i></i>${MTN_SVG}</div>`;
-  const img=document.getElementById('handDrawnMapImg');if(img&&img.getAttribute('src')!==PLANS[PLAN].overview){img.setAttribute('src',PLANS[PLAN].overview);img.alt=`春光•藤花•山色 ${PLANS[PLAN].label} 行程總覽插畫`;}
-  const note=document.getElementById('planNoteRoute');if(note)note.innerHTML=`<b>目前顯示：${escHtml(PLANS[PLAN].label)}</b><span>${escHtml(PLANS[PLAN].note)}</span><button type="button" onclick="setPlan('${PLAN==='loma'?'fujiiso':'loma'}')">改看${escHtml(PLANS[PLAN==='loma'?'fujiiso':'loma'].short)}</button>`;
+  if(el)el.innerHTML=`<div class="ps-theme"><i></i><span>${escHtml(PLANS[PLAN].theme)}</span><i></i>${MTN_SVG}</div>`;
+  const note=document.getElementById('planNoteRoute');if(note)note.innerHTML=`<b>${escHtml(PLANS[PLAN].label)}</b><span>2027.6.3–6.14｜12天11晚・${escHtml(PLANS[PLAN].note)}</span>`;
   const gm=document.getElementById('routeGmapLink');if(gm)gm.href=PLAN_GMAPS[PLAN];
   document.body.dataset.plan=PLAN;
 }
@@ -4997,7 +4957,7 @@ setTimeout(()=>{try{renderTodoBanner();}catch(e){console.warn(e)}},0);
 if(!CLOUD_CONFIGURED&&'caches' in window){
   window.addEventListener('load',()=>setTimeout(async()=>{
     try{
-      const hasB64=Object.keys(localStorage).some(k=>k.startsWith('nagano_')&&/data:image\//.test(localStorage.getItem(k)||''));
+      const hasB64=Object.keys(localStorage).some(k=>k.startsWith('shinshu_')&&/data:image\//.test(localStorage.getItem(k)||''));
       if(!hasB64)return;
       if(navigator.serviceWorker&&!navigator.serviceWorker.controller)return; /* 等 Service Worker 接手後的下一次開啟再搬 */
       await migrateLegacyMediaToCloud();
@@ -5010,7 +4970,7 @@ CRITTER_IMGS.length=0;CRITTER_IMGS.push(...PEEK_IMGS);
 
 /* 10 天一覽：記住收合狀態 */
 (function(){const d=document.querySelector('.route-timeline-card');if(!d)return;
-  try{if(localStorage.getItem('nagano_rt_open')==='0')d.open=false;}catch(e){}
-  d.addEventListener('toggle',()=>{try{localStorage.setItem('nagano_rt_open',d.open?'1':'0')}catch(e){}});})();
+  try{if(localStorage.getItem('shinshu_rt_open')==='0')d.open=false;}catch(e){}
+  d.addEventListener('toggle',()=>{try{localStorage.setItem('shinshu_rt_open',d.open?'1':'0')}catch(e){}});})();
 /* hk14：主程式跑完的記號（給 index.html 的啟動檢查用） */
 window.__appReady=true;

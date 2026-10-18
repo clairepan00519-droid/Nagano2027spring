@@ -1,7 +1,7 @@
 {
-  "name": "春光•藤花•山色・背上小背包，去山裡住幾天",
-  "short_name": "春光藤花山色",
-  "description": "高崎・長野・橫濱 10 日春旅行程與家人共享指南",
+  "name": "雲停下的地方｜2027 北阿爾卑斯・信州",
+  "short_name": "隨雲入山",
+  "description": "北阿爾卑斯・信州 12 天初夏行程與家人共享指南",
   "lang": "zh-Hant",
   "start_url": "./",
   "scope": "./",
@@ -10,8 +10,23 @@
   "background_color": "#F6F2E8",
   "theme_color": "#F6F2E8",
   "icons": [
-    {"src": "images/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
-    {"src": "images/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
-    {"src": "images/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+    {
+      "src": "images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

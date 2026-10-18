@@ -792,7 +792,7 @@ const TOGAKUSHI_LINK={link:'https://togakushi-21.jp/',linkLabel:'戶隱步道與
 const SHIGA_LINK={link:'https://visitor-center.shigakogen.gr.jp/trekking/',linkLabel:'志賀步道開放資訊'};
 const days = [
 /* 0 */ {dayNum:"1",date:"6/3",weekday:"四",region:"抵達富山",enRegion:"Taipei → Toyama",drive:"✈️ TPE 13:30 → TOY 17:35（當地時間），不取車、不加景點",title:"暮色落在富山",dayDesc:"小羚羊收好登機證，沿著城市的燈光，找一處好好吃飯、慢慢落腳的地方。",wear:"6 月初富山傍晚偏涼，帶一件薄外套",weatherIco:"✈️",spots:[
-    S("13:30 TPE → 17:35 TOY","transport","桃園飛富山，時間皆為當地時間。",{tags:["富山進"],dur:"約3小時",fullDesc:"抵達後入境、領行李，依實際交通前往富山站附近飯店。",img:SCENE.d0}),
+    S("13:30 TPE → 17:35 TOY","transport","桃園飛富山，時間皆為當地時間。",{flight:true,tags:["富山進"],dur:"約3小時",fullDesc:"抵達後入境、領行李，依實際交通前往富山站附近飯店。",img:SCENE.d0}),
     S("すし玉 富山站店","food","晚餐候選，富山站附近。",{tags:["晚餐","不接受預約"],hours:"11:00～21:00（元旦及臨休除外）",fullDesc:"現行 11:00～21:00，不接受座位預約；晚到就改簡餐，不趕打烊。晚上分裝隔日搭車行李，早點休息。",mapQuery:"すし玉 富山駅店",img:SCENE.d0})
   ],moreSpots:[
     hotel(H_TOYAMA,"富山站附近，住 1 晚。",SCENE.d0,{mapQuery:'富山駅',fullDesc:'選富山站步行範圍，隔天直接搭北陸新幹線去長野。'})
@@ -873,7 +873,7 @@ const days = [
   ]},
 /* 11 */ {dayNum:"12",date:"6/14",weekday:"一",region:"橫濱 → 羽田 → 台灣",enRegion:"Yokohama → Haneda → Taipei Songshan",drive:"✈️ HND 14:30 → TSA 16:55（當地時間），11:30 前到機場",title:"歸途仍有餘溫",dayDesc:"背包裡多了玫瑰的香、杉林的聲音，還有幾個想再回去的地方。",wear:"機艙備薄外套",weatherIco:"💌",spots:[
     S("前往羽田機場","transport","08:00～09:00 早餐整理，09:30～10:00 出發，11:30 前到報到航廈。",{fullDesc:"當天不排景點。機場巴士或鐵路方案，依最後住的飯店、2027 時刻和兩個大箱的搬運便利性選擇。",mapQuery:"羽田空港 第3ターミナル",img:SCENE.d11}),
-    S("14:30 HND → 16:55 TSA","transport","羽田飛台北松山，時間皆為當地時間。",{tags:["羽田出"],img:SCENE.d11})
+    S("14:30 HND → 16:55 TSA","transport","羽田飛台北松山，時間皆為當地時間。",{flight:true,tags:["羽田出"],img:SCENE.d11})
   ],moreSpots:[]}
 ];
 
@@ -1270,7 +1270,7 @@ function updateSpotCount(){
 }
 
 /* ============ 景點排序 (LocalStorage 永久保存) ============ */
-/* ng21：交通類卡片（航班、新幹線、取還車、移動）不放在「今日亮點」，改放在「交通」分頁最下面 */
+/* ng22：航班留在「今日亮點」；其他交通類卡片（新幹線、取還車、移動）不放在「今日亮點」，改放在「交通」分頁最下面 */
 const MAIN_CATS = ['attraction','activity'];
 const LIFE_CATS = ['food','shopping','hotel'];
 let orderStore = JSON.parse(localStorage.getItem('shinshu_order')) || {};
@@ -1485,7 +1485,7 @@ function allSearchableSpots(){
       const desc=currentFieldValue(key,'desc',spot.desc)||spot.desc||'';
       const full=currentFieldValue(key,'fullDesc',spot.fullDesc)||spot.fullDesc||'';
       const info=currentBuiltInInfo(key,spot.customInfo||'')||'';
-      const listType=spot.cat==='transport'?'transport':(MAIN_CATS.includes(spot.cat)?'main':'more');
+      const listType=spot.flight?'main':spot.cat==='transport'?'transport':(MAIN_CATS.includes(spot.cat)?'main':'more');
       out.push({dayIdx,key,listType,name,desc,cat:spot.cat,text:[name,desc,full,info,(spot.tags||[]).join(' '),day.region,day.title].join(' ').toLocaleLowerCase('zh-Hant')});
     };
     (day.spots||[]).forEach((spot,i)=>{if(!spot.removed)add(spot,`d${dayIdx}-m${i}`);});
@@ -2476,7 +2476,7 @@ window.addEventListener('offline', updateNetStatus);
 /* ============ Service Worker（離線快取整個網頁） ============ */
 if (navigator.serviceWorker) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=ng21').then(()=>navigator.serviceWorker.ready).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=ng22').then(()=>navigator.serviceWorker.ready).catch(()=>{});
   });
 }
 document.addEventListener('error',e=>{if(e.target?.tagName==='IMG')imageErrorFallback(e.target);},true);
@@ -2978,7 +2978,7 @@ const TENKI_LINKS={
 /* =====================================================================
    v48：收藏／預約狀態／提醒、自駕即時路況、版本與同步比對
    ===================================================================== */
-const APP_VERSION='ng21-2026-10-18';
+const APP_VERSION='ng22-2026-10-18';
 
 /* ---------- 收藏 ★／預約狀態／提醒 ---------- */
 let marksStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_marks'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
@@ -3736,7 +3736,7 @@ function plannedEntriesFor(dayIdx){
 function transportSpotCardsHTML(dayIdx){
   const hidden=new Set(hiddenFixedSpotsStore[dayIdx]||[]);
   const shown=spotsShownOnDay(dayIdx);
-  const list=[...shown.fixed.filter(o=>!hidden.has(o.key)),...shown.custom].filter(o=>o.spot&&o.spot.cat==='transport');
+  const list=[...shown.fixed.filter(o=>!hidden.has(o.key)),...shown.custom].filter(o=>o.spot&&o.spot.cat==='transport'&&!o.spot.flight);
   if(!list.length)return '';
   return `<section class="tp-spot-cards"><h4>交通卡片<small>可以記筆記、放票券截圖或照片</small></h4>${list.map(o=>spotCardHTML(o.spot,o.key,false,o.customMeta,null,o.fixedMeta)).join('')}</section>`;
 }
@@ -3748,7 +3748,7 @@ function getNaturalList(dayIdx, listType){
   const shown = spotsShownOnDay(dayIdx);
   const allFixed = shown.fixed.filter(o=>!hidden.has(o.key));
   const allCustom = shown.custom;
-  const belongs=(o)=> listType==='life' ? (o.spot.life || cats.includes(o.spot.cat)) : (!o.spot.life && cats.includes(o.spot.cat));
+  const belongs=(o)=> listType==='life' ? (o.spot.life || cats.includes(o.spot.cat)) : (!o.spot.life && (cats.includes(o.spot.cat)||o.spot.flight));
   let result=allFixed.filter(belongs).concat(allCustom.filter(belongs)).filter(o=>!master.has(o.key));
   if(listType==='life'){
     result=result.concat(plannedEntriesFor(dayIdx));

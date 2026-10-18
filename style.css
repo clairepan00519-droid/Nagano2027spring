@@ -2851,3 +2851,8 @@ html body #dayScroll .day-chip .m{font-size:11.5px!important;}
 .critter-peek.left.in{transform:translateX(-34%) rotate(4deg)!important;}
 .critter-peek.right.in{transform:translateX(34%) rotate(-4deg)!important;}
 #critterLayer{z-index:40!important;}
+
+/* ng17：裝飾只用杉枝、棉菅、小山、玫瑰 */
+.day-review{position:relative;}
+.ng-deco-review{right:14px;top:10px;width:44px;opacity:.95;}
+.ng-deco-inline{width:30px;height:auto;margin-left:6px;vertical-align:middle;}

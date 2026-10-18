@@ -2474,7 +2474,7 @@ window.addEventListener('offline', updateNetStatus);
 /* ============ Service Worker（離線快取整個網頁） ============ */
 if (navigator.serviceWorker) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=ng16').then(()=>navigator.serviceWorker.ready).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=ng17').then(()=>navigator.serviceWorker.ready).catch(()=>{});
   });
 }
 document.addEventListener('error',e=>{if(e.target?.tagName==='IMG')imageErrorFallback(e.target);},true);
@@ -2976,7 +2976,7 @@ const TENKI_LINKS={
 /* =====================================================================
    v48：收藏／預約狀態／提醒、自駕即時路況、版本與同步比對
    ===================================================================== */
-const APP_VERSION='ng16-2026-10-18';
+const APP_VERSION='ng17-2026-10-18';
 
 /* ---------- 收藏 ★／預約狀態／提醒 ---------- */
 let marksStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_marks'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
@@ -4815,7 +4815,7 @@ function dayReviewHTML(i){
   const card=([k,r])=>{const ms=moodList(r.mood).map(moodInfo);const mi=ms[0];return `<div class="rv-item${k===me?' mine':''}"><div class="rv-head">${mi?`<img class="rv-deer" src="${mi.img}" alt="${escAttr(mi.label)}" width="56" height="56">`:`<span class="rv-av">${escHtml(String(r.name||'?').slice(0,1).toUpperCase())}</span>`}<div class="rv-who"><b>${escHtml(r.name||'家人')}${k===me?'<em>（我）</em>':''}</b></div></div>${ms.length?`<div class="rv-moods">${ms.map((x,n)=>`<span class="rv-mood" style="--mc:${x.color}" title="${escAttr(x.label)}">${n?`<img src="${x.img}" alt="" width="26" height="26">`:''}<b>${escHtml(x.title)}</b><small>${escHtml(x.label)}</small></span>`).join('')}</div>`:''}${r.text?`<p>${brText(r.text)}</p>`:''}${r.img?`<img class="rv-img" src="${escAttr(r.img)}" data-src="${escAttr(r.img)}" alt="" loading="lazy" onclick="openAttachModal(this.dataset.src)">`:''}${k===me?`<div class="rv-acts"><button type="button" onclick="editMyReview(${i})">修改</button><button type="button" class="rv-del" onclick="deleteMyReview(${i})">刪除</button></div>`:''}</div>`;};
   const mine=day[me]&&(day[me].text||day[me].img||day[me].mood);
   const email=myEmail();
-  return `<section class="day-review"><h3><img src="images/mood-happy.webp" alt="" width="40" height="40">今日回顧</h3><p class="rv-sub">今天過得怎麼樣呀？選幾隻小羚羊代表你的心情，再說說今天最喜歡的瞬間～全家都看得到喔 🌸</p>${entries.map(card).join('')||'<div class="rv-empty">還沒有人寫喔～<br>睡前來跟小羚羊說說今天吧！</div>'}${mine?'':`<button type="button" class="rv-add" onclick="editMyReview(${i})">＋ 寫我的回顧</button>`}${CLOUD_CONFIGURED?'':'<!--'}<p class="rv-acct">${email?`目前用 <b>${escHtml(email)}</b> 寫`:'目前沒有登入'}・<button type="button" class="rv-switch" onclick="logoutFamily()">不是你？換帳號</button></p>${CLOUD_CONFIGURED?'':'-->'}</section>`;
+  return `<section class="day-review"><img class="ng-deco ng-deco-review" src="images/deco/rose.webp" alt="" aria-hidden="true"><h3><img src="images/mood-happy.webp" alt="" width="40" height="40">今日回顧</h3><p class="rv-sub">今天過得怎麼樣呀？選幾隻小羚羊代表你的心情，再說說今天最喜歡的瞬間～全家都看得到喔</p>${entries.map(card).join('')||'<div class="rv-empty">還沒有人寫喔～<br>睡前來跟小羚羊說說今天吧！</div>'}${mine?'':`<button type="button" class="rv-add" onclick="editMyReview(${i})">＋ 寫我的回顧</button>`}${CLOUD_CONFIGURED?'':'<!--'}<p class="rv-acct">${email?`目前用 <b>${escHtml(email)}</b> 寫`:'目前沒有登入'}・<button type="button" class="rv-switch" onclick="logoutFamily()">不是你？換帳號</button></p>${CLOUD_CONFIGURED?'':'-->'}</section>`;
 }
 function moodPickerHTML(cur){
   const sel=moodList(cur);

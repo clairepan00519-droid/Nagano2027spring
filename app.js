@@ -2476,7 +2476,7 @@ window.addEventListener('offline', updateNetStatus);
 /* ============ Service Worker（離線快取整個網頁） ============ */
 if (navigator.serviceWorker) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=ng19').then(()=>navigator.serviceWorker.ready).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=ng20').then(()=>navigator.serviceWorker.ready).catch(()=>{});
   });
 }
 document.addEventListener('error',e=>{if(e.target?.tagName==='IMG')imageErrorFallback(e.target);},true);
@@ -2978,7 +2978,7 @@ const TENKI_LINKS={
 /* =====================================================================
    v48：收藏／預約狀態／提醒、自駕即時路況、版本與同步比對
    ===================================================================== */
-const APP_VERSION='ng19-2026-10-18';
+const APP_VERSION='ng20-2026-10-18';
 
 /* ---------- 收藏 ★／預約狀態／提醒 ---------- */
 let marksStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_marks'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
@@ -4131,7 +4131,9 @@ function nextSurprise(mode){
 }
 /* 依標點切成一小段一小段，換行盡量落在逗號、句號之後 */
 function phraseWrapHTML(t){
-  const parts=String(t).match(/[^，、。；：！？!?）」』]+[，、。；：！？!?）」』]*|[，、。；：！？!?）」』]+/g)||[String(t)];
+  const raw=String(t).match(/[^，、。；：！？!?）」』]+[，、。；：！？!?）」』]*|[，、。；：！？!?）」』]+/g)||[String(t)];
+  /* 太短的片段（例如「今晚，」）跟下一段放在同一行，不單獨成行 */
+  const parts=[];for(let i=0;i<raw.length;i++){const x=raw[i];if(x.replace(/[，、。；：！？!?）」』]/g,'').length<=3&&i<raw.length-1){raw[i+1]=x+raw[i+1];continue;}parts.push(x);}
   return parts.map(x=>`<span class="ph">${escHtml(x)}</span>`).join('');
 }
 function showSurprise(mode){

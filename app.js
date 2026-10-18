@@ -773,12 +773,12 @@ function S(name, cat, desc, opts={}){
 
 /* ============ 雲停下的地方：2027 北阿爾卑斯・信州 12 天每日行程（長野取還車版，2026/10/18 整理） ============
    2027.6.3–6.14。去程 TPE 桃園 → TOY 富山 13:30–17:35；回程 HND 羽田 → TSA 松山 14:30–16:55（皆為當地時間）。
-   6/4 富山搭新幹線到長野，TOYOTA 長野店取車；6/12 同店還車，再搭車經東京到橫濱。東京與橫濱不自駕。
+   6/4 富山取車直接開往白馬；6/12 長野還車，再搭車經東京到橫濱。東京與橫濱不自駕。
    車程為規劃預算，2027 班次、餐飲臨休、步道開放與花況仍待確認。
    PLANS 只留一版（沿用原本兩版切換的程式，切換鈕不再顯示）。 */
 const PLAN_KEY='shinshu_plan_v1';
 const PLANS={
-  june:{label:'2027 北阿爾卑斯・信州',short:'12 天',theme:'富山・白馬・戶隱・妙高・志賀高原・橫濱',note:'富山進、羽田出，長野取還車。',overview:'images/overview.webp',days:[0,1,2,3,4,5,6,7,8,9,10,11]}
+  june:{label:'2027 北阿爾卑斯・信州',short:'12 天',theme:'富山・白馬・戶隱・妙高・志賀高原・橫濱',note:'富山進、羽田出，富山取車、長野還車。',overview:'images/overview.webp',days:[0,1,2,3,4,5,6,7,8,9,10,11]}
 };
 let PLAN='june';
 function planDays(){return PLANS[PLAN].days;}
@@ -797,11 +797,10 @@ const days = [
   ],moreSpots:[
     hotel(H_TOYAMA,"富山站附近，住 1 晚。",SCENE.d0,{mapQuery:'富山駅',fullDesc:'選富山站步行範圍，隔天直接搭北陸新幹線去長野。'})
   ]},
-/* 1 */ {dayNum:"2",date:"6/4",weekday:"五",region:"長野取車 → 白馬",enRegion:"Toyama → Nagano → Hakuba",drive:"🚄 富山→長野新幹線，TOYOTA 長野店取車，奧林匹克道路到白馬（純開車 1h15–1h30）",title:"車窗外的遠方",dayDesc:"列車把山拉近，車窗又把山路展開；今天的終點，是午後三點的庭園。",wear:"白馬早晚約 10°C 上下，帶保暖外套",weatherIco:"🚄",spots:[
-    S("富山 → 長野 北陸新幹線","transport","08:00～09:00 早餐退房，上午搭新幹線到長野。",{dur:"約1小時",fullDesc:"先抓約一小時，依 2027 實際停靠班次安排。",img:SCENE.d1}),
-    S("TOYOTA 長野店取車","transport","預留 30～45 分鐘，確認 ETC、還車資訊與導航。",{tags:["租車"],dur:"30–45分鐘",fullDesc:"長野店在善光寺口步行約 3 分鐘。租到 6/12 同店還車。",link:'https://rent.toyota.co.jp/',linkLabel:'TOYOTA 租車門市與預約',mapQuery:"トヨタレンタカー 長野駅善光寺口",img:SCENE.d1}),
-    S("長野或往白馬途中午餐","food","12:00 左右午餐。",{tags:["午餐"],img:SCENE.d1}),
-    S("白馬・長野奧林匹克道路","activity","下午經奧林匹克道路前往飯店，不加景點。",{dur:"約1h15–1h30",fullDesc:"從租車店到飯店的時間，不等於飯店官網寫的「長野 IC 到飯店約一小時」。保留午餐與交通餘裕，優先 15:00 入住。",mapQuery:"オリンピック道路 白馬",img:SCENE.d1})
+/* 1 */ {dayNum:"2",date:"6/4",weekday:"五",region:"富山取車 → 白馬",enRegion:"Toyama → Hakuba",drive:"🚗 富山取車，直接開往白馬，15:00 入住",title:"車窗外的遠方",dayDesc:"列車把山拉近，車窗又把山路展開；今天的終點，是午後三點的庭園。",wear:"白馬早晚約 10°C 上下，帶保暖外套",weatherIco:"🚗",spots:[
+    S("富山取車","transport","08:00～09:00 早餐退房，上午在富山取車，預留 30～45 分鐘。",{tags:["租車"],dur:"30–45分鐘",fullDesc:"確認 ETC、還車資訊與導航。租到 6/12 長野還車；富山取、長野還是異地還車，通常要另付費用，預約時確認。",link:'https://rent.toyota.co.jp/',linkLabel:'TOYOTA 租車門市與預約',mapQuery:"トヨタレンタカー 富山駅前",img:SCENE.d1}),
+    S("富山 → 白馬","transport","走北陸道往糸魚川，接國道 148 南下白馬，不加景點。",{dur:"約2～2.5小時（估算）",fullDesc:"路線依導航；保留午餐與交通餘裕，優先 15:00 入住。",mapQuery:"白馬村",img:SCENE.d1}),
+    S("途中午餐","food","12:00 左右，在路上的休息站或糸魚川一帶午餐。",{tags:["午餐"],img:SCENE.d1})
   ],moreSpots:[
     hotel(H_HAKUBA,"15:00 後入住，庭園、泡湯；晚餐依預訂時段。連住 2 晚。",SCENE.d2,{tags:["連住2晚","15:00入住"],mapQuery:'シェラリゾート白馬',link:'https://sierraresort.jp/hakuba/',linkLabel:'Sierra 交通／館內資訊'})
   ]},
@@ -883,10 +882,9 @@ const transportPlans = [
   {summary:'TPE 13:30 → TOY 17:35，入境後到富山站附近飯店。', alert:'今天不取車、不加景點。', routes:[
     {from:'桃園 TPE',to:'富山 TOY',mode:'✈️ 航班',time:'13:30 → 17:35',note:'當地時間'},
     {from:'富山機場',to:'富山站附近飯店',mode:'🚌 依實際交通',time:'抵達後',note:''}]},
-  {summary:'富山→長野新幹線，TOYOTA 長野店取車，奧林匹克道路到白馬。', alert:'租車店到飯店不等於「長野 IC 到飯店約一小時」；保留午餐與交通餘裕，優先 15:00 入住。', routes:[
-    {from:'富山站',to:'JR 長野站',mode:'🚄 北陸新幹線',time:'約 1 小時',note:'依 2027 停靠班次'},
-    {from:'長野站善光寺口',to:'TOYOTA 長野店',mode:'🚶 步行',time:'約 3 分',note:'取車預留 30～45 分'},
-    {from:'長野',to:'白馬 Sierra Resort',mode:'🚗 奧林匹克道路',time:'約 1h15～1h30',note:'15:00 入住'}]},
+  {summary:'富山取車，直接開往白馬。', alert:'富山取、長野還是異地還車，費用預約時確認；優先 15:00 入住。', routes:[
+    {from:'富山',to:'租車店',mode:'🚗 取車',time:'上午',note:'預留 30～45 分'},
+    {from:'富山',to:'白馬 Sierra Resort',mode:'🚗 北陸道＋國道 148',time:'約 2～2.5 小時（估算）',note:'15:00 入住'}]},
   null,
   {summary:'10:00 退房，奧林匹克道路 → 長野外圍 → 淺川 Loop Line 進戶隱。', alert:'主要長移動日；較寬幹道優先，不改走狹窄捷徑。', routes:[
     {from:'白馬',to:'戶隱',mode:'🚗 自駕',time:'約 2～2.5 小時',note:'另加午餐休息，15:00 左右入住'}]},
@@ -914,7 +912,7 @@ const transportPlans = [
     {from:'橫濱飯店',to:'羽田機場',mode:'🚌／🚃 機場巴士或鐵路',time:'09:30～10:00 出發',note:'11:30 前抵達'},
     {from:'羽田 HND',to:'台北松山 TSA',mode:'✈️ 航班',time:'14:30 → 16:55',note:'當地時間'}]}
 ];
-const transportGeneralTips = ['準備 Suica 等 IC 卡','長野同店租還；東京、橫濱不開車'];
+const transportGeneralTips = ['準備 Suica 等 IC 卡','富山取車、長野還車；東京、橫濱不開車'];
 
 
 /* ============ 筆記/照片/自訂景點系統 (LocalStorage 永久保存) ============ */
@@ -2358,8 +2356,7 @@ function addRuleItem() {
 const defaultDocsData = [
   {ic:'✈️',t:'去程 TPE 桃園 → TOY 富山',s:'6/3 13:30 → 17:35',chip:'航班',link:'',img:null,confirmed:false},
   {ic:'🏨',t:'富山站周邊飯店',s:'6/3・1 晚',chip:'住宿',link:'',img:null,confirmed:false},
-  {ic:'🚄',t:'北陸新幹線 富山 → 長野',s:'6/4',chip:'車票',link:'',img:null,confirmed:false},
-    {ic:'🚗',t:'TOYOTA 長野店租車（同店租還）',s:'6/4–6/12',chip:'租車',link:'',img:null,confirmed:false},
+    {ic:'🚗',t:'租車（富山取、長野還）',s:'6/4–6/12',chip:'租車',link:'',img:null,confirmed:false},
   {ic:'🏨',t:'白馬 Sierra Resort',s:'6/4–6/5・2 晚',chip:'住宿',link:'',img:null,confirmed:false},
   {ic:'🏨',t:'戶隱住宿',s:'6/6–6/7・2 晚',chip:'住宿',link:'',img:null,confirmed:false},
   {ic:'🏨',t:'妙高 赤倉観光ホテル',s:'6/8・1 晚',chip:'住宿',link:'',img:null,confirmed:false},
@@ -2477,7 +2474,7 @@ window.addEventListener('offline', updateNetStatus);
 /* ============ Service Worker（離線快取整個網頁） ============ */
 if (navigator.serviceWorker) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=ng14').then(()=>navigator.serviceWorker.ready).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=ng15').then(()=>navigator.serviceWorker.ready).catch(()=>{});
   });
 }
 document.addEventListener('error',e=>{if(e.target?.tagName==='IMG')imageErrorFallback(e.target);},true);
@@ -2979,7 +2976,7 @@ const TENKI_LINKS={
 /* =====================================================================
    v48：收藏／預約狀態／提醒、自駕即時路況、版本與同步比對
    ===================================================================== */
-const APP_VERSION='ng14-2026-10-18';
+const APP_VERSION='ng15-2026-10-18';
 
 /* ---------- 收藏 ★／預約狀態／提醒 ---------- */
 let marksStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_marks'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
@@ -3204,7 +3201,7 @@ document.addEventListener('DOMContentLoaded',()=>{initLive();renderMarksBar();re
 /* =====================================================================
    v49：手機優先改版（新標頭與圖示、逛吃畫廊、MaMa 專頁、App 安裝）
    ===================================================================== */
-const DAY_CITIES=[['Toyama'],['Nagano','Hakuba'],['Hakuba'],['Hakuba','Togakushi'],['Togakushi'],['Togakushi','Myoko'],['Nagano','Shiga'],['Shiga'],['Shiga','Yudanaka'],['Nagano','Yokohama'],['Yokohama'],['Yokohama']];
+const DAY_CITIES=[['Toyama'],['Toyama','Hakuba'],['Hakuba'],['Hakuba','Togakushi'],['Togakushi'],['Togakushi','Myoko'],['Nagano','Shiga'],['Shiga'],['Shiga','Yudanaka'],['Nagano','Yokohama'],['Yokohama'],['Yokohama']];
 const NAV_IC={itinerary:'images/nav-itinerary.webp',route:'images/nav-route.webp',guide:'images/nav-guide.webp',weather:'images/nav-weather.webp',food:'images/nav-food.webp',shopping:'images/nav-shopping.webp',lodging:'images/nav-lodging.webp'};
 /* hk19：每天「交通」分頁最上方的即時狀況大按鈕（網址沿用環線頁「即時交通與警報」，在那裡改了這裡也跟著變） */
 function tpLiveBarHTML(dayIdx){
@@ -3459,7 +3456,7 @@ function moveEatArea(name,dir){
 /* hk11 */
 function isCustomArea(a){return !EAT_AREAS.includes(a);}
 const AREA_ORIGIN={'富山':'富山駅','白馬':'Sierra Resort Hakuba','戶隱':'戸隠','妙高':'赤倉観光ホテル','中野・長野':'長野駅','志賀高原・湯田中':'湯田中温泉','橫濱':'横浜駅'};
-const EAT_DAY_AREA={0:'富山',1:'中野・長野',2:'白馬',3:'戶隱',4:'戶隱',5:'妙高',6:'中野・長野',7:'志賀高原・湯田中',8:'志賀高原・湯田中',9:'中野・長野',10:'橫濱',11:'橫濱'};
+const EAT_DAY_AREA={0:'富山',1:'白馬',2:'白馬',3:'戶隱',4:'戶隱',5:'妙高',6:'中野・長野',7:'志賀高原・湯田中',8:'志賀高原・湯田中',9:'中野・長野',10:'橫濱',11:'橫濱'};
 const EAT_NAME_AREA={};
 let eatAreaStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_eat_area'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
 function persistEatArea(){safeSetItem('shinshu_eat_area',eatAreaStore);}
@@ -4701,9 +4698,9 @@ const TODO_SEED=[
   {id:'todo-flight6',text:'確認機票：6/3 TPE 13:30 → TOY 17:35、6/14 HND 14:30 → TSA 16:55',due:'2027-01-31'},
   {id:'todo-hakuba',text:'白馬 Sierra Resort：確認 6/4–6/5 兩晚、晚餐與溫泉時間',due:'2027-02-28'},
   {id:'todo-hotels6',text:'訂富山、戶隱（2 晚）、志賀高原（2 晚）、橫濱（2 晚）住宿；確認赤倉観光ホテル、松籟莊',due:'2027-02-28'},
-  {id:'todo-car6',text:'預約 TOYOTA 長野店租車 6/4–6/12（同店租還）；核對車型、ETC、營業時間與後車廂',due:'2027-03-31'},
+  {id:'todo-car6',text:'預約租車 6/4 富山取、6/12 長野還；確認異地還車費、車型、ETC、營業時間與後車廂',due:'2027-03-31'},
   {id:'todo-license',text:'每位駕駛準備駕照日文譯本（國際駕照），確認有效期限',due:'2027-04-30'},
-  {id:'todo-shinkansen6',text:'新幹線指定席：搭乘日前 1 個月開售，6/4 富山→長野、6/12 長野→東京先訂',due:'2027-05-04'},
+  {id:'todo-shinkansen6',text:'新幹線指定席：搭乘日前 1 個月開售，6/12 長野→東京先訂',due:'2027-05-04'},
   {id:'todo-luggage',text:'確認 6/10 志賀高原寄大行李到橫濱：住宿是否受理、橫濱住宿能否代收',due:'2027-05-15'},
   {id:'todo-insurance',text:'保旅遊平安險＋旅遊不便險',due:'2027-05-20'},
   {id:'todo-vjw',text:'每個人填好 Visit Japan Web（入境與海關資料），截圖 QR Code',due:'2027-05-27'},
@@ -4938,7 +4935,7 @@ renderRouteTimeline();
 /* ============ 行程版本（現在只有一版，保留舊的切換程式） ============
    只換顯示哪 10 天；兩版各自的筆記、照片、自訂景點都保留，切回去還在。選擇只記在這支手機上。 */
 const MTN_SVG='<img class="ps-mtn" src="images/deco/mountain.webp" alt="" aria-hidden="true">';
-const PLAN_GMAPS={june:'https://www.google.com/maps/dir/Toyama+Station/Nagano+Station/Hakuba/Togakushi+Shrine/Kagamiike+Togakushi/Imoriike/Ichibongi+Park+Nakano/Shiga+Kogen/Yudanaka+Onsen/Nagano+Station/Yokohama+Station/Haneda+Airport+Terminal+3'};
+const PLAN_GMAPS={june:'https://www.google.com/maps/dir/Toyama+Station/Hakuba/Togakushi+Shrine/Kagamiike+Togakushi/Imoriike/Ichibongi+Park+Nakano/Shiga+Kogen/Yudanaka+Onsen/Nagano+Station/Yokohama+Station/Haneda+Airport+Terminal+3'};
 
 function renderPlanSwitch(){
   /* 只有一版行程：不顯示切換鈕，只留主題小字 */

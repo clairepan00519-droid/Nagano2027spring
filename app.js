@@ -1270,8 +1270,8 @@ function updateSpotCount(){
 }
 
 /* ============ 景點排序 (LocalStorage 永久保存) ============ */
-/* hk28：航班卡片放回「今日亮點」；其他交通卡片已移除（交通資訊都在「交通」分頁） */
-const MAIN_CATS = ['attraction','activity','transport'];
+/* ng21：交通類卡片（航班、新幹線、取還車、移動）不放在「今日亮點」，改放在「交通」分頁最下面 */
+const MAIN_CATS = ['attraction','activity'];
 const LIFE_CATS = ['food','shopping','hotel'];
 let orderStore = JSON.parse(localStorage.getItem('shinshu_order')) || {};
 function persistOrder(){ safeSetItem('shinshu_order', orderStore); }
@@ -1485,7 +1485,7 @@ function allSearchableSpots(){
       const desc=currentFieldValue(key,'desc',spot.desc)||spot.desc||'';
       const full=currentFieldValue(key,'fullDesc',spot.fullDesc)||spot.fullDesc||'';
       const info=currentBuiltInInfo(key,spot.customInfo||'')||'';
-      const listType=MAIN_CATS.includes(spot.cat)?'main':'more';
+      const listType=spot.cat==='transport'?'transport':(MAIN_CATS.includes(spot.cat)?'main':'more');
       out.push({dayIdx,key,listType,name,desc,cat:spot.cat,text:[name,desc,full,info,(spot.tags||[]).join(' '),day.region,day.title].join(' ').toLocaleLowerCase('zh-Hant')});
     };
     (day.spots||[]).forEach((spot,i)=>{if(!spot.removed)add(spot,`d${dayIdx}-m${i}`);});
@@ -1778,7 +1778,7 @@ function renderDayContent(){
   const lifeList = applyOrder(activeDay, 'life', getNaturalList(activeDay, 'life'));
 
   let mainSpotsHTML = mainList.map(o=>spotCardHTML(o.spot, o.key, true, o.customMeta, {dayIdx:activeDay, listType:'main'}, o.fixedMeta)).join('');
-  if(!mainSpotsHTML) mainSpotsHTML = '<div class="empty">此區域今天暫無排定主要亮點。</div>';
+  if(!mainSpotsHTML) mainSpotsHTML = `<div class="empty">今天以移動為主，沒有排景點。<br>航班、取還車與路線都在「交通」分頁。<br><button type="button" class="dp-link" onclick="switchSubTab(${activeDay},'transport')">看今天的交通 ›</button></div>`;
 
   let secondaryCardsHTML = lifeList.map(o=>spotCardHTML(o.spot, o.key, false, o.customMeta, {dayIdx:activeDay, listType:'life'}, o.fixedMeta)).join('');
   if(!secondaryCardsHTML) secondaryCardsHTML = '<div class="empty">此區域今天暫無排定食衣住項目，歡迎在下方新增您的私房景點。</div>';
@@ -1830,7 +1830,7 @@ function renderDayContent(){
         <div class="spots-pane${curSubTab==='more'?' active':''}" data-view="life">${secondaryCardsHTML}${addSpotFormHTML}</div>
       </div>
       <div class="subtab-content${curSubTab==='weather'?' active':''}" data-type="weather">${curSubTab==='weather'?dayWeatherPanelHTML(activeDay):''}</div>
-      <div class="subtab-content${curSubTab==='transport'?' active':''}" data-type="transport">${transportHTML}</div>
+      <div class="subtab-content${curSubTab==='transport'?' active':''}" data-type="transport">${transportHTML}${transportSpotCardsHTML(activeDay)}</div>
       <div class="subtab-content${curSubTab==='routemap'?' active':''}" data-type="routemap" style="background:#F6F4F0; border-radius:var(--r-lg); padding:12px; margin-bottom:16px;">${routeMapHTML}</div>
       <div class="subtab-content${curSubTab==='eat'?' active':''}" data-type="eat">${curSubTab==='eat'?dayEatPanelHTML(activeDay):''}</div>
     </div>
@@ -2476,7 +2476,7 @@ window.addEventListener('offline', updateNetStatus);
 /* ============ Service Worker（離線快取整個網頁） ============ */
 if (navigator.serviceWorker) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=ng20').then(()=>navigator.serviceWorker.ready).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=ng21').then(()=>navigator.serviceWorker.ready).catch(()=>{});
   });
 }
 document.addEventListener('error',e=>{if(e.target?.tagName==='IMG')imageErrorFallback(e.target);},true);
@@ -2978,7 +2978,7 @@ const TENKI_LINKS={
 /* =====================================================================
    v48：收藏／預約狀態／提醒、自駕即時路況、版本與同步比對
    ===================================================================== */
-const APP_VERSION='ng20-2026-10-18';
+const APP_VERSION='ng21-2026-10-18';
 
 /* ---------- 收藏 ★／預約狀態／提醒 ---------- */
 let marksStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_marks'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
@@ -3254,7 +3254,7 @@ function openMarksPanel(filter){
   const wrap=document.createElement('div');wrap.className='spot-edit-modal active';wrap.id='formModal';
   wrap.addEventListener('click',e=>{if(e.target===wrap)closeFormModal();});
   const tabs=Object.keys(names).map(f=>`<button type="button" class="mk-tab ${f===filter?'on':''}" data-tab="${f}">${names[f]} <b>${c[f]}</b></button>`).join('');
-  const body=rows.length?rows.map(({k,m,t:x})=>`<div class="snap-row"><div><strong>${escHtml(x.name)}</strong><small>${x.dayIdx!=null?`D${days[x.dayIdx].dayNum}・${days[x.dayIdx].date}`:(x.kind==='eat'?'吃·旅途 我的收藏':'逛·旅途 我的收藏')}</small>${statusChipHTML(k)}${m.info?`<small>${escHtml(m.info)}</small>`:''}${m.remind?`<small>⏰ ${m.remindDate?escHtml(m.remindDate)+' ':''}${escHtml(m.remind)}</small>`:''}</div><button type="button" data-go="${escAttr(k)}">前往</button></div>`).join(''):`<div class="empty-art"><img src="images/bird-cookie.webp" alt="" loading="lazy"><p>目前沒有項目。<br>在景點或餐廳卡片點 ☆ 收藏，<br>或在編輯模式設定預約／提醒。</p></div>`;
+  const body=rows.length?rows.map(({k,m,t:x})=>`<div class="snap-row"><div><strong>${escHtml(x.name)}</strong><small>${x.dayIdx!=null?`D${days[x.dayIdx].dayNum}・${days[x.dayIdx].date}`:(x.kind==='eat'?'吃·旅途 我的收藏':'逛·旅途 我的收藏')}</small>${statusChipHTML(k)}${m.info?`<small>${escHtml(m.info)}</small>`:''}${m.remind?`<small>⏰ ${m.remindDate?escHtml(m.remindDate)+' ':''}${escHtml(m.remind)}</small>`:''}</div><button type="button" data-go="${escAttr(k)}">前往</button></div>`).join(''):`<div class="empty-art"><img src="images/serow-peek.webp" alt="" loading="lazy"><p>目前沒有項目。<br>在景點或餐廳卡片點 ☆ 收藏，<br>或在編輯模式設定預約／提醒。</p></div>`;
   wrap.innerHTML=`<div class="spot-edit-modal-card"><div class="spot-edit-modal-head"><h3>收藏與預約</h3><button class="spot-edit-modal-close" type="button" data-close>✕</button></div><div class="mk-tabs">${tabs}</div><div class="spot-edit-modal-body">${body}</div></div>`;
   document.body.appendChild(wrap);
   wrap.querySelector('[data-close]').onclick=()=>closeFormModal();
@@ -3731,6 +3731,14 @@ function plannedEntriesFor(dayIdx){
   masterKeySet().forEach(key=>{if(planOf(key)===dayIdx){const spot=spotByKey(key);if(spot)out.push({spot,key,fixedMeta:{dayIdx,planned:true}});}});
   eatShopStore.forEach(c=>{if(planOf('es:'+c.id)===dayIdx)out.push({spot:eatCustomSpot(c),key:'es:'+c.id,fixedMeta:{dayIdx,planned:true}});});
   return out;
+}
+/* 交通類的卡片放在「交通」分頁最下面，筆記、照片照常可用 */
+function transportSpotCardsHTML(dayIdx){
+  const hidden=new Set(hiddenFixedSpotsStore[dayIdx]||[]);
+  const shown=spotsShownOnDay(dayIdx);
+  const list=[...shown.fixed.filter(o=>!hidden.has(o.key)),...shown.custom].filter(o=>o.spot&&o.spot.cat==='transport');
+  if(!list.length)return '';
+  return `<section class="tp-spot-cards"><h4>交通卡片<small>可以記筆記、放票券截圖或照片</small></h4>${list.map(o=>spotCardHTML(o.spot,o.key,false,o.customMeta,null,o.fixedMeta)).join('')}</section>`;
 }
 function getNaturalList(dayIdx, listType){
   const cats = listType === 'main' ? MAIN_CATS : LIFE_CATS;

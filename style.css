@@ -2864,3 +2864,7 @@ html body .ng-dayhead .ng-route-strip{margin-top:0!important;padding:9px 14px!im
 .ng-dayhead .dh-art{height:226px!important;-webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.35) 14%,rgba(0,0,0,.85) 30%,#000 42%),linear-gradient(180deg,#000 72%,transparent 100%)!important;mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.35) 14%,rgba(0,0,0,.85) 30%,#000 42%),linear-gradient(180deg,#000 72%,transparent 100%)!important;}
 /* ng20：每日副標每個逗號、分號後都換行，一個短句一行（像「換海風來帶路」那樣） */
 html body .ng-dayhead h2 .ph{display:block;}
+/* ng21：交通分頁下方的交通卡片 */
+.tp-spot-cards{margin:14px 0 4px;}
+.tp-spot-cards h4{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0 4px 10px;font-family:var(--title);font-weight:400;font-size:19px;color:var(--forest);}
+.tp-spot-cards h4 small{font-family:inherit;font-size:12px;color:var(--ink-soft);}

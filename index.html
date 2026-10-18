@@ -17,8 +17,8 @@ window.__repairApp=function(){var done=function(){var u=location.pathname+'?fres
 window.addEventListener('load',function(){setTimeout(function(){if(window.__appReady)return;var b=box();if(!b)return;b.innerHTML='<b>⚠️ 網站程式沒有正常啟動</b><div style="margin:6px 0;font-size:13px;word-break:break-all">'+(window.__appReady?'':'主程式 app.js 沒有跑完。<br>')+errs.slice(0,5).map(function(x){return x.replace(/</g,'&lt;');}).join('<br>')+'<br><small>'+navigator.userAgent.replace(/</g,'')+'</small></div><button type="button" onclick="__repairApp()" style="width:100%;min-height:48px;border:0;border-radius:12px;background:#3B6A5A;color:#fff;font:inherit;font-weight:800">清除舊版快取並重新載入（資料不會刪除）</button><div style="margin-top:6px;font-size:13px">如果還是不行，請把這個畫面截圖傳給我。</div>';},2500);});
 })();</script>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="64x64" href="images/favicon.png?v=ng13">
-<link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=ng13">
+<link rel="icon" type="image/png" sizes="64x64" href="images/favicon.png?v=ng14">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=ng14">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="隨雲入山">
@@ -32,8 +32,8 @@ window.addEventListener('load',function(){setTimeout(function(){if(window.__appR
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@300;400;700&family=Caveat:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="preload" href="fonts/ChenYuluoyan-Thin-sub.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=ng13">
-<link rel="stylesheet" href="splash.css?v=ng13">
+<link rel="stylesheet" href="style.css?v=ng14">
+<link rel="stylesheet" href="splash.css?v=ng14">
 </head>
 <body class="family-locked">
 <div id="naganoSplash" class="splash" hidden aria-label="雲停下的地方 載入中">
@@ -49,7 +49,7 @@ window.addEventListener('load',function(){setTimeout(function(){if(window.__appR
     <div class="splash__title"><strong>雲停下的地方</strong><span>沿著山路與湖光，住進十二天的初夏</span></div>
   </div>
 </div>
-<script src="splash.js?v=ng13"></script>
+<script src="splash.js?v=ng14"></script>
 
 <div id="familyGate" class="family-gate" aria-hidden="false">
   <div class="family-gate-card">
@@ -147,9 +147,9 @@ window.addEventListener('load',function(){setTimeout(function(){if(window.__appR
     <!-- Flights -->
     <div class="section-card">
       <h3><img class="h-ic" src="images/art-route.webp" alt="" width="30" height="30"> 飛航與主要交通</h3>
-      <div class="flight-box"><div class="ftitle">🛫 去程 台灣 → 富山</div><div class="flight-row"><span>日期</span><span>2027.06.03（四）</span></div><div class="flight-row"><span>時間</span><span>待訂</span></div><div class="flight-row"><span>航班</span><span>待訂</span></div></div>
-      <div class="flight-box"><div class="ftitle">🛬 回程 羽田 → 台灣</div><div class="flight-row"><span>日期</span><span>2027.06.14（一）</span></div><div class="flight-row"><span>時間</span><span>待訂（國際線預留起飛前約 3 小時到機場）</span></div><div class="flight-row"><span>航班</span><span>待訂</span></div></div>
-      <div class="source-note">※ 富山進、羽田出要用多城市方式購票，2027 班表公布後再定。</div>
+      <div class="flight-box"><div class="ftitle">🛫 去程 TPE 桃園 → TOY 富山</div><div class="flight-row"><span>日期</span><span>2027.06.03（四）</span></div><div class="flight-row"><span>時間</span><span>13:30 → 17:35（當地時間）</span></div></div>
+      <div class="flight-box"><div class="ftitle">🛬 回程 HND 羽田 → TSA 松山</div><div class="flight-row"><span>日期</span><span>2027.06.14（一）</span></div><div class="flight-row"><span>時間</span><span>14:30 → 16:55（當地時間），11:30 前到機場</span></div></div>
+      <div class="source-note">※ 時間皆為當地時間；2027 班次以最終票券為準。</div>
     </div>
 
     <!-- Docs -->
@@ -166,18 +166,18 @@ window.addEventListener('load',function(){setTimeout(function(){if(window.__appR
       <details class="transport-principles">
         <summary class="transport-principles-head"><img class="tp-ic" src="images/nav-route.webp" alt="" width="34" height="34"><div><small>共通設定</small><h4>租車與鐵路原則</h4></div><em>展開</em></summary>
         <div class="transport-principles-body">
-        <ul><li>6/4 富山取車直接開往白馬；6/12 長野還車，之後只用鐵路。甲地租乙地還要另付異地還車費。</li><li>新幹線熱門班次先訂指定席；JR 一般指定席在搭乘日前 1 個月開售。</li><li>奧林匹克道路、淺川 Loop Line、國道 292 都是山路，雨霧天減速，以白天移動為主。</li><li>6/10 在志賀高原把大行李寄到橫濱，後兩天輕裝。</li></ul><div class="transport-link-row"><a href="https://www.jreast.co.jp/multi/zh-CHT/" target="_blank" rel="noopener">JR 東日本新幹線及機場列車</a></div>
+        <ul><li>6/4 富山搭新幹線到長野，TOYOTA 長野店取車；6/12 同店還車，再搭車經東京到橫濱。東京、橫濱不開車。</li><li>新幹線熱門班次先訂指定席；JR 一般指定席在搭乘日前 1 個月開售。</li><li>奧林匹克道路、淺川 Loop Line、國道 292 都是山路，雨霧天減速，以白天移動為主。</li><li>6/10 在志賀高原把大行李寄到橫濱，後兩天輕裝。</li></ul><div class="transport-link-row"><a href="https://www.jreast.co.jp/multi/zh-CHT/" target="_blank" rel="noopener">JR 東日本新幹線及機場列車</a></div>
         </div>
       </details>
       <div id="transportQuickNav" class="transport-quick-nav" aria-label="交通日期快速索引"></div>
       <div class="transport-grid" id="transportGrid">
         <article class="transport-card"><div class="transport-day">D1</div><div><h4>富山機場 → 富山站</h4><p>機場巴士約 20–30 分鐘（估算，依班次）。</p></div></article>
-        <article class="transport-card"><div class="transport-day">D2</div><div><h4>富山取車 → 白馬</h4><p>富山取車，走北陸道接國道 148 到白馬（約 2–2.5 小時，估算），15:00 入住。</p></div></article>
+        <article class="transport-card"><div class="transport-day">D2</div><div><h4>富山 → 長野取車 → 白馬</h4><p>北陸新幹線到長野（約 1 小時），TOYOTA 長野店取車（預留 30～45 分），奧林匹克道路到白馬（約 1h15～1h30），15:00 入住。</p></div></article>
         <article class="transport-card"><div class="transport-day">D4</div><div><h4>白馬 → 戶隱</h4><p>10:00 退房，奧林匹克道路接淺川 Loop Line（約 1.5 小時，估算）。</p></div></article>
         <article class="transport-card"><div class="transport-day">D6</div><div><h4>戶隱 → 鏡池 → いもり池 → 妙高</h4><p>清晨鏡池，10:00 退房後去いもり池，15:00 赤倉入住。</p></div></article>
         <article class="transport-card"><div class="transport-day">D7</div><div><h4>妙高 → 中野 → 志賀高原</h4><p>11:00 退房，一本木公園看玫瑰，中野午餐，國道 292 上山，15:00 入住。</p></div></article>
         <article class="transport-card"><div class="transport-day">D9</div><div><h4>志賀高原 → 湯田中</h4><p>一沼、琵琶池短走後下山，15:00 入住。</p></div></article>
-        <article class="transport-card"><div class="transport-day">D10</div><div><h4>湯田中 → 長野還車 → 橫濱</h4><p>11:00 退房，長野還車，北陸新幹線到東京轉 JR 到橫濱。</p></div></article>
+        <article class="transport-card"><div class="transport-day">D10</div><div><h4>湯田中 → 長野還車 → 橫濱</h4><p>11:00 退房，加油後 TOYOTA 長野店還車，北陸新幹線到東京轉 JR 到橫濱。</p></div></article>
         <article class="transport-card"><div class="transport-day">D12</div><div><h4>橫濱 → 羽田機場第 3 航廈</h4><p>京急線，國際線預留起飛前約 3 小時到機場。</p><div class="transport-link-row"><a href="https://www.haneda-tokyo-access.com/" target="_blank" rel="noopener">京急羽田機場交通</a></div></div></article>
       </div>
       </div>
@@ -339,8 +339,8 @@ window.addEventListener('load',function(){setTimeout(function(){if(window.__appR
 
 <input type="file" id="restoreFile" accept="application/json,.json" style="display:none" onchange="restoreBackupFile(event)">
 
-<script src="config.js?v=ng13"></script>
-<script src="app.js?v=ng13"></script>
+<script src="config.js?v=ng14"></script>
+<script src="app.js?v=ng14"></script>
 
 
 

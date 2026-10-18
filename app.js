@@ -771,13 +771,14 @@ function S(name, cat, desc, opts={}){
   return Object.assign({name, cat, desc, tags:[], park:null, tip:null, dur:null, note:null, link:null, linkLabel:'查看網頁', img:null, hours:null, docMap:null, customInfo:null, recDishes:null, fullDesc:null}, opts);
 }
 
-/* ============ 雲停下的地方：2027 北阿爾卑斯・信州 12 天每日行程 ============
-   2027.6.3–6.14，富山機場入境、羽田機場離境。6/4 富山取車直接開往白馬；6/12 長野還車。
-   車程為一般路況估算，不是已訂班次；營業時間、花況、步道開放與天候出發前再確認。
+/* ============ 雲停下的地方：2027 北阿爾卑斯・信州 12 天每日行程（長野取還車版，2026/10/18 整理） ============
+   2027.6.3–6.14。去程 TPE 桃園 → TOY 富山 13:30–17:35；回程 HND 羽田 → TSA 松山 14:30–16:55（皆為當地時間）。
+   6/4 富山搭新幹線到長野，TOYOTA 長野店取車；6/12 同店還車，再搭車經東京到橫濱。東京與橫濱不自駕。
+   車程為規劃預算，2027 班次、餐飲臨休、步道開放與花況仍待確認。
    PLANS 只留一版（沿用原本兩版切換的程式，切換鈕不再顯示）。 */
 const PLAN_KEY='shinshu_plan_v1';
 const PLANS={
-  june:{label:'2027 北阿爾卑斯・信州',short:'12 天',theme:'富山・白馬・戶隱・妙高・志賀高原・橫濱',note:'富山進、羽田出，富山取車、長野還車。',overview:'images/overview.webp',days:[0,1,2,3,4,5,6,7,8,9,10,11]}
+  june:{label:'2027 北阿爾卑斯・信州',short:'12 天',theme:'富山・白馬・戶隱・妙高・志賀高原・橫濱',note:'富山進、羽田出，長野取還車。',overview:'images/overview.webp',days:[0,1,2,3,4,5,6,7,8,9,10,11]}
 };
 let PLAN='june';
 function planDays(){return PLANS[PLAN].days;}
@@ -785,126 +786,135 @@ function inPlan(i){return planDays().includes(Number(i));}
 function prevPlanDay(i){const a=planDays(),k=a.indexOf(Number(i));return k>0?a[k-1]:-1;}
 function isLastPlanDay(i){const a=planDays();return a[a.length-1]===Number(i);}
 const SCENE=Object.fromEntries(Array.from({length:12},(_,i)=>['d'+i,`images/scene-day${String(i).padStart(2,'0')}.webp`]));
-const H_TOYAMA='富山站周邊飯店（待訂）', H_HAKUBA='白馬 Sierra Resort', H_TOGA='戶隱住宿（待訂）', H_MYOKO='妙高 赤倉観光ホテル', H_SHIGA='志賀高原住宿（待訂）', H_YUDA='湯田中 松籟莊', H_YOKO='橫濱住宿（待訂）';
+const H_TOYAMA='富山站附近飯店（待訂）', H_HAKUBA='白馬 Sierra Resort', H_TOGA='戶隱住宿（待訂）', H_MYOKO='妙高 赤倉観光ホテル', H_SHIGA='志賀高原住宿（優先蓮池／丸池）', H_YUDA='湯田中 松籟莊', H_YOKO='橫濱住宿（建議山下公園／元町中華街附近）';
 const hotel=(name,desc,img,opts={})=>S(name,'hotel',desc,Object.assign({img},opts));
-const TOGAKUSHI_LINK={link:'https://togakushi-21.jp/',linkLabel:'戶隱觀光・開山消息'};
-const SHIGA_LINK={link:'https://www.shigakogen.gr.jp/',linkLabel:'志賀高原觀光協會'};
+const TOGAKUSHI_LINK={link:'https://togakushi-21.jp/',linkLabel:'戶隱步道與觀光資料'};
+const SHIGA_LINK={link:'https://visitor-center.shigakogen.gr.jp/trekking/',linkLabel:'志賀步道開放資訊'};
 const days = [
-/* 0 */ {dayNum:"1",date:"6/3",weekday:"四",region:"富山",enRegion:"Toyama",drive:"✈️ 富山機場入境，進市區晚餐",title:"暮色落在富山",dayDesc:"小羚羊收好登機證，沿著城市的燈光，找一處好好吃飯、慢慢落腳的地方。",wear:"6 月初富山白天約 20–25°C，晚上偏涼，帶一件薄外套",weatherIco:"✈️",spots:[
-    S("台灣 → 富山機場（航班待訂）","transport","富山機場入境，領行李後進富山市區。",{tags:["富山進"],fullDesc:"富山進、羽田出要用多城市方式購票。機場到富山站可搭機場巴士，約 20–30 分鐘（估算，依班次）。2027 班表公布後再補上航班與時間。",img:SCENE.d0}),
-    S("富山站周邊晚餐","food","第一晚只安排晚餐和整理行李。",{tags:["晚餐"],fullDesc:"富山灣的白蝦、壽司、富山黑拉麵都在車站周邊找得到。吃完早點休息，隔天搭新幹線。",mapQuery:"富山駅",img:SCENE.d0})
+/* 0 */ {dayNum:"1",date:"6/3",weekday:"四",region:"抵達富山",enRegion:"Taipei → Toyama",drive:"✈️ TPE 13:30 → TOY 17:35（當地時間），不取車、不加景點",title:"暮色落在富山",dayDesc:"小羚羊收好登機證，沿著城市的燈光，找一處好好吃飯、慢慢落腳的地方。",wear:"6 月初富山傍晚偏涼，帶一件薄外套",weatherIco:"✈️",spots:[
+    S("13:30 TPE → 17:35 TOY","transport","桃園飛富山，時間皆為當地時間。",{tags:["富山進"],dur:"約3小時",fullDesc:"抵達後入境、領行李，依實際交通前往富山站附近飯店。",img:SCENE.d0}),
+    S("すし玉 富山站店","food","晚餐候選，富山站附近。",{tags:["晚餐","不接受預約"],hours:"11:00～21:00（元旦及臨休除外）",fullDesc:"現行 11:00～21:00，不接受座位預約；晚到就改簡餐，不趕打烊。晚上分裝隔日搭車行李，早點休息。",mapQuery:"すし玉 富山駅店",img:SCENE.d0})
   ],moreSpots:[
-    hotel(H_TOYAMA,"富山站步行範圍，住 1 晚。",SCENE.d0,{mapQuery:'富山駅',fullDesc:'選富山站步行範圍，隔天直接搭北陸新幹線去長野。'})
+    hotel(H_TOYAMA,"富山站附近，住 1 晚。",SCENE.d0,{mapQuery:'富山駅',fullDesc:'選富山站步行範圍，隔天直接搭北陸新幹線去長野。'})
   ]},
-/* 1 */ {dayNum:"2",date:"6/4",weekday:"五",region:"富山 → 白馬",enRegion:"Toyama → Hakuba",drive:"🚗 富山取車，直接開往白馬，15:00 入住",title:"車窗外的遠方",dayDesc:"列車把山拉近，車窗又把山路展開；今天的終點，是午後三點的庭園。",wear:"白馬海拔較高，早晚約 10°C 上下，帶保暖外套",weatherIco:"🚄",spots:[
-    S("富山取車","transport","上午在富山取車，租到 6/12 長野還車。",{tags:["租車"],fullDesc:"甲地租乙地還（富山取、長野還）通常要另付異地還車費，預約時確認。取車時確認保險、ETC、導航語言與還車時間，先拍車身照片。",mapQuery:"富山駅 レンタカー",img:SCENE.d1}),
-    S("沿途午餐","food","往白馬的路上找地方吃午餐。",{tags:["午餐"],fullDesc:"可以在富山先吃再出發，或在路上的休息站、糸魚川一帶用餐。",img:SCENE.d1}),
-    S("富山 → 白馬","transport","開車到白馬，車窗外是北阿爾卑斯。",{dur:"約2–2.5小時（估算）",fullDesc:"走北陸道往糸魚川，再接國道 148 號南下白馬，路線依導航；沿途看到停車區可以停下來拍照。15:00 入住。",mapQuery:"白馬村",img:SCENE.d1})
+/* 1 */ {dayNum:"2",date:"6/4",weekday:"五",region:"長野取車 → 白馬",enRegion:"Toyama → Nagano → Hakuba",drive:"🚄 富山→長野新幹線，TOYOTA 長野店取車，奧林匹克道路到白馬（純開車 1h15–1h30）",title:"車窗外的遠方",dayDesc:"列車把山拉近，車窗又把山路展開；今天的終點，是午後三點的庭園。",wear:"白馬早晚約 10°C 上下，帶保暖外套",weatherIco:"🚄",spots:[
+    S("富山 → 長野 北陸新幹線","transport","08:00～09:00 早餐退房，上午搭新幹線到長野。",{dur:"約1小時",fullDesc:"先抓約一小時，依 2027 實際停靠班次安排。",img:SCENE.d1}),
+    S("TOYOTA 長野店取車","transport","預留 30～45 分鐘，確認 ETC、還車資訊與導航。",{tags:["租車"],dur:"30–45分鐘",fullDesc:"長野店在善光寺口步行約 3 分鐘。租到 6/12 同店還車。",link:'https://rent.toyota.co.jp/',linkLabel:'TOYOTA 租車門市與預約',mapQuery:"トヨタレンタカー 長野駅善光寺口",img:SCENE.d1}),
+    S("長野或往白馬途中午餐","food","12:00 左右午餐。",{tags:["午餐"],img:SCENE.d1}),
+    S("白馬・長野奧林匹克道路","activity","下午經奧林匹克道路前往飯店，不加景點。",{dur:"約1h15–1h30",fullDesc:"從租車店到飯店的時間，不等於飯店官網寫的「長野 IC 到飯店約一小時」。保留午餐與交通餘裕，優先 15:00 入住。",mapQuery:"オリンピック道路 白馬",img:SCENE.d1})
   ],moreSpots:[
-    hotel(H_HAKUBA,"15:00 入住，連住 2 晚。",SCENE.d2,{tags:["連住2晚","15:00入住"],mapQuery:'Sierra Resort Hakuba',fullDesc:'連住兩晚，第二天不開車，留給庭園和溫泉。訂房時確認晚餐、溫泉時間與停車。'})
+    hotel(H_HAKUBA,"15:00 後入住，庭園、泡湯；晚餐依預訂時段。連住 2 晚。",SCENE.d2,{tags:["連住2晚","15:00入住"],mapQuery:'シェラリゾート白馬',link:'https://sierraresort.jp/hakuba/',linkLabel:'Sierra 交通／館內資訊'})
   ]},
-/* 2 */ {dayNum:"3",date:"6/5",weekday:"六",region:"白馬",enRegion:"Hakuba",drive:"🚶 今天不開車",title:"今天沒有任務",dayDesc:"沒有出發時間，只有庭園裡的風、暖暖的湯，和一個可以睡長一點的午後。",wear:"室內輕便；庭園散步帶薄外套",weatherIco:"♨️",spots:[
-    S("庭園散步","activity","在住宿的庭園慢慢走，看殘雪的山稜。",{tags:["慢住"],fullDesc:"6 月的北阿爾卑斯山頂還留著殘雪，天氣好時從庭園就看得到。",mapQuery:"Sierra Resort Hakuba",img:SCENE.d2}),
-    S("泡湯、休息","activity","泡湯、午睡、喝茶，今天什麼都不用趕。",{tags:["溫泉"],fullDesc:"這一天的主軸就是休息，不另外安排景點。",mapQuery:"Sierra Resort Hakuba",img:SCENE.d2})
+/* 2 */ {dayNum:"3",date:"6/5",weekday:"六",region:"Sierra 完整飯店日",enRegion:"Hakuba",drive:"🚶 開車 0",title:"今天沒有任務",dayDesc:"沒有出發時間，只有庭園裡的風、暖暖的湯，和一個可以睡長一點的午後。",wear:"室內輕便；庭園散步帶薄外套",weatherIco:"♨️",spots:[
+    S("慢慢吃早餐","activity","08:00～09:30。",{tags:["慢住"],img:SCENE.d2}),
+    S("庭園散步、公共空間休息","activity","10:00～12:00。",{mapQuery:"シェラリゾート白馬",img:SCENE.d2}),
+    S("泡湯、午睡、閱讀","activity","下午、晚上；晚餐可以跟前一晚選不同餐廳。",{tags:["溫泉"],fullDesc:"中午先向飯店確認當日午餐供餐選項與時段。不排必須外出的景點。",img:SCENE.d2}),
+    S("ZEN 白馬（選配）","food","想外出才去；會減少飯店時間，也可能候位。",{tags:["選配"],hours:"午餐 11:00～14:00，週二、三休",fullDesc:"週六例行可排。",mapQuery:"ZEN 白馬 そば",img:SCENE.d2})
   ],moreSpots:[
-    hotel(H_HAKUBA,"連住第 2 晚，續住。",SCENE.d2,{mapQuery:'Sierra Resort Hakuba'})
+    hotel(H_HAKUBA,"連住第 2 晚，續住。",SCENE.d2,{mapQuery:'シェラリゾート白馬'})
   ]},
-/* 3 */ {dayNum:"4",date:"6/6",weekday:"日",region:"白馬 → 戶隱",enRegion:"Hakuba → Togakushi",drive:"🚗 10:00 退房，奧林匹克道路接淺川 Loop Line 到戶隱",title:"杉影深處歇腳",dayDesc:"離開庭園，沿著山路轉進杉林；一碗蕎麥麵之後，把腳步留在森林裡。",wear:"戶隱海拔約 1,200 公尺，比長野市區涼，帶外套",weatherIco:"🌲",spots:[
-    S("白馬 → 戶隱","transport","10:00 退房，經奧林匹克道路、淺川 Loop Line 到戶隱。",{dur:"約1.5小時（估算）",fullDesc:"山路彎道多，慢慢開。",img:SCENE.d3}),
-    S("戶隱蕎麥麵","food","到戶隱先吃午餐。",{tags:["午餐"],fullDesc:"戶隱蕎麥常用「ぼっち盛り」，一小束一小束擺在竹篩上。熱門店中午會排隊，可以提早或錯開。",mapQuery:"戸隠 そば",img:SCENE.d3})
+/* 3 */ {dayNum:"4",date:"6/6",weekday:"日",region:"白馬 → 戶隱",enRegion:"Hakuba → Togakushi",drive:"🚗 10:00 退房，純開車 2～2.5 小時，另加午餐休息",title:"杉影深處歇腳",dayDesc:"離開庭園，沿著山路轉進杉林；一碗蕎麥麵之後，把腳步留在森林裡。",wear:"戶隱海拔約 1,200 公尺，比長野市區涼，帶外套",weatherIco:"🌲",spots:[
+    S("早餐、最後泡湯、退房","activity","08:00～09:30 整理，10:00 依一般退房時間退房。",{img:SCENE.d3}),
+    S("白馬 → 戶隱","transport","奧林匹克道路 → 長野外圍 → 淺川 Loop Line 方向進戶隱。",{dur:"約2～2.5小時",fullDesc:"今天是主要長移動日。較寬幹道優先，不為壓低時間改走狹窄捷徑；實際道路與施工訂房前依地址再查。",img:SCENE.d3}),
+    S("途中午餐、休息","food","不為名店額外繞路。",{tags:["午餐"],img:SCENE.d3}),
+    S("住宿附近短散步","activity","15:00 左右入住，晚餐以住宿供餐為主；今天不走正式步道。",{img:SCENE.d3})
   ],moreSpots:[
-    hotel(H_TOGA,"戶隱住宿，連住 2 晚。",SCENE.d4,{tags:["連住2晚"],mapQuery:'戸隠',...TOGAKUSHI_LINK})
+    hotel(H_TOGA,"15:00 左右入住，連住 2 晚。",SCENE.d4,{tags:["連住2晚"],mapQuery:'戸隠',...TOGAKUSHI_LINK,fullDesc:'先確認六月上旬接待、早晚餐及午餐／便當，並問有無大型團體同住。'})
   ]},
-/* 4 */ {dayNum:"5",date:"6/7",weekday:"一",region:"戶隱",enRegion:"Togakushi",drive:"🚶 奧社參道與森林植物園都在附近",title:"杉木爺爺作伴",dayDesc:"走過隨神門與高高的杉木，再沿木道慢慢走，聽見葉子與鞋底的小小聲響。",wear:"杉林裡陰涼，穿好走的鞋，木道可能濕滑",weatherIco:"🌲",spots:[
-    S("戶隱神社 奧社參道・隨神門","activity","走奧社參道，穿過隨神門。",{dur:"約1小時",fullDesc:"戶隱神社由奧社、中社、寶光社、九頭龍社、火之御子社五社組成。參道入口到隨神門是比較平緩的一段。",mapQuery:"戸隠神社 随神門",...TOGAKUSHI_LINK,img:SCENE.d4}),
-    S("杉並木（前段）","activity","隨神門後的杉木並木，只走前段就好。",{tags:["杉木"],dur:"約30–60分鐘",fullDesc:"杉木並木的樹齡據說約 400 年。後段到奧社有陡坡，不必走完。",mapQuery:"戸隠神社 杉並木",img:SCENE.d4}),
-    S("戶隱森林植物園 木道","activity","沿森林植物園的木道散步。",{dur:"約1小時",fullDesc:"木道平緩，6 月有新綠和野花。山區有熊出沒的可能，走在步道上、可以帶熊鈴。",mapQuery:"戸隠森林植物園",img:SCENE.d4}),
-    S("蕎麥麵、休息","food","午餐吃蕎麥麵，下午回住宿休息。",{tags:["午餐"],mapQuery:"戸隠 そば",img:SCENE.d4})
+/* 4 */ {dayNum:"5",date:"6/7",weekday:"一",region:"杉木參道＋森林植物園",enRegion:"Togakushi",drive:"🚶 步行 1.5～2 小時｜開車約 20～40 分鐘",title:"杉木爺爺作伴",dayDesc:"走過隨神門與高高的杉木，再沿木道慢慢走，聽見葉子與鞋底的小小聲響。",wear:"杉林裡陰涼，穿好走的防滑鞋，木道可能濕滑",weatherIco:"🌲",spots:[
+    S("參道入口 → 隨神門 → 杉林前段","activity","09:30～11:30，杉林前段短進短出。",{dur:"約2小時",fullDesc:"經開放的連接步道回到植物園及停車處。必須先核對停車點、連接路與終點，確保能回到同一個停車處。不到奧社最後階梯、不走植物園完整大圈。杉木並木的樹齡據說約 400 年。",mapQuery:"戸隠神社 随神門",...TOGAKUSHI_LINK,img:SCENE.d4}),
+    S("戶隱森林植物園 短環線","activity","從杉林回植物園，走短環線。",{fullDesc:"不是完整植物園大圈。山區有熊出沒的可能，走在步道上，可以帶熊鈴。",mapQuery:"戸隠森林植物園",img:SCENE.d4}),
+    S("そばの実","food","11:30～13:00 蕎麥麵午餐候選。",{tags:["午餐","現場候位"],hours:"10:30～16:00，週四、五休，售完提早結束",fullDesc:"一般席不預約，現場候位。下午喝咖啡、回住宿休息，不補長步道。",mapQuery:"そばの実 戸隠",img:SCENE.d4})
   ],moreSpots:[
     hotel(H_TOGA,"連住第 2 晚，續住。",SCENE.d4,{mapQuery:'戸隠'})
   ]},
-/* 5 */ {dayNum:"6",date:"6/8",weekday:"二",region:"鏡池 → 妙高",enRegion:"Kagami-ike → Myoko",drive:"🚗 清晨鏡池，10:00 退房後去いもり池，15:00 妙高入住",title:"遠山掉進池裡",dayDesc:"清晨先向鏡池借一面鏡子，再去いもり池，看遠山如何安靜地住進水裡。",wear:"清晨池邊偏冷，加一件外套",weatherIco:"🪞",spots:[
-    S("鏡池（清晨）","attraction","清晨水面最平靜，戶隱連峰倒映在池裡。",{tags:["清晨"],dur:"約30–60分鐘",fullDesc:"風小的清晨倒影最清楚。從戶隱住宿開車很近，看完回去吃早餐、10:00 退房。",mapQuery:"鏡池 戸隠",img:SCENE.d5}),
-    S("いもり池 短環線","activity","繞いもり池走一圈，看妙高山的倒影。",{dur:"約30–45分鐘",fullDesc:"天氣好時水面會映出妙高山。池邊有平緩的步道，繞一圈不用太久。",mapQuery:"いもり池",img:SCENE.d5}),
-    S("妙高午餐","food","池の平或赤倉一帶吃午餐。",{tags:["午餐"],mapQuery:"池の平温泉",img:SCENE.d5})
+/* 5 */ {dayNum:"6",date:"6/8",weekday:"二",region:"鏡池 → いもり池 → 赤倉觀光",enRegion:"Kagami-ike → Imori-ike → Akakura",drive:"🚗 開車約 1～1.5 小時（鏡池往返另計），15:00 後入住",title:"遠山掉進池裡",dayDesc:"清晨先向鏡池借一面鏡子，再去いもり池，看遠山如何安靜地住進水裡。",wear:"清晨池邊偏冷，加一件外套",weatherIco:"🪞",spots:[
+    S("鏡池（選配）","attraction","只有天氣好、旅館距離近時去，短停 20～30 分鐘。",{tags:["選配","早餐前後"],dur:"20–30分鐘",fullDesc:"陰雨、能見度差或時間不順就刪。風小的清晨，戶隱連峰會倒映在池面上。",mapQuery:"鏡池 戸隠",img:SCENE.d5}),
+    S("いもり池 短環線","activity","10:00 左右退房往妙高，上午到中午走短環線、看山景。",{dur:"約30–45分鐘",fullDesc:"不延伸長線。天氣好時水面會映出妙高山。",mapQuery:"いもり池",img:SCENE.d5}),
+    S("妙高午餐","food","いもり池之後吃午餐，下午直接去赤倉觀光，不加其他景點。",{tags:["午餐"],mapQuery:"池の平温泉",img:SCENE.d5})
   ],moreSpots:[
-    hotel(H_MYOKO,"15:00 入住，住 1 晚。",SCENE.d5,{tags:["15:00入住"],mapQuery:'赤倉観光ホテル',fullDesc:'高原上的老牌飯店，天氣好時可以看到遠山與雲海。'})
+    hotel(H_MYOKO,"15:00 後入住，景觀露台、泡湯與飯店晚餐。",SCENE.d5,{tags:["15:00入住"],mapQuery:'赤倉観光ホテル',link:'https://www.akr-hotel.com/',linkLabel:'赤倉觀光飯店與方案',fullDesc:'優先保留完整下午。入住時確認隔天方案的退房時限（11:00 或 12:00）。'})
   ]},
-/* 6 */ {dayNum:"7",date:"6/9",weekday:"三",region:"中野 → 志賀高原",enRegion:"Nakano → Shiga Kogen",drive:"🚗 11:00 退房，中野看玫瑰，國道 292 上志賀高原",title:"玫瑰捎來口信",dayDesc:"玫瑰替上午留了香氣，午後再沿山路上行，把傍晚交給濕原的白色絮影。",wear:"中野白天溫暖；志賀高原海拔高、傍晚冷，帶厚一點的外套",weatherIco:"🌹",spots:[
-    S("一本木公園 玫瑰","attraction","中野市一本木公園的玫瑰園，停留約 30–40 分鐘。",{tags:["玫瑰","花況待確認"],dur:"約30–40分鐘",fullDesc:"每年 5 月下旬到 6 月是玫瑰季，2027 花況出發前再確認。",mapQuery:"一本木公園 中野市",img:SCENE.d6}),
-    S("中野午餐","food","在中野吃午餐，再上山。",{tags:["午餐"],mapQuery:"中野市",img:SCENE.d6}),
-    S("國道 292 → 志賀高原","transport","沿國道 292 上志賀高原，15:00 入住。",{dur:"約1小時（估算）",fullDesc:"山路彎道多，路況與開放時間出發前查一下。",img:SCENE.d6}),
-    S("ワタスゲ平（傍晚）","activity","傍晚到ワタスゲ平看棉菅。",{tags:["傍晚","棉菅"],dur:"約30–60分鐘",fullDesc:"ワタスゲ（棉菅）白色的絮球通常在 6 月中下旬到 7 月最多，6/9 可能還早，看當年狀況。",mapQuery:"ワタスゲ平",...SHIGA_LINK,img:SCENE.d7})
+/* 6 */ {dayNum:"7",date:"6/9",weekday:"三",region:"赤倉觀光 → 中野 → 志賀",enRegion:"Akakura → Nakano → Shiga Kogen",drive:"🚗 純開車約 1h45～2h15，15:30～16:00 入住",title:"玫瑰捎來口信",dayDesc:"玫瑰替上午留了香氣，午後再沿山路上行，把傍晚交給濕原的白色絮影。",wear:"中野白天可能偏熱；志賀高原傍晚冷，帶外套",weatherIco:"🌹",spots:[
+    S("早餐、泡湯，11:00 退房","activity","賞花版 11:00 退房。",{fullDesc:"二選一：賞花版照下面排；如果赤倉觀光可以 12:00 退房而且想待到最後，就刪掉玫瑰，午餐後直接上山。不要同時承諾晚退房、賞花、正式午餐和 15:00 入住。",img:SCENE.d6}),
+    S("一本木公園 玫瑰（選配）","attraction","中午前後停 45～60 分鐘，只有花況好才去。",{tags:["選配","花況待確認"],dur:"45–60分鐘",mapQuery:"一本木公園 中野市",img:SCENE.d6}),
+    S("中野簡單午餐、補給","food","接著沿國道 292 上山。",{tags:["午餐"],mapQuery:"中野市",img:SCENE.d6}),
+    S("ワタスゲ平（傍晚選配）","activity","住蓮池附近、天氣穩定且步道開放才去短走。",{tags:["選配","傍晚"],fullDesc:"ワタスゲ（棉菅）依 2027 花況，不預設盛開。",mapQuery:"ワタスゲ平",...SHIGA_LINK,img:SCENE.d7})
   ],moreSpots:[
-    hotel(H_SHIGA,"15:00 入住，連住 2 晚。",SCENE.d7,{tags:["連住2晚"],mapQuery:'志賀高原',...SHIGA_LINK})
+    hotel(H_SHIGA,"15:30～16:00 入住，連住 2 晚。",SCENE.d7,{tags:["連住2晚"],mapQuery:'蓮池 志賀高原',...SHIGA_LINK,fullDesc:'先確認六月上旬接待、早晚餐及午餐／便當，並問有無大型團體同住。'})
   ]},
-/* 7 */ {dayNum:"8",date:"6/10",weekday:"四",region:"志賀高原",enRegion:"Shiga Kogen",drive:"🚶 木戸池到田ノ原濕原步道",title:"木道慢慢走呀",dayDesc:"木道從池邊伸向草間，棉菅隨風輕晃；走累了，就讓雲陪我們坐一會兒。",wear:"高原早晚冷、白天日照強，帶外套、帽子和防曬",weatherIco:"🌾",spots:[
-    S("木戸池 → 田ノ原濕原步道","activity","從木戸池沿木道走到田ノ原濕原，約 1–2 小時。",{tags:["木道"],dur:"約1–2小時",fullDesc:"平緩的濕原木道。志賀高原是聯合國教科文組織的生物圈保護區（Biosphere Reserve）。",mapQuery:"木戸池",...SHIGA_LINK,img:SCENE.d7}),
-    S("寄大行李到橫濱","activity","把大行李寄到橫濱的住宿，後面兩天輕裝。",{tags:["行李"],fullDesc:"依住宿與宅配業者實際受理條件安排，先確認橫濱住宿可以代收。",img:SCENE.d7})
+/* 7 */ {dayNum:"8",date:"6/10",weekday:"四",region:"木戶池 → 田之原濕原",enRegion:"Shiga Kogen",drive:"🚶 步行約 1～2 小時｜開車約 20～40 分鐘",title:"木道慢慢走呀",dayDesc:"木道從池邊伸向草間，棉菅隨風輕晃；走累了，就讓雲陪我們坐一會兒。",wear:"高原早晚冷、白天日照強，帶外套、帽子和防曬",weatherIco:"🌾",spots:[
+    S("大行李寄橫濱","activity","早餐後大行李交櫃台寄到橫濱，確認當日集貨；留兩晚用品。",{tags:["行李"],fullDesc:"早上就交，不等散步回來才寄。先確認當日集貨截止、實際郵遞區號的到貨日，以及橫濱飯店能提前代收。收件資料寫入住日 6/12、訂房姓名、訂房編號與飯店電話。證件與貴重物品隨身。",link:'https://date.kuronekoyamato.co.jp/date/Main?LINK=',linkLabel:'Yamato 配送日與運費',img:SCENE.d7}),
+    S("木戶池 → 田之原濕原","activity","09:30 左右出發，原路返回，含拍照約一小時。",{dur:"40–60分鐘",fullDesc:"木戶池到田之原約單程 1 km、20 分鐘，往返含拍照抓 40～60 分鐘；濕滑就縮短。不接完整自然探勝長線。志賀高原是聯合國教科文組織的生物圈保護區。",mapQuery:"木戸池",...SHIGA_LINK,img:SCENE.d7}),
+    S("Restaurant Green","food","12:00 左右午餐候選，或住宿準備的便當。",{tags:["午餐"],hours:"10:00～15:00，不定休",fullDesc:"先查營業，便當備用。下午蓮池短走、喝咖啡，或回住宿休息。",mapQuery:"Restaurant Green 志賀高原",img:SCENE.d7})
   ],moreSpots:[
-    hotel(H_SHIGA,"連住第 2 晚，續住。",SCENE.d7,{mapQuery:'志賀高原'})
+    hotel(H_SHIGA,"連住第 2 晚，續住。",SCENE.d7,{mapQuery:'蓮池 志賀高原'})
   ]},
-/* 8 */ {dayNum:"9",date:"6/11",weekday:"五",region:"志賀高原 → 湯田中",enRegion:"Shiga Kogen → Yudanaka",drive:"🚗 退房後短走一沼、琵琶池，下山到湯田中",title:"一簾湯煙入夢",dayDesc:"先繞過一沼與琵琶池，再循著湯煙下山；今晚，讓暖湯接住走過木道的腳。",wear:"下山後比較暖，洋蔥式穿搭",weatherIco:"♨️",spots:[
-    S("一沼・琵琶池","activity","退房後在一沼、琵琶池短走。",{dur:"約30–60分鐘",fullDesc:"兩個池子都在路邊不遠，挑一個走就好。",mapQuery:"一沼 志賀高原",img:SCENE.d8}),
-    S("湯田中午餐","food","下山到湯田中吃午餐。",{tags:["午餐"],mapQuery:"湯田中温泉",img:SCENE.d8}),
-    S("湯田中溫泉","activity","15:00 入住，泡湯休息。",{tags:["溫泉"],fullDesc:"湯田中附近的地獄谷野猿公苑以泡溫泉的猴子聞名，有興趣可以另外排。",mapQuery:"湯田中温泉",img:SCENE.d8})
+/* 8 */ {dayNum:"9",date:"6/11",weekday:"五",region:"一沼／琵琶池 → 湯田中",enRegion:"Shiga Kogen → Yudanaka",drive:"🚗 開車約 45～75 分鐘，15:00 入住",title:"一簾湯煙入夢",dayDesc:"先繞過一沼與琵琶池，再循著湯煙下山；今晚，讓暖湯接住走過木道的腳。",wear:"下山後比較暖，洋蔥式穿搭",weatherIco:"♨️",spots:[
+    S("一沼或琵琶池（擇一）","activity","08:00～09:30 退房後，一沼短停或琵琶池沿岸短線，約 45～75 分鐘。",{dur:"45–75分鐘",fullDesc:"琵琶池有坡段，不要求完整周回；雨天就刪步道，早點下山。",mapQuery:"一沼 志賀高原",img:SCENE.d8}),
+    S("國道 292 下山","transport","11:00 左右下山，不再回志賀住宿取行李。",{img:SCENE.d8}),
+    S("湯田中午餐","food","12:00～13:00。下午溫泉街短逛、吃點心，或寄放行李休息。",{tags:["午餐"],fullDesc:"不加小布施。",mapQuery:"湯田中温泉",img:SCENE.d8})
   ],moreSpots:[
-    hotel(H_YUDA,"15:00 入住，住 1 晚。",SCENE.d8,{tags:["15:00入住"],mapQuery:'湯田中温泉 松籟荘'})
+    hotel(H_YUDA,"15:00 入住，房內溫泉、休息與晚餐。",SCENE.d8,{tags:["15:00入住"],mapQuery:'湯田中温泉 松籟荘',link:'https://shoraiso.com/faq/',linkLabel:'松籟莊入住退房資訊',fullDesc:'現行一般 15:00 入住、11:00 退房，以實際方案為準。可替換其他湯田中旅館。'})
   ]},
-/* 9 */ {dayNum:"10",date:"6/12",weekday:"六",region:"長野 → 橫濱",enRegion:"Nagano → Tokyo → Yokohama",drive:"🚗 11:00 退房，長野還車，新幹線到東京轉橫濱",title:"換海風來帶路",dayDesc:"把車鑰匙還回去，把山路收進記憶裡；列車越過城市，港邊的風正等著。",wear:"橫濱比山上溫暖潮濕，帶折疊傘",weatherIco:"🚄",spots:[
-    S("長野還車","transport","11:00 退房，開回長野還車，還車前加滿油。",{tags:["還車"],mapQuery:"トヨタレンタカー 長野駅前",img:SCENE.d9}),
-    S("長野午餐","food","還車後在長野站吃午餐。",{tags:["午餐"],mapQuery:"長野駅",img:SCENE.d9}),
-    S("北陸新幹線 → 東京 → 橫濱","transport","長野搭新幹線到東京，轉 JR 到橫濱。",{dur:"約2–2.5小時（估算）",fullDesc:"熱門時段先訂指定席。",img:SCENE.d9})
+/* 9 */ {dayNum:"10",date:"6/12",weekday:"六",region:"長野還車 → 橫濱",enRegion:"Yudanaka → Nagano → Tokyo → Yokohama",drive:"🚗 純開車約 50～70 分鐘，另留加油還車時間；東京、橫濱不開車",title:"換海風來帶路",dayDesc:"把車鑰匙還回去，把山路收進記憶裡；列車越過城市，港邊的風正等著。",wear:"橫濱比山上溫暖潮濕，帶折疊傘",weatherIco:"🚄",spots:[
+    S("早餐、泡湯，11:00 退房","activity","留到松籟莊正常退房時間。",{img:SCENE.d9}),
+    S("TOYOTA 長野店還車","transport","11:00～12:15 往長野、加油；12:15～13:00 還車，步行到長野站。",{tags:["還車"],dur:"45–60分鐘",fullDesc:"還車另留 45～60 分鐘。長野店在善光寺口步行約 3 分鐘。今天不再插入小布施。",mapQuery:"トヨタレンタカー 長野駅善光寺口",img:SCENE.d9}),
+    S("長野站午餐","food","13:00～14:00 午餐，接預留餘裕的火車班次。",{tags:["午餐"],mapQuery:"長野駅",img:SCENE.d9}),
+    S("新幹線 → 東京 → 橫濱","transport","下午新幹線到東京，再轉車到橫濱。",{fullDesc:"17:00～18:00 入住、領回兩個大行李，附近吃晚餐。",img:SCENE.d9})
   ],moreSpots:[
-    hotel(H_YOKO,"橫濱住宿，連住 2 晚。",SCENE.d10,{tags:["連住2晚"],mapQuery:'横浜駅'})
+    hotel(H_YOKO,"17:00～18:00 入住，連住 2 晚。",SCENE.d10,{tags:["連住2晚"],mapQuery:'山下公園'})
   ]},
-/* 10 */ {dayNum:"11",date:"6/13",weekday:"日",region:"橫濱",enRegion:"Yokohama",drive:"🚶 山下公園、港邊、元町步行",title:"港邊拾起日光",dayDesc:"從山下公園走到元町，看看船、逛逛街，再用一頓洋食，把午後慢慢拉長。",wear:"港邊風大、日照強，帶帽子；可能下梅雨",weatherIco:"⚓",spots:[
-    S("山下公園・冰川丸","attraction","港邊散步，看停在公園旁的冰川丸。",{dur:"約1小時",fullDesc:"冰川丸是 1930 年完工的遠洋客船，現在停在山下公園旁開放參觀。公園的玫瑰園在 5–6 月也有花。",mapQuery:"山下公園",img:SCENE.d10}),
-    S("元町","shopping","沿元町商店街慢慢逛。",{dur:"約1–2小時",mapQuery:"元町ショッピングストリート",img:SCENE.d10}),
-    S("洋食午餐","food","在橫濱吃一頓洋食。",{tags:["午餐"],fullDesc:"橫濱是日本洋食的發源地之一，蛋包飯、拿坡里義大利麵都很經典。",mapQuery:"横浜 洋食",img:SCENE.d10})
+/* 10 */ {dayNum:"11",date:"6/13",weekday:"日",region:"橫濱慢旅",enRegion:"Yokohama",drive:"🚶 港邊、元町步行",title:"港邊拾起日光",dayDesc:"從山下公園走到元町，看看船、逛逛街，再用一頓洋食，把午後慢慢拉長。",wear:"港邊晴天可能偏熱，帶帽子；梅雨季帶傘",weatherIco:"⚓",spots:[
+    S("山下公園、港邊散步","attraction","早餐後慢慢出門，不早起搶景點；晴熱就縮短。",{fullDesc:"公園旁的冰川丸是 1930 年完工的遠洋客船，現在開放參觀。不要求走完港未來、紅磚倉庫、大棧橋和中華街。",mapQuery:"山下公園",img:SCENE.d10}),
+    S("洋食キムラ 野毛店","food","洋食午餐候選，願意搭車再去。",{tags:["午餐"],hours:"週一、二休，午後可能中休",fullDesc:"6/13 週日例行可排，2027 仍須查臨休。",mapQuery:"洋食キムラ 野毛店",img:SCENE.d10}),
+    S("元町逛街、咖啡","shopping","下午元町逛街、喝咖啡，或回飯店休息。",{fullDesc:"晚上在飯店步行圈吃晚餐，整理回台行李。",mapQuery:"元町ショッピングストリート",img:SCENE.d10})
   ],moreSpots:[
-    hotel(H_YOKO,"連住第 2 晚，續住。",SCENE.d10,{mapQuery:'横浜駅'})
+    hotel(H_YOKO,"連住第 2 晚，續住。",SCENE.d10,{mapQuery:'山下公園'})
   ]},
-/* 11 */ {dayNum:"12",date:"6/14",weekday:"一",region:"羽田 → 台灣",enRegion:"Haneda → Taiwan",drive:"🚃 京急線到羽田機場第 3 航廈",title:"歸途仍有餘溫",dayDesc:"背包裡多了玫瑰的香、杉林的聲音，還有幾個想再回去的地方。",wear:"機艙備薄外套",weatherIco:"💌",spots:[
-    S("前往羽田機場","transport","京急線到羽田機場第 3 航廈。",{fullDesc:"國際線預留起飛前約 3 小時到機場，依班機時間倒推出發時間。",mapQuery:"羽田空港 第3ターミナル",img:SCENE.d11}),
-    S("羽田 → 台灣（航班待訂）","transport","羽田機場第 3 航廈出境。",{tags:["羽田出"],fullDesc:"2027 班表公布後再補上航班與時間。",img:SCENE.d11})
+/* 11 */ {dayNum:"12",date:"6/14",weekday:"一",region:"橫濱 → 羽田 → 台灣",enRegion:"Yokohama → Haneda → Taipei Songshan",drive:"✈️ HND 14:30 → TSA 16:55（當地時間），11:30 前到機場",title:"歸途仍有餘溫",dayDesc:"背包裡多了玫瑰的香、杉林的聲音，還有幾個想再回去的地方。",wear:"機艙備薄外套",weatherIco:"💌",spots:[
+    S("前往羽田機場","transport","08:00～09:00 早餐整理，09:30～10:00 出發，11:30 前到報到航廈。",{fullDesc:"當天不排景點。機場巴士或鐵路方案，依最後住的飯店、2027 時刻和兩個大箱的搬運便利性選擇。",mapQuery:"羽田空港 第3ターミナル",img:SCENE.d11}),
+    S("14:30 HND → 16:55 TSA","transport","羽田飛台北松山，時間皆為當地時間。",{tags:["羽田出"],img:SCENE.d11})
   ],moreSpots:[]}
 ];
 
-/* 每日交通速查（index 與 days 相同；車程為估算） */
+/* 每日交通速查（index 與 days 相同；車程為規劃預算） */
 const transportPlans = [
-  {summary:'富山機場入境，搭機場巴士進富山市區。', alert:'預留入境及領行李時間；機場巴士班次依航班調整。', routes:[
-    {from:'富山機場',to:'富山站',mode:'🚌 機場巴士',time:'約 20–30 分（估算）',note:'依班次'}]},
-  {summary:'富山取車，直接開往白馬。', alert:'租車到 6/12 長野還車，異地還車費預約時確認；15:00 白馬入住。', routes:[
-    {from:'富山',to:'租車店',mode:'🚗 取車',time:'上午',note:''},
-    {from:'富山',to:'白馬 Sierra Resort',mode:'🚗 北陸道＋國道 148',time:'約 2–2.5 小時（估算）',note:'15:00 入住'}]},
+  {summary:'TPE 13:30 → TOY 17:35，入境後到富山站附近飯店。', alert:'今天不取車、不加景點。', routes:[
+    {from:'桃園 TPE',to:'富山 TOY',mode:'✈️ 航班',time:'13:30 → 17:35',note:'當地時間'},
+    {from:'富山機場',to:'富山站附近飯店',mode:'🚌 依實際交通',time:'抵達後',note:''}]},
+  {summary:'富山→長野新幹線，TOYOTA 長野店取車，奧林匹克道路到白馬。', alert:'租車店到飯店不等於「長野 IC 到飯店約一小時」；保留午餐與交通餘裕，優先 15:00 入住。', routes:[
+    {from:'富山站',to:'JR 長野站',mode:'🚄 北陸新幹線',time:'約 1 小時',note:'依 2027 停靠班次'},
+    {from:'長野站善光寺口',to:'TOYOTA 長野店',mode:'🚶 步行',time:'約 3 分',note:'取車預留 30～45 分'},
+    {from:'長野',to:'白馬 Sierra Resort',mode:'🚗 奧林匹克道路',time:'約 1h15～1h30',note:'15:00 入住'}]},
   null,
-  {summary:'10:00 退房，奧林匹克道路接淺川 Loop Line 到戶隱。', alert:'山路彎道多，慢慢開。', routes:[
-    {from:'白馬',to:'戶隱',mode:'🚗 奧林匹克道路＋淺川 Loop Line',time:'約 1.5 小時（估算）',note:'10:00 退房'}]},
-  {summary:'奧社參道、隨神門、森林植物園都在附近，開車或步行。', alert:'奧社停車場假日容易滿，早點出門。', routes:[
-    {from:'戶隱住宿',to:'奧社入口',mode:'🚗 自駕',time:'約 10 分（估算）',note:''},
-    {from:'奧社入口',to:'戶隱森林植物園',mode:'🚶 步行',time:'就在附近',note:''}]},
-  {summary:'清晨鏡池，10:00 退房後去いもり池，15:00 妙高入住。', alert:'鏡池停車位不多，清晨比較好停。', routes:[
-    {from:'戶隱住宿',to:'鏡池',mode:'🚗 自駕',time:'約 10 分（估算）',note:'清晨'},
-    {from:'戶隱',to:'いもり池',mode:'🚗 自駕',time:'約 40 分（估算）',note:'10:00 退房後'},
-    {from:'いもり池',to:'赤倉観光ホテル',mode:'🚗 自駕',time:'約 15 分（估算）',note:'15:00 入住'}]},
-  {summary:'11:00 退房，中野看玫瑰、吃午餐，國道 292 上志賀高原。', alert:'國道 292 山路，出發前查路況。', routes:[
-    {from:'妙高',to:'一本木公園（中野）',mode:'🚗 自駕',time:'約 45 分（估算）',note:'11:00 退房'},
-    {from:'中野',to:'志賀高原',mode:'🚗 國道 292',time:'約 1 小時（估算）',note:'15:00 入住'}]},
-  {summary:'木戸池到田ノ原濕原步道；寄大行李到橫濱。', alert:'', routes:[
-    {from:'志賀高原住宿',to:'木戸池',mode:'🚗 自駕',time:'約 10–20 分（估算）',note:''}]},
-  {summary:'退房後短走一沼、琵琶池，下山到湯田中。', alert:'', routes:[
-    {from:'志賀高原',to:'湯田中',mode:'🚗 自駕',time:'約 40 分（估算）',note:'15:00 入住'}]},
-  {summary:'11:00 退房，長野還車，新幹線到東京轉橫濱。', alert:'還車前加滿油；新幹線先訂指定席。', routes:[
-    {from:'湯田中',to:'長野租車店',mode:'🚗 自駕',time:'約 40 分（估算）',note:'11:00 退房'},
-    {from:'JR 長野站',to:'東京站',mode:'🚄 北陸新幹線',time:'約 1.5 小時（估算）',note:''},
-    {from:'東京站',to:'橫濱站',mode:'🚆 JR 東海道線等',time:'約 30 分（估算）',note:''}]},
-  {summary:'山下公園、港邊、元町都可以步行或搭港未來線。', alert:'', routes:[
-    {from:'橫濱站',to:'元町・中華街站',mode:'🚇 港未來線',time:'約 10 分（估算）',note:'山下公園就在附近'}]},
-  {summary:'京急線到羽田機場第 3 航廈。', alert:'國際線預留起飛前約 3 小時到機場。', routes:[
-    {from:'橫濱站',to:'羽田機場第 3 航廈',mode:'🚃 京急線',time:'約 30 分（估算）',note:'依班機倒推'}]}
+  {summary:'10:00 退房，奧林匹克道路 → 長野外圍 → 淺川 Loop Line 進戶隱。', alert:'主要長移動日；較寬幹道優先，不改走狹窄捷徑。', routes:[
+    {from:'白馬',to:'戶隱',mode:'🚗 自駕',time:'約 2～2.5 小時',note:'另加午餐休息，15:00 左右入住'}]},
+  {summary:'參道入口 → 隨神門 → 杉林前段 → 連接步道回植物園及停車處。', alert:'先核對停車點、連接路與終點，確保能回同一停車處。', routes:[
+    {from:'戶隱住宿',to:'參道入口停車處',mode:'🚗 自駕',time:'約 20～40 分（全天合計）',note:''},
+    {from:'參道入口',to:'隨神門 → 植物園',mode:'🚶 步行',time:'約 1.5～2 小時',note:'09:30～11:30'}]},
+  {summary:'鏡池選配，10:00 左右退房，いもり池短環線，15:00 後赤倉入住。', alert:'鏡池只在天氣好、時間順時去。', routes:[
+    {from:'戶隱',to:'鏡池',mode:'🚗 自駕',time:'往返另計',note:'選配，短停 20～30 分'},
+    {from:'戶隱',to:'いもり池 → 赤倉観光ホテル',mode:'🚗 自駕',time:'約 1～1.5 小時',note:'15:00 後入住'}]},
+  {summary:'11:00 退房，一本木公園玫瑰（選配），中野午餐，國道 292 上志賀。', alert:'晚退房和賞花二選一。', routes:[
+    {from:'赤倉',to:'一本木公園（中野）',mode:'🚗 自駕',time:'',note:'玫瑰 45～60 分'},
+    {from:'中野',to:'志賀高原',mode:'🚗 國道 292',time:'全天純開車約 1h45～2h15',note:'15:30～16:00 入住'}]},
+  {summary:'早上寄大行李到橫濱，木戶池 → 田之原濕原往返。', alert:'濕滑就縮短。', routes:[
+    {from:'志賀住宿',to:'木戶池',mode:'🚗 自駕',time:'約 20～40 分（全天合計）',note:'09:30 左右'},
+    {from:'木戶池',to:'田之原濕原',mode:'🚶 木道',time:'單程約 1 km、20 分',note:'往返含拍照 40～60 分'}]},
+  {summary:'一沼或琵琶池短走，11:00 左右國道 292 下山到湯田中。', alert:'雨天刪步道，早點下山。', routes:[
+    {from:'志賀高原',to:'湯田中',mode:'🚗 國道 292',time:'約 45～75 分',note:'15:00 入住'}]},
+  {summary:'11:00 退房，加油後 TOYOTA 長野店還車，新幹線經東京到橫濱。', alert:'還車另留 45～60 分鐘；東京、橫濱不開車。', routes:[
+    {from:'湯田中',to:'TOYOTA 長野店',mode:'🚗 自駕＋加油',time:'約 50～70 分',note:'12:15～13:00 還車'},
+    {from:'JR 長野站',to:'東京站',mode:'🚄 北陸新幹線',time:'',note:'接預留餘裕的班次'},
+    {from:'東京站',to:'橫濱',mode:'🚆 轉車',time:'',note:'17:00～18:00 入住'}]},
+  {summary:'山下公園、港邊、元町步行。', alert:'', routes:[
+    {from:'飯店',to:'洋食キムラ 野毛店',mode:'🚇 搭車',time:'',note:'願意搭車再去'}]},
+  {summary:'09:30～10:00 出發，11:30 前到羽田，14:30 起飛。', alert:'機場巴士或鐵路依飯店位置、2027 時刻與兩個大箱的搬運便利性選擇。', routes:[
+    {from:'橫濱飯店',to:'羽田機場',mode:'🚌／🚃 機場巴士或鐵路',time:'09:30～10:00 出發',note:'11:30 前抵達'},
+    {from:'羽田 HND',to:'台北松山 TSA',mode:'✈️ 航班',time:'14:30 → 16:55',note:'當地時間'}]}
 ];
-const transportGeneralTips = ['準備 Suica 等 IC 卡','6 月可能進入梅雨季，山路雨天慢慢開'];
+const transportGeneralTips = ['準備 Suica 等 IC 卡','長野同店租還；東京、橫濱不開車'];
 
 
 /* ============ 筆記/照片/自訂景點系統 (LocalStorage 永久保存) ============ */
@@ -2346,9 +2356,10 @@ function addRuleItem() {
 
 /* ============ DYNAMIC DOCS/VOUCHERS ============ */
 const defaultDocsData = [
-  {ic:'✈️',t:'去程 台灣 → 富山（航班待訂）',s:'6/3',chip:'航班',link:'',img:null,confirmed:false},
+  {ic:'✈️',t:'去程 TPE 桃園 → TOY 富山',s:'6/3 13:30 → 17:35',chip:'航班',link:'',img:null,confirmed:false},
   {ic:'🏨',t:'富山站周邊飯店',s:'6/3・1 晚',chip:'住宿',link:'',img:null,confirmed:false},
-    {ic:'🚗',t:'租車（富山取、長野還）',s:'6/4–6/12',chip:'租車',link:'',img:null,confirmed:false},
+  {ic:'🚄',t:'北陸新幹線 富山 → 長野',s:'6/4',chip:'車票',link:'',img:null,confirmed:false},
+    {ic:'🚗',t:'TOYOTA 長野店租車（同店租還）',s:'6/4–6/12',chip:'租車',link:'',img:null,confirmed:false},
   {ic:'🏨',t:'白馬 Sierra Resort',s:'6/4–6/5・2 晚',chip:'住宿',link:'',img:null,confirmed:false},
   {ic:'🏨',t:'戶隱住宿',s:'6/6–6/7・2 晚',chip:'住宿',link:'',img:null,confirmed:false},
   {ic:'🏨',t:'妙高 赤倉観光ホテル',s:'6/8・1 晚',chip:'住宿',link:'',img:null,confirmed:false},
@@ -2356,7 +2367,7 @@ const defaultDocsData = [
   {ic:'🏨',t:'湯田中 松籟莊',s:'6/11・1 晚',chip:'住宿',link:'',img:null,confirmed:false},
   {ic:'🚄',t:'北陸新幹線 長野 → 東京',s:'6/12',chip:'車票',link:'',img:null,confirmed:false},
   {ic:'🏨',t:'橫濱住宿',s:'6/12–6/13・2 晚',chip:'住宿',link:'',img:null,confirmed:false},
-  {ic:'✈️',t:'回程 羽田 → 台灣（航班待訂）',s:'6/14',chip:'航班',link:'',img:null,confirmed:false}
+  {ic:'✈️',t:'回程 HND 羽田 → TSA 松山',s:'6/14 14:30 → 16:55',chip:'航班',link:'',img:null,confirmed:false}
 ];
 function mergeDocsWithDefaults(value){
   const existing=normalizeStructuredList('shinshu_docs', Array.isArray(value)?value:[]);
@@ -2466,7 +2477,7 @@ window.addEventListener('offline', updateNetStatus);
 /* ============ Service Worker（離線快取整個網頁） ============ */
 if (navigator.serviceWorker) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=ng13').then(()=>navigator.serviceWorker.ready).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=ng14').then(()=>navigator.serviceWorker.ready).catch(()=>{});
   });
 }
 document.addEventListener('error',e=>{if(e.target?.tagName==='IMG')imageErrorFallback(e.target);},true);
@@ -2968,7 +2979,7 @@ const TENKI_LINKS={
 /* =====================================================================
    v48：收藏／預約狀態／提醒、自駕即時路況、版本與同步比對
    ===================================================================== */
-const APP_VERSION='ng13-2026-10-18';
+const APP_VERSION='ng14-2026-10-18';
 
 /* ---------- 收藏 ★／預約狀態／提醒 ---------- */
 let marksStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_marks'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
@@ -3193,7 +3204,7 @@ document.addEventListener('DOMContentLoaded',()=>{initLive();renderMarksBar();re
 /* =====================================================================
    v49：手機優先改版（新標頭與圖示、逛吃畫廊、MaMa 專頁、App 安裝）
    ===================================================================== */
-const DAY_CITIES=[['Toyama'],['Toyama','Hakuba'],['Hakuba'],['Hakuba','Togakushi'],['Togakushi'],['Togakushi','Myoko'],['Nagano','Shiga'],['Shiga'],['Shiga','Yudanaka'],['Nagano','Yokohama'],['Yokohama'],['Yokohama']];
+const DAY_CITIES=[['Toyama'],['Nagano','Hakuba'],['Hakuba'],['Hakuba','Togakushi'],['Togakushi'],['Togakushi','Myoko'],['Nagano','Shiga'],['Shiga'],['Shiga','Yudanaka'],['Nagano','Yokohama'],['Yokohama'],['Yokohama']];
 const NAV_IC={itinerary:'images/nav-itinerary.webp',route:'images/nav-route.webp',guide:'images/nav-guide.webp',weather:'images/nav-weather.webp',food:'images/nav-food.webp',shopping:'images/nav-shopping.webp',lodging:'images/nav-lodging.webp'};
 /* hk19：每天「交通」分頁最上方的即時狀況大按鈕（網址沿用環線頁「即時交通與警報」，在那裡改了這裡也跟著變） */
 function tpLiveBarHTML(dayIdx){
@@ -3448,7 +3459,7 @@ function moveEatArea(name,dir){
 /* hk11 */
 function isCustomArea(a){return !EAT_AREAS.includes(a);}
 const AREA_ORIGIN={'富山':'富山駅','白馬':'Sierra Resort Hakuba','戶隱':'戸隠','妙高':'赤倉観光ホテル','中野・長野':'長野駅','志賀高原・湯田中':'湯田中温泉','橫濱':'横浜駅'};
-const EAT_DAY_AREA={0:'富山',1:'白馬',2:'白馬',3:'戶隱',4:'戶隱',5:'妙高',6:'中野・長野',7:'志賀高原・湯田中',8:'志賀高原・湯田中',9:'中野・長野',10:'橫濱',11:'橫濱'};
+const EAT_DAY_AREA={0:'富山',1:'中野・長野',2:'白馬',3:'戶隱',4:'戶隱',5:'妙高',6:'中野・長野',7:'志賀高原・湯田中',8:'志賀高原・湯田中',9:'中野・長野',10:'橫濱',11:'橫濱'};
 const EAT_NAME_AREA={};
 let eatAreaStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_eat_area'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
 function persistEatArea(){safeSetItem('shinshu_eat_area',eatAreaStore);}
@@ -4687,12 +4698,12 @@ function openSpotDayModal(key){
 
 /* ============ hk19（移植京丹雅行 v85）：出發前待辦（全家共用，誰勾的會顯示名字） ============ */
 const TODO_SEED=[
-  {id:'todo-flight6',text:'2027 班表公布後，用多城市方式買「台灣 → 富山、羽田 → 台灣」機票',due:'2027-01-31'},
+  {id:'todo-flight6',text:'確認機票：6/3 TPE 13:30 → TOY 17:35、6/14 HND 14:30 → TSA 16:55',due:'2027-01-31'},
   {id:'todo-hakuba',text:'白馬 Sierra Resort：確認 6/4–6/5 兩晚、晚餐與溫泉時間',due:'2027-02-28'},
   {id:'todo-hotels6',text:'訂富山、戶隱（2 晚）、志賀高原（2 晚）、橫濱（2 晚）住宿；確認赤倉観光ホテル、松籟莊',due:'2027-02-28'},
-  {id:'todo-car6',text:'預約租車 6/4 富山取、6/12 長野還；確認異地還車費、人數、行李件數與後車廂',due:'2027-03-31'},
+  {id:'todo-car6',text:'預約 TOYOTA 長野店租車 6/4–6/12（同店租還）；核對車型、ETC、營業時間與後車廂',due:'2027-03-31'},
   {id:'todo-license',text:'每位駕駛準備駕照日文譯本（國際駕照），確認有效期限',due:'2027-04-30'},
-  {id:'todo-shinkansen6',text:'新幹線指定席：搭乘日前 1 個月開售，6/12 長野→東京先訂',due:'2027-05-04'},
+  {id:'todo-shinkansen6',text:'新幹線指定席：搭乘日前 1 個月開售，6/4 富山→長野、6/12 長野→東京先訂',due:'2027-05-04'},
   {id:'todo-luggage',text:'確認 6/10 志賀高原寄大行李到橫濱：住宿是否受理、橫濱住宿能否代收',due:'2027-05-15'},
   {id:'todo-insurance',text:'保旅遊平安險＋旅遊不便險',due:'2027-05-20'},
   {id:'todo-vjw',text:'每個人填好 Visit Japan Web（入境與海關資料），截圖 QR Code',due:'2027-05-27'},
@@ -4927,7 +4938,7 @@ renderRouteTimeline();
 /* ============ 行程版本（現在只有一版，保留舊的切換程式） ============
    只換顯示哪 10 天；兩版各自的筆記、照片、自訂景點都保留，切回去還在。選擇只記在這支手機上。 */
 const MTN_SVG='<img class="ps-mtn" src="images/deco/mountain.webp" alt="" aria-hidden="true">';
-const PLAN_GMAPS={june:'https://www.google.com/maps/dir/Toyama+Station/Hakuba/Togakushi+Shrine/Kagamiike+Togakushi/Imoriike/Ichibongi+Park+Nakano/Shiga+Kogen/Yudanaka+Onsen/Nagano+Station/Yokohama+Station/Haneda+Airport+Terminal+3'};
+const PLAN_GMAPS={june:'https://www.google.com/maps/dir/Toyama+Station/Nagano+Station/Hakuba/Togakushi+Shrine/Kagamiike+Togakushi/Imoriike/Ichibongi+Park+Nakano/Shiga+Kogen/Yudanaka+Onsen/Nagano+Station/Yokohama+Station/Haneda+Airport+Terminal+3'};
 
 function renderPlanSwitch(){
   /* 只有一版行程：不顯示切換鈕，只留主題小字 */

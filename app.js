@@ -2474,7 +2474,7 @@ window.addEventListener('offline', updateNetStatus);
 /* ============ Service Worker（離線快取整個網頁） ============ */
 if (navigator.serviceWorker) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=ng17').then(()=>navigator.serviceWorker.ready).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=ng18').then(()=>navigator.serviceWorker.ready).catch(()=>{});
   });
 }
 document.addEventListener('error',e=>{if(e.target?.tagName==='IMG')imageErrorFallback(e.target);},true);
@@ -2976,7 +2976,7 @@ const TENKI_LINKS={
 /* =====================================================================
    v48：收藏／預約狀態／提醒、自駕即時路況、版本與同步比對
    ===================================================================== */
-const APP_VERSION='ng17-2026-10-18';
+const APP_VERSION='ng18-2026-10-18';
 
 /* ---------- 收藏 ★／預約狀態／提醒 ---------- */
 let marksStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_marks'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
@@ -3646,7 +3646,7 @@ function restoreSurprises(){
 }
 
 /* ---------- 角落的小動物：不常出現，只從左下／右下角邊緣探頭，點了才有小驚喜 ---------- */
-const CRITTER_IMGS=['images/serow-welcome.webp','images/serow-point.webp','images/serow-camera.webp','images/serow-peek.webp','images/serow-shop.webp'];
+const CRITTER_IMGS=['images/serow-welcome.webp','images/serow-point.webp','images/serow-camera.webp','images/serow-peek.webp'];
 /* 每張角落插圖配一句不同的話，索引對齊 CRITTER_IMGS（之後加進來的插圖沿用最後一句） */
 const END_NOTE_QUOTES=['今天也慢慢走，山不會跑。','累了就坐下來喝杯茶，風景會等你。','抬頭看看，雲正停在山頂上。','今天辛苦了，泡個湯早點睡。','山路慢慢開，下一個彎有好風景。','背包裡多了一點今天的喜歡。','早晚還涼，記得加件外套。','下雨也沒關係，慢慢走就好。'];
 const critter={last:'',timer:null};
@@ -4281,7 +4281,7 @@ function toggleSpotDetails(key){
 /* =====================================================================
    v56：訂位連結、營業時間、照片縮圖＋大圖檢視、交通新增／刪除／圖片、修正導航視窗、新插圖
    ===================================================================== */
-const ART={lying:'images/serow-sleepy.webp',suitcase:'images/serow-welcome.webp',photo:'images/serow-camera.webp',heart:'images/serow-satisfied.webp',rain:'images/serow-rainy.webp',search:'images/serow-guide.webp',car:'images/serow-point.webp',sleep:'images/serow-sleepy.webp'};
+const ART={lying:'images/mood-sleepy.webp',suitcase:'images/serow-welcome.webp',photo:'images/serow-camera.webp',heart:'images/mood-satisfied.webp',rain:'images/mood-rainy.webp',search:'images/serow-peek.webp',car:'images/serow-point.webp',sleep:'images/mood-sleepy.webp'};
 function emptyArtHTML(text,art){return `<div class="empty-art"><img src="${art||ART.lying}" alt="" loading="lazy"><p>${text}</p></div>`;}
 
 /* ---------- 網址整理 ---------- */

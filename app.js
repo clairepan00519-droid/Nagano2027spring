@@ -785,6 +785,8 @@ function planDays(){return PLANS[PLAN].days;}
 function inPlan(i){return planDays().includes(Number(i));}
 function prevPlanDay(i){const a=planDays(),k=a.indexOf(Number(i));return k>0?a[k-1]:-1;}
 function isLastPlanDay(i){const a=planDays();return a[a.length-1]===Number(i);}
+/* ng23：每天插圖的左右位置，把小羊往右推，不被副標戳到 */
+const DH_POS={0:'4% 50%',1:'40% 50%',2:'44% 50%',3:'18% 50%',4:'40% 50%',5:'60% 50%',6:'16% 50%',8:'14% 50%',9:'0% 50%',10:'40% 50%',11:'70% 50%'};
 const SCENE=Object.fromEntries(Array.from({length:12},(_,i)=>['d'+i,`images/scene-day${String(i).padStart(2,'0')}.webp`]));
 const H_TOYAMA='富山站附近飯店（待訂）', H_HAKUBA='白馬 Sierra Resort', H_TOGA='戶隱住宿（待訂）', H_MYOKO='妙高 赤倉観光ホテル', H_SHIGA='志賀高原住宿（優先蓮池／丸池）', H_YUDA='湯田中 松籟莊', H_YOKO='橫濱住宿（建議山下公園／元町中華街附近）';
 const hotel=(name,desc,img,opts={})=>S(name,'hotel',desc,Object.assign({img},opts));
@@ -1812,7 +1814,7 @@ function renderDayContent(){
 
   dayContent.innerHTML = `${todayRemindHTML()}
     <div class="day-card-head ng-dayhead">
-      <img class="dh-art" src="${SCENE['d'+activeDay]||''}" alt="" decoding="async" onclick="openAttachModal(this.getAttribute('src'))">
+      <img class="dh-art" src="${SCENE['d'+activeDay]||''}" style="object-position:${DH_POS[activeDay]||'58% 50%'}" alt="" decoding="async" onclick="openAttachModal(this.getAttribute('src'))">
       <div class="dh-top">
       <div class="day-eyebrow"><span>DAY ${String(d.dayNum).padStart(2,'0')} · ${String(d.date).split('/').map(x=>x.padStart(2,'0')).join('.')}（${d.weekday}）</span><i></i></div>
       <div class="region">${phraseWrapHTML(d.title)}</div>
@@ -2476,7 +2478,7 @@ window.addEventListener('offline', updateNetStatus);
 /* ============ Service Worker（離線快取整個網頁） ============ */
 if (navigator.serviceWorker) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=ng22').then(()=>navigator.serviceWorker.ready).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=ng23').then(()=>navigator.serviceWorker.ready).catch(()=>{});
   });
 }
 document.addEventListener('error',e=>{if(e.target?.tagName==='IMG')imageErrorFallback(e.target);},true);
@@ -2978,7 +2980,7 @@ const TENKI_LINKS={
 /* =====================================================================
    v48：收藏／預約狀態／提醒、自駕即時路況、版本與同步比對
    ===================================================================== */
-const APP_VERSION='ng22-2026-10-18';
+const APP_VERSION='ng23-2026-10-19';
 
 /* ---------- 收藏 ★／預約狀態／提醒 ---------- */
 let marksStore=(()=>{try{const v=JSON.parse(localStorage.getItem('shinshu_marks'));return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(e){return {};}})();
